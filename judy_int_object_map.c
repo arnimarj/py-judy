@@ -188,7 +188,6 @@ static int judy_i_o_map_ass_sub(PyJudyIntObjectMap* m, PyObject* k, PyObject* v)
 	return 0;
 }
 
-
 static PyMappingMethods judy_i_o_map_as_mapping = {
 	(lenfunc)judy_i_o_map_length,        /*mp_length*/
 	(binaryfunc)judy_i_o_map_subscript,  /*mp_subscript*/
@@ -237,7 +236,6 @@ static PyObject* judy_i_o_map_sizeof(PyJudyIntObjectMap* m)
 	JLMU(w, m->judy_L);
 	return PyLong_FromUnsignedLongLong(w);
 }
-
 
 PyDoc_STRVAR(contains__doc__, "");
 PyDoc_STRVAR(getitem__doc__,  "");
@@ -295,7 +293,6 @@ static PyObject* judy_int_object_map_new(PyTypeObject* type, PyObject* args, PyO
 	return self;
 }
 
-
 PyTypeObject PyJudyIntObjectMapType = {
 	PyObject_HEAD_INIT(NULL)
 	0,                                   /*ob_size*/
@@ -339,40 +336,6 @@ PyTypeObject PyJudyIntObjectMapType = {
 	judy_int_object_map_new,             /* tp_new */
 	PyObject_GC_Del                      /* tp_free */
 };
-
-
-//PyTypeObject PyJudyIntObjectKeyIterType = {
-//	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-//	"PyJudyIntObjectMapKeyIter",                    /* tp_name */
-//	sizeof(PyJudyIntObjectMapKey)                   /* tp_basicsize */
-//	0                                               /* tp_itemsize */
-//	0,//(destructor)judy_i_o_map_key_iter_dealloc,      /* tp_dealloc */
-//	0,                                              /* tp_print */
-//	0,                                              /* tp_getattr */
-//	0,                                              /* tp_setattr */
-//	0,                                              /* tp_compare */
-//	0,                                              /* tp_repr */
-//	0,                                              /* tp_as_number */
-//	0,                                              /* tp_as_sequence */
-//	0,                                              /* tp_as_mapping */
-//	0,                                              /* tp_hash */
-//	0,                                              /* tp_call */
-//	0,                                              /* tp_str */
-//	PyObject_GenericGetAttr,                        /* tp_getattro */
-//	0,                                              /* tp_setattro */
-//	0,                                              /* tp_as_buffer */
-//	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,        /* tp_flags */
-//	0,                                              /* tp_doc */
-//	0,//(traverseproc)judy_i_o_map_key_iter_traverse,                /* tp_traverse */
-//	0,                                              /* tp_clear */
-//	0,                                              /* tp_richcompare */
-//	0,                                              /* tp_weaklistoffset */
-//	PyObject_SelfIter,                              /* tp_iter */
-//	0,//(iternextfunc)judy_i_o_map_key_iter_iternext,   /* tp_iternext */
-//	0,//judy_i_o_map_key_iter_methods,                  /* tp_methods */
-//	0,
-//};
-
 
 PyObject* PyJudyIntObjectMap_New(void)
 {
