@@ -68,10 +68,58 @@ static void judy_i_o_map_dealloc(PyJudyIntObjectMap* m)
 
 static int judy_i_o_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
 {
+	int status = Py_ReprEnter((PyObject*)m);
+
+	if (status != 0) {
+		if (status < 0)
+			return status;
+
+		Py_BEGIN_ALLOW_THREADS
+		fprintf(fp, "{...}");
+		Py_END_ALLOW_THREADS
+		return 0;
+	}
+
 	Py_BEGIN_ALLOW_THREADS
-	// TBD
-	fprintf(fp, "{...}");
+	fprintf(fp, "{");
 	Py_END_ALLOW_THREADS
+
+	Word_t n = 0;
+	Word_t i = 0;
+	PWord_t v = 0;
+
+	JLF(v, m->judy_L, i);
+
+	while (v != 0) {
+		Py_INCREF((PyObject*)(*v));
+
+		if (n++ > 0) {
+			Py_BEGIN_ALLOW_THREADS
+			fprintf(fp, ", ");
+			Py_END_ALLOW_THREADS
+		}
+
+		Py_BEGIN_ALLOW_THREADS
+		fprintf(fp, "%llu: ", (unsigned long long)i);
+		Py_END_ALLOW_THREADS
+
+		if (PyObject_Print((PyObject*)(*v), fp, 0) != 0) {
+			Py_DECREF((PyObject*)(*v));
+			Py_ReprLeave((PyObject*)m);
+			return -1;
+		}
+
+		Py_DECREF((PyObject*)(*v));
+
+		JLN(v, m->judy_L, i);
+	}
+
+	Py_BEGIN_ALLOW_THREADS
+	fprintf(fp, "}");
+	Py_END_ALLOW_THREADS
+
+	Py_ReprLeave((PyObject*)m);
+
 	return 0;
 }
 
