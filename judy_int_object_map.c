@@ -18,12 +18,13 @@ static int pyobject_as_word_t(PyObject* p, Word_t* v)
 	unsigned PY_LONG_LONG pv = 0;
 
 	if (PyInt_Check(p)) {
-		 long pv_ = PyInt_AS_LONG(p);
-		 if (pv_ < 0)
+		long pv_ = PyInt_AS_LONG(p);
+
+		if (pv_ < 0)
 			 return 0;
 
-		 pv = (unsigned PY_LONG_LONG)pv_;
-	} else if (PyLong_Check(v)) {
+		pv = (unsigned PY_LONG_LONG)pv_;
+	} else if (PyLong_Check(p)) {
 		pv = PyLong_AsUnsignedLongLong(p);
 
 		// not in range of [0, 2**64-1]
