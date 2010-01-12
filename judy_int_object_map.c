@@ -106,7 +106,7 @@ static int judy_i_o_map_tp_clear(PyObject* op)
 static Py_ssize_t judy_i_o_map_length(PyJudyIntObjectMap* m)
 {
 	Word_t count;
-	JLC(count, m, 0, -1);
+	JLC(count, m->judy_L, 0, -1);
 	//! 2**31-1 on 32-bit systems, 2**63-1 on 64-bit systems
 	return (Py_ssize_t)count;
 }
@@ -138,7 +138,7 @@ static int judy_i_o_map_ass_sub(PyJudyIntObjectMap* m, PyObject* k, PyObject* v)
 	int i = 0;
 
 	if (!pyobject_as_word_t(k, &k_)) {
-		set_key_error(k);
+		PyErr_SetString(PyExc_KeyError, "non-integer keys not supported");
 		return -1;
 	}
 
@@ -269,11 +269,60 @@ static PyObject* judy_i_o_map_get(PyJudyIntObjectMap* m, PyObject* args)
 	return (PyObject*)(*v);
 }
 
+static PyObject* judy_i_o_map_pop(PyJudyIntObjectMap* m, PyObject* args)
+{
+	PyObject* key = 0;
+	PyObject* deflt = 0;
+	Word_t k_ = 0;
+
+	if (!PyArg_UnpackTuple(args, "pop", 1, 2, &key, &deflt))
+		return NULL;
+
+	if (!pyobject_as_word_t(key, &k_)) {
+		if (deflt) {
+			Py_INCREF(deflt);
+			return deflt;
+		}
+
+		set_key_error(key);
+		return 0;
+	}
+
+	PWord_t value = 0;
+	JLG(value, m->judy_L, k_);
+
+	if (value == 0) {
+		if (deflt != 0) {
+			Py_INCREF(deflt);
+			return deflt;
+		}
+
+		set_key_error(key);
+		return 0;
+	}
+
+	Word_t v = *value;
+
+	int i = 0;
+	JLD(i, m->judy_L, k_);
+
+	if (i == JERR)
+		return PyErr_NoMemory();
+
+	if (i != 1) {
+		PyErr_BadInternalCall();
+		return 0;
+	}
+
+	return (PyObject*)v;
+}
+
+
 PyDoc_STRVAR(contains__doc__, "");
 PyDoc_STRVAR(getitem__doc__,  "");
 PyDoc_STRVAR(sizeof__doc__,   "");
 PyDoc_STRVAR(get__doc__,      "");
-//PyDoc_STRVAR(pop__doc__,      "");
+PyDoc_STRVAR(pop__doc__,      "");
 //PyDoc_STRVAR(popitem__doc__,  "");
 //PyDoc_STRVAR(keys__doc__,     "");
 //PyDoc_STRVAR(items__doc__,    "");
@@ -291,7 +340,7 @@ static PyMethodDef judy_io_map_methods[] = {
 	{"__getitem__",  (PyCFunction)judy_i_o_map_subscript,    METH_O | METH_COEXIST,        getitem__doc__},
 	{"__sizeof__",   (PyCFunction)judy_i_o_map_sizeof,       METH_NOARGS,                  sizeof__doc__},
 	{"get",          (PyCFunction)judy_i_o_map_get,          METH_VARARGS,                 get__doc__},
-//	{"pop",          (PyCFunction)judy_i_o_map_pop,          METH_VARARGS,                 pop__doc__},
+	{"pop",          (PyCFunction)judy_i_o_map_pop,          METH_VARARGS,                 pop__doc__},
 //	{"popitem",      (PyCFunction)judy_i_o_map_popitem,      METH_NOARGS,                  popitem__doc__},
 //	{"keys",         (PyCFunction)judy_i_o_map_keys,         METH_NOARGS,                  keys__doc__},
 //	{"items",        (PyCFunction)judy_i_o_map_items,        METH_NOARGS,                  items__doc__},
