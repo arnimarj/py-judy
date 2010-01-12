@@ -182,7 +182,7 @@ static int judy_i_o_map_ass_sub(PyJudyIntObjectMap* m, PyObject* k, PyObject* v)
 		return -1;
 	}
 
-	Py_INCREF(v_);
+	Py_INCREF(v);
 	*v_ = (Word_t)v;
 
 	return 0;
@@ -231,9 +231,17 @@ static PySequenceMethods judy_i_o_map_as_sequence = {
 	0 			                        /* sq_inplace_repeat */
 };
 
+static PyObject* judy_i_o_map_sizeof(PyJudyIntObjectMap* m)
+{
+	Word_t w = 0;
+	JLMU(w, m->judy_L);
+	return PyLong_FromUnsignedLongLong(w);
+}
+
+
 PyDoc_STRVAR(contains__doc__, "");
 PyDoc_STRVAR(getitem__doc__,  "");
-//PyDoc_STRVAR(sizeof__doc__,   "");
+PyDoc_STRVAR(sizeof__doc__,   "");
 //PyDoc_STRVAR(get__doc__,      "");
 //PyDoc_STRVAR(pop__doc__,      "");
 //PyDoc_STRVAR(popitem__doc__,  "");
@@ -251,7 +259,7 @@ PyDoc_STRVAR(getitem__doc__,  "");
 static PyMethodDef judy_io_map_methods[] = {
 	{"__contains__", (PyCFunction)judy_i_o_map_contains_,    METH_O | METH_COEXIST,        contains__doc__},
 	{"__getitem__",  (PyCFunction)judy_i_o_map_subscript,    METH_O | METH_COEXIST,        getitem__doc__},
-//	{"__sizeof__",   (PyCFunction)judy_i_o_map_sizeof,       METH_NOARGS,                  sizeof__doc__},
+	{"__sizeof__",   (PyCFunction)judy_i_o_map_sizeof,       METH_NOARGS,                  sizeof__doc__},
 //	{"get",          (PyCFunction)judy_i_o_map_get,          METH_VARARGS,                 get__doc__},
 //	{"pop",          (PyCFunction)judy_i_o_map_pop,          METH_VARARGS,                 pop__doc__},
 //	{"popitem",      (PyCFunction)judy_i_o_map_popitem,      METH_NOARGS,                  popitem__doc__},
