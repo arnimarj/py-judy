@@ -287,7 +287,65 @@ static PyObject* judy_i_o_map_sizeof(PyJudyIntObjectMap* m)
 {
 	Word_t w = 0;
 	JLMU(w, m->judy_L);
-	return PyLong_FromUnsignedLongLong(w);
+	return PyLong_FromUnsignedLongLong(sizeof(PyJudyIntObjectMap) + w);
+}
+
+static PyObject* judy_i_o_map_value_sizeof(PyJudyIntObjectMap* m)
+{
+	Word_t i = 0;
+	PWord_t v = 0;
+	PyObject* o = 0;
+	PyObject* V = 0;
+	size_t n_bytes = 0;
+	long long L = 0;
+
+	JLF(v, m->judy_L, i);
+
+	while (v != 0) {
+		o = (PyObject*)(*v);
+		PyObject* func = PyObject_GetAttrString(o, "__sizeof__");
+
+		if (func == 0)
+			return 0;
+
+		V = PyObject_CallObject(func, 0);
+		Py_DECREF(func);
+
+		if (V == 0)
+			return 0;
+
+		if (PyInt_Check(V)) {
+			L = (long long)PyInt_AS_LONG(V);
+
+			if (L < 0) {
+				PyErr_SetString(PyExc_ValueError, "__sizeof__() returned a negative integer");
+				Py_DECREF(V);
+				return 0;
+			}
+
+			n_bytes += L;
+		} else if (PyLong_Check(V)) {
+			L = PyLong_AsLongLong(V);
+
+			if (PyErr_Occurred()) {
+				PyErr_SetString(PyExc_ValueError, "__sizeof__() return an out-of-bounds long");
+				Py_DECREF(V);
+				return 0;
+			}
+
+			n_bytes += L;
+		} else {
+			PyErr_SetString(PyExc_ValueError, "__sizeof__() did not return an int/long");
+			Py_DECREF(V);
+			return 0;
+		}
+
+		Py_DECREF(V);
+
+		JLN(v, m->judy_L, i);
+	}
+
+	return PyLong_FromSize_t(n_bytes);
 }
 
 static PyObject* judy_i_o_map_get(PyJudyIntObjectMap* m, PyObject* args)
@@ -384,23 +442,24 @@ PyDoc_STRVAR(clear__doc__,    "");
 //PyDoc_STRVAR(iteritems__doc__, "");
 
 static PyMethodDef judy_io_map_methods[] = {
-	{"__contains__", (PyCFunction)judy_i_o_map_contains_,    METH_O | METH_COEXIST,        contains__doc__},
-	{"__getitem__",  (PyCFunction)judy_i_o_map_subscript,    METH_O | METH_COEXIST,        getitem__doc__},
-	{"__sizeof__",   (PyCFunction)judy_i_o_map_sizeof,       METH_NOARGS,                  sizeof__doc__},
-	{"get",          (PyCFunction)judy_i_o_map_get,          METH_VARARGS,                 get__doc__},
-	{"pop",          (PyCFunction)judy_i_o_map_pop,          METH_VARARGS,                 pop__doc__},
-//	{"popitem",      (PyCFunction)judy_i_o_map_popitem,      METH_NOARGS,                  popitem__doc__},
-//	{"keys",         (PyCFunction)judy_i_o_map_keys,         METH_NOARGS,                  keys__doc__},
-//	{"items",        (PyCFunction)judy_i_o_map_items,        METH_NOARGS,                  items__doc__},
-//	{"values",       (PyCFunction)judy_i_o_map_values,       METH_NOARGS,                  values__doc__},
-//	{"update",       (PyCFunction)judy_i_o_map_update,       METH_VARARGS | METH_KEYWORDS, update__doc__},
-//	{"fromkeys",     (PyCFunction)dict_fromkeys,             METH_VARARGS | METH_CLASS,    fromkeys__doc__},
-	{"clear",        (PyCFunction)judy_i_o_map_clear,        METH_NOARGS,                  clear__doc__},
-//	{"copy",         (PyCFunction)judy_i_o_map_copy,         METH_NOARGS,                  copy__doc__},
-//	{"iterkeys",     (PyCFunction)judy_i_o_map_iterkeys,     METH_NOARGS,                  iterkeys__doc__},
-//	{"itervalues",   (PyCFunction)judy_i_o_map_itervalues,   METH_NOARGS,                  itervalues__doc__},
-//	{"iteritems",    (PyCFunction)judy_i_o_map_iteritems,    METH_NOARGS,                  iteritems__doc__},
-	{NULL,      NULL}
+	{"__contains__",     (PyCFunction)judy_i_o_map_contains_,    METH_O | METH_COEXIST,        contains__doc__},
+	{"__getitem__",      (PyCFunction)judy_i_o_map_subscript,    METH_O | METH_COEXIST,        getitem__doc__},
+	{"__sizeof__",       (PyCFunction)judy_i_o_map_sizeof,       METH_NOARGS,                  sizeof__doc__},
+	{"__value_sizeof__", (PyCFunction)judy_i_o_map_value_sizeof, METH_NOARGS,                  sizeof__doc__},
+	{"get",              (PyCFunction)judy_i_o_map_get,          METH_VARARGS,                 get__doc__},
+	{"pop",              (PyCFunction)judy_i_o_map_pop,          METH_VARARGS,                 pop__doc__},
+//	{"popitem",          (PyCFunction)judy_i_o_map_popitem,      METH_NOARGS,                  popitem__doc__},
+//	{"keys",             (PyCFunction)judy_i_o_map_keys,         METH_NOARGS,                  keys__doc__},
+//	{"items",            (PyCFunction)judy_i_o_map_items,        METH_NOARGS,                  items__doc__},
+//	{"values",           (PyCFunction)judy_i_o_map_values,       METH_NOARGS,                  values__doc__},
+//	{"update",           (PyCFunction)judy_i_o_map_update,       METH_VARARGS | METH_KEYWORDS, update__doc__},
+//	{"fromkeys",         (PyCFunction)dict_fromkeys,             METH_VARARGS | METH_CLASS,    fromkeys__doc__},
+	{"clear",            (PyCFunction)judy_i_o_map_clear,        METH_NOARGS,                  clear__doc__},
+//	{"copy",             (PyCFunction)judy_i_o_map_copy,         METH_NOARGS,                  copy__doc__},
+//	{"iterkeys",         (PyCFunction)judy_i_o_map_iterkeys,     METH_NOARGS,                  iterkeys__doc__},
+//	{"itervalues",       (PyCFunction)judy_i_o_map_itervalues,   METH_NOARGS,                  itervalues__doc__},
+//	{"iteritems",        (PyCFunction)judy_i_o_map_iteritems,    METH_NOARGS,                  iteritems__doc__},
+	{NULL, NULL}
 };
 
 static int judy_int_object_map_init(PyObject* self, PyObject* args, PyObject* kwds)

@@ -28,8 +28,34 @@ def measure(prefix, D):
 	print '%s: %.2f   %.2f' % (prefix, t_1 - t_0, t_2 - t_1)
 	print '   %i bytes' % (D.__sizeof__(),)
 
-J = judy.JudyIntObjectMap()
-P = dict()
+def test_sizeof():
+	import pointless
+	J = judy.JudyIntObjectMap()
 
-measure('judy', J)
-measure('dict', P)
+	J[00] = pointless.PointlessPrimVector('u32', xrange(1000))
+	J[10] = pointless.PointlessPrimVector('u32', xrange(10000))
+	J[20] = pointless.PointlessPrimVector('u32', xrange(100000))
+
+	print '__sizeof__()      ', J.__sizeof__()
+	print '__value_sizeof()__', J.__value_sizeof__()
+
+def print_usage_exit():
+	sys.exit('usage: ./test.py (--measure | --test-sizeof)')
+
+def main():
+	if len(sys.argv) != 2:
+		print_usage_exit()
+
+	if sys.argv[1] == '--measure':
+		J = judy.JudyIntObjectMap()
+		P = dict()
+
+		measure('judy', J)
+		measure('dict', P)
+	elif sys.argv[1] == '--test-sizeof':
+		test_sizeof()
+	else:
+		print_usage_exit()
+
+if __name__ == '__main__':
+	main()
