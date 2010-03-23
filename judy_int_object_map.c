@@ -125,10 +125,97 @@ static int judy_i_o_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
 
 static PyObject* judy_i_o_map_repr(PyJudyIntObjectMap* m)
 {
-	// TBD
-	return PyString_FromString("{...}");
-}
+	Py_ssize_t r = Py_ReprEnter((PyObject*)m);
+	PyObject* retval = 0;
+	PyObject* left_bracket = 0;
+	PyObject* right_bracket = 0;
+	PyObject* pieces = 0;
+	PyObject* s = 0;
+	PyObject* t = 0;
+	char s_buffer[32];
+	int status;
 
+	if (r != 0)
+		return r > 0 ? PyString_FromString("{...}") : 0;
+
+	if ((left_bracket = PyString_FromString("{")) == 0)
+		goto cleanup;
+
+	if ((right_bracket = PyString_FromString("}")) == 0)
+		goto cleanup;
+
+	if ((pieces = PyList_New(0)) == 0)
+		goto cleanup;
+
+	// for each key/value pair
+	Word_t i = 0;
+	PWord_t v = 0;
+
+	JLF(v, m->judy_L, i);
+
+	while (v != 0) {
+		Py_INCREF((PyObject*)(*v));
+
+		sprintf(s_buffer, "%llu: ", (unsigned long long)i);
+
+		s = PyString_FromString(s_buffer);
+		PyString_ConcatAndDel(&s, PyObject_Repr((PyObject*)(*v)));
+		Py_DECREF((PyObject*)(*v));
+
+		if (s == 0)
+			goto cleanup;
+
+		status = PyList_Append(pieces, s);
+		Py_DECREF(s);
+
+		if (status < 0)
+			goto cleanup;
+
+		JLN(v, m->judy_L, i);
+	}
+
+	s = PyString_FromString("{");
+
+	if (s == 0)
+		goto cleanup;
+
+	t = PyList_GET_ITEM(pieces, 0);
+	PyString_ConcatAndDel(&s, t);
+	PyList_SET_ITEM(pieces, 0, s);
+
+	if (s == 0)
+		goto cleanup;
+
+	s = PyString_FromString("}");
+
+	if (s == 0)
+		goto cleanup;
+
+	t = PyList_GET_ITEM(pieces, PyList_GET_SIZE(pieces) - 1);
+	PyString_ConcatAndDel(&t, s);
+	PyList_SET_ITEM(pieces, PyList_GET_SIZE(pieces) - 1, t);
+
+	if (t == 0)
+		goto cleanup;
+
+	s = PyString_FromString(", ");
+
+	if (s == 0)
+		goto cleanup;
+
+	retval = _PyString_Join(s, pieces);
+	Py_DECREF(s);
+
+cleanup:
+
+	Py_XDECREF(pieces);
+	Py_XDECREF(left_bracket);
+	Py_XDECREF(right_bracket);
+
+	Py_ReprLeave((PyObject*)m);
+
+	return retval;
+}
 
 static int judy_i_o_map_traverse(PyObject* op, visitproc visit, void* arg)
 {

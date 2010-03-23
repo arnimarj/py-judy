@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import sys, time
+import sys, time, random, cStringIO
 
 p = sys.path
 
@@ -39,6 +39,25 @@ def test_sizeof():
 	print '__sizeof__()      ', J.__sizeof__()
 	print '__value_sizeof()__', J.__value_sizeof__()
 
+def test_print():
+	J = judy.JudyIntObjectMap()
+	P = { }
+
+	random.seed(0)
+	k = [random.randint(0, 10000) for i in xrange(10)]
+	v = ['a', ['a'], [{},{'a':'b'}], 'k', u'arni', 1.00001, 7, 2, 1, 10]
+
+	for K, V in zip(k, v):
+		J[K] = V
+		P[K] = V
+
+	for i in xrange(10000000):
+		buffer = cStringIO.StringIO()
+		print >> buffer, repr(J)
+		print >> buffer, repr(P)
+		print repr(J)
+		print repr(P)
+
 def print_usage_exit():
 	sys.exit('usage: ./test.py (--measure | --test-sizeof)')
 
@@ -54,6 +73,8 @@ def main():
 		measure('dict', P)
 	elif sys.argv[1] == '--test-sizeof':
 		test_sizeof()
+	elif sys.argv[1] == '--test-print':
+		test_print()
 	else:
 		print_usage_exit()
 
