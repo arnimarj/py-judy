@@ -9,6 +9,10 @@
 #include <stdio.h>
 #include <limits.h>
 
+#include "utils.h"
+
+// #define JUDY_WORD_MAX (sizeof(Word_t) == 4 ? 0xFFFFFFFF : 0xFFFFFFFFFFFFFFFF)
+
 typedef struct {
 	PyObject_HEAD
 	Pvoid_t judy_L;

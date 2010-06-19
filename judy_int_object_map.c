@@ -2,47 +2,6 @@
 
 #define PYJUDY_IO_MAP_FOREACH(a, f, T) { Word_t i = 0; PWord_t v = 0; JLF(v, a, i); while ((v) != 0) { f((T)(*v)); JLN(v, a, i); } }
 
-static void set_key_error(PyObject* arg)
-{
-	PyObject* tup = PyTuple_Pack(1, arg);
-
-	if (tup == 0)
-		return;
-
-	PyErr_SetObject(PyExc_KeyError, tup);
-	Py_DECREF(tup);
-}
-
-static int pyobject_as_word_t(PyObject* p, Word_t* v)
-{
-	unsigned PY_LONG_LONG pv = 0;
-
-	if (PyInt_Check(p)) {
-		long pv_ = PyInt_AS_LONG(p);
-
-		if (pv_ < 0)
-			 return 0;
-
-		pv = (unsigned PY_LONG_LONG)pv_;
-	} else if (PyLong_Check(p)) {
-		pv = PyLong_AsUnsignedLongLong(p);
-
-		// not in range of [0, 2**64-1]
-		if (PyErr_Occurred()) {
-			PyErr_Clear();
-			return 0;
-		}
-	} else {
-		return 0;
-	}
-
-	if (pv > ULONG_MAX)
-		return 0;
-
-	*v = (Word_t)pv;
-	return 1;
-}
-
 static PyObject* judy_i_o_map_clear(PyObject* op)
 {
 	PyJudyIntObjectMap* m = (PyJudyIntObjectMap*)op;

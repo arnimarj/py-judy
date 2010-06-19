@@ -5,10 +5,20 @@ import sys, time, random, cStringIO
 p = sys.path
 
 try:
-	sys.path = ['/home/arni/py-judy/build/lib.cygwin-1.7.1-i686-2.6']
+	sys.path = ['/home/arni/py-judy/build/lib.linux-i686-2.6/']
 	import judy
 finally:
 	sys.path = p
+
+s = judy.JudyIntSet()
+print 'S', s
+s.add(0xFFFFFFFF)
+print list(s)
+s.add(0xFFFFFFFFFFFF)
+print list(s)
+sys.exit()
+
+
 
 def measure(prefix, D):
 	X = 0

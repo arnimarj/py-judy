@@ -13,18 +13,19 @@ setup(name = 'Judy Python API',
 
 	ext_modules = [
 		Extension('judy',
-			include_dirs = ['/usr/include' ],
-			library_dirs = ['/usr/lib' ],
+			include_dirs = [ '/usr/include' ],
+			library_dirs = [ '/usr/lib' ],
 
 			sources = [
 				'judy.c',
 				'judy_int_object_map.c',
 				'judy_int_set.c',
+				'utils.c'
 			],
 
 			#extra_compile_args = ['-pedantic', '-std=c99', '-Wall', '-Wno-strict-prototypes', '-g', '-D_GNU_SOURCE', '-O2', '-DNDEBUG'],
-			extra_compile_args = ['-pedantic', '-std=c99', '-Wall', '-Wno-strict-prototypes', '-g', '-D_GNU_SOURCE', '-O2'],
-			extra_link_args = ['-Bstatic', '-lJudy', '-Bdynamic']
+			extra_compile_args = ['-static', '-pedantic', '-std=c99', '-Wall', '-Wno-strict-prototypes', '-g', '-D_GNU_SOURCE', '-O2'],
+			extra_link_args = ['-Bstatic', '-lJudy', '-Bstatic']
 		)
 	]
 )

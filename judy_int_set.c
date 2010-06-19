@@ -3,31 +3,6 @@
 PyTypeObject PyJudyIntSetType;
 PyTypeObject PyJudyIntSetIterType;
 
-#define JUDY_WORD_MAX (sizeof(Word_t) == 4 ? 0xFFFFFFFF : 0xFFFFFFFFFFFFFFFF)
-
-static int PyJudyIntSet_parse_ulonglong(PyObject* o, unsigned long long* v)
-{
-	if (PyInt_Check(o)) {
-		long i = PyInt_AS_LONG(o);
-		if (0 <= i && i < JUDY_WORD_MAX) {
-			*v = (unsigned long long)i;
-			return 1;
-		}
-	} else if (PyLong_Check(o)) {
-		unsigned PY_LONG_LONG i = PyLong_AsUnsignedLongLong(o);
-
-		if (PyErr_Occurred()) {
-			PyErr_Clear();
-			return 0;
-		}
-
-		*v = (unsigned long long)i;
-		return 1;
-	}
-
-	return 0;
-}
-
 static void print_word_and_error(const char* s, Word_t w, JError_t* e)
 {
 	switch (JU_ERRNO(e)) {
@@ -72,9 +47,8 @@ PyObject* PyJudyIntSet_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 {
 	PyJudyIntSet* self = (PyJudyIntSet*)type->tp_alloc(type, 0);
 
-	if (self) {
+	if (self)
 		self->s = 0;
-	}
 
 	return (PyObject*)self;
 }
@@ -137,44 +111,20 @@ static PyObject* PyJudyIntSet_iter(PyObject* s)
 	return (PyObject*)iter;
 }
 
-static void PyJudyIntSet_set_error(JError_t* error)
+static PyObject* PyJudyIntSet_add(PyJudyIntSet* self, PyObject* key)
 {
-	switch (JU_ERRNO(error)) {
-		case JU_ERRNO_NONE:          PyErr_SetString(PyExc_TypeError, "internal error 1"); break;
-		case JU_ERRNO_FULL:          PyErr_SetString(PyExc_TypeError, "internal error 2"); break;
-		case JU_ERRNO_NOMEM:         PyErr_NoMemory();                                     break;
-		case JU_ERRNO_NULLPPARRAY:   PyErr_SetString(PyExc_TypeError, "internal error 3"); break;
-		case JU_ERRNO_NONNULLPARRAY: PyErr_SetString(PyExc_TypeError, "internal error 4"); break;
-		case JU_ERRNO_NULLPINDEX:    PyErr_SetString(PyExc_TypeError, "internal error 5"); break;
-		case JU_ERRNO_NULLPVALUE:    PyErr_SetString(PyExc_TypeError, "internal error 6"); break;
-		case JU_ERRNO_NOTJUDY1:      PyErr_SetString(PyExc_TypeError, "internal error 7"); break;
-		case JU_ERRNO_NOTJUDYL:      PyErr_SetString(PyExc_TypeError, "internal error 8"); break;
-		case JU_ERRNO_NOTJUDYSL:     PyErr_SetString(PyExc_TypeError, "internal error 9"); break;
-		case JU_ERRNO_UNSORTED:      PyErr_SetString(PyExc_TypeError, "internal error 10"); break;
-		case JU_ERRNO_OVERRUN:       PyErr_SetString(PyExc_TypeError, "internal error 11"); break;
-		case JU_ERRNO_CORRUPT:       PyErr_SetString(PyExc_TypeError, "internal error 12"); break;
-		default:                     PyErr_SetString(PyExc_TypeError, "internal error 13"); break;
-	}
-}
+	Word_t v;
 
-static PyObject* PyJudyIntSet_add(PyJudyIntSet* self, PyObject* args)
-{
-	PyObject* o;
-	unsigned PY_LONG_LONG v;
-
-	if (!PyArg_ParseTuple(args, "O", &o))
-		return 0;
-
-	if (!PyJudyIntSet_parse_ulonglong(o, &v) || v > JUDY_WORD_MAX) {
+	if (!pyobject_as_word_t(key, &v)) {
 		PyErr_Format(PyExc_ValueError, "we only support integers in the range [0, 2**%i-1]", sizeof(Word_t) == 4 ? 32 : 64);
 		return 0;
 	}
 
 	JError_t JError;
-	Word_t w = Judy1Set(&self->s, (Word_t)v, &JError);
+	Word_t w = Judy1Set(&self->s, v, &JError);
 
 	if (w == JERR) {
-		PyJudyIntSet_set_error(&JError);
+		judy_set_error(&JError);
 		return 0;
 	}
 
@@ -182,23 +132,12 @@ static PyObject* PyJudyIntSet_add(PyJudyIntSet* self, PyObject* args)
 	return Py_None;
 }
 
-static PyObject* PyJudyIntSet_remove(PyJudyIntSet* self, PyObject* args)
+static PyObject* PyJudyIntSet_remove(PyJudyIntSet* self, PyObject* key)
 {
-	PyObject* o = 0;
-	unsigned PY_LONG_LONG v;
+	Word_t v;
 
-	if (!PyArg_ParseTuple(args, "O", &o) || self->s == 0) {
-		PyErr_SetNone(PyExc_KeyError);
-		return 0;
-	}
-
-	if (!PyJudyIntSet_parse_ulonglong(o, &v)) {
-		PyErr_SetNone(PyExc_KeyError);
-		return 0;
-	}
-
-	if (v > JUDY_WORD_MAX) {
-		PyErr_SetNone(PyExc_KeyError);
+	if (self->s == 0 || !pyobject_as_word_t(key, &v)) {
+		set_key_error(key);
 		return 0;
 	}
 
@@ -206,12 +145,12 @@ static PyObject* PyJudyIntSet_remove(PyJudyIntSet* self, PyObject* args)
 	int i = Judy1Unset(&self->s, (Word_t)v, &JError);
 
 	if (i == JERR) {
-		PyJudyIntSet_set_error(&JError);
+		judy_set_error(&JError);
 		return 0;
 	}
 
 	if (i == 0) {
-		PyErr_SetNone(PyExc_KeyError);
+		set_key_error(key);
 		return 0;
 	}
 
@@ -227,19 +166,16 @@ static PyObject* PyJudyIntSet_sizeof(PyJudyIntSet* self)
 
 static int PyJudyIntSet_contains(PyJudyIntSet* self, PyObject* key)
 {
-	unsigned PY_LONG_LONG v;
+	Word_t v;
 
-	if (!PyJudyIntSet_parse_ulonglong(key, &v))
-		return 0;
-
-	if (v > JUDY_WORD_MAX)
+	if (!pyobject_as_word_t(key, &v))
 		return 0;
 
 	JError_t JError;
-	int i = Judy1Test(self->s, (Word_t)v, &JError);
+	int i = Judy1Test(self->s, v, &JError);
 
 	if (i == JERR) {
-		PyJudyIntSet_set_error(&JError);
+		judy_set_error(&JError);
 		return -1;
 	}
 
@@ -258,8 +194,8 @@ static PySequenceMethods PyJudyIntSet_as_sequence = {
 };
 
 static PyMethodDef PyJudyIntSet_methods[] = {
-	{"add",        (PyCFunction)PyJudyIntSet_add,    METH_VARARGS, ""},
-	{"remove",     (PyCFunction)PyJudyIntSet_remove, METH_VARARGS, ""},
+	{"add",        (PyCFunction)PyJudyIntSet_add,    METH_O,       ""},
+	{"remove",     (PyCFunction)PyJudyIntSet_remove, METH_O,       ""},
 	{"__sizeof__", (PyCFunction)PyJudyIntSet_sizeof, METH_NOARGS,  ""},
 	{NULL, NULL}
 };
@@ -319,7 +255,7 @@ static PyObject* PyJudyIntSetIter_iternext(PyJudyIntSetIter* iter)
 		iter->b = 1;													
 																																																			
 		if (i == JERR) {
-			PyJudyIntSet_set_error(&JError);
+			judy_set_error(&JError);
 			return 0;
 		}
 
@@ -329,7 +265,7 @@ static PyObject* PyJudyIntSetIter_iternext(PyJudyIntSetIter* iter)
 	i = Judy1Next(iter->s->s, &iter->i, &JError);
 
 	if (i == JERR) {
-		PyJudyIntSet_set_error(&JError);
+		judy_set_error(&JError);
 		return 0;
 	}
 
@@ -339,14 +275,13 @@ static PyObject* PyJudyIntSetIter_iternext(PyJudyIntSetIter* iter)
 	return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG)iter->i);
 }
 
-
 PyTypeObject PyJudyIntSetIterType = {
 	PyObject_HEAD_INIT(NULL)
 	0,                                               /*ob_size*/
-	"judy.PyJudyIntSetIter",            /*tp_name*/
-	sizeof(PyJudyIntSetIter),                /*tp_basicsize*/
+	"judy.PyJudyIntSetIter",                         /*tp_name*/
+	sizeof(PyJudyIntSetIter),                        /*tp_basicsize*/
 	0,                                               /*tp_itemsize*/
-	(destructor)PyJudyIntSetIter_dealloc,    /*tp_dealloc*/
+	(destructor)PyJudyIntSetIter_dealloc,            /*tp_dealloc*/
 	0,                                               /*tp_print*/
 	0,                                               /*tp_getattr*/
 	0,                                               /*tp_setattr*/
@@ -362,13 +297,13 @@ PyTypeObject PyJudyIntSetIterType = {
 	0,                                               /*tp_setattro*/
 	0,                                               /*tp_as_buffer*/
 	Py_TPFLAGS_DEFAULT,                              /*tp_flags*/
-	"PyJudyIntSetIter",                      /*tp_doc */
+	"PyJudyIntSetIter",                              /*tp_doc */
 	0,                                               /*tp_traverse */
 	0,                                               /*tp_clear */
 	0,                                               /*tp_richcompare */
 	0,                                               /*tp_weaklistoffset */
 	PyObject_SelfIter,                               /*tp_iter */
-	(iternextfunc)PyJudyIntSetIter_iternext, /*tp_iternext */
+	(iternextfunc)PyJudyIntSetIter_iternext,         /*tp_iternext */
 	0,                                               /*tp_methods */
 	0,                                               /*tp_members */
 	0,                                               /*tp_getset */
@@ -377,7 +312,7 @@ PyTypeObject PyJudyIntSetIterType = {
 	0,                                               /*tp_descr_get */
 	0,                                               /*tp_descr_set */
 	0,                                               /*tp_dictoffset */
-	(initproc)PyJudyIntSetIter_init,         /*tp_init */
+	(initproc)PyJudyIntSetIter_init,                 /*tp_init */
 	0,                                               /*tp_alloc */
-	PyJudyIntSetIter_new,                    /*tp_new */
+	PyJudyIntSetIter_new,                            /*tp_new */
 };
