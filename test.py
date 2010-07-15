@@ -10,58 +10,6 @@ try:
 finally:
 	sys.path = p
 
-m = judy.JudyIntSet()
-for i in xrange(10):
-	m.add(i)
-print m
-sys.exit()
-
-
-print 'A'
-v = [random.randint(0, 2**32-1) for i in xrange(10000)]
-
-print 'B'
-
-a = set()
-b = judy.JudyIntSet()
-
-for i in v:
-	a.add(i)
-	b.add(i)
-c = 0
-
-t_0 = time.time()
-
-for i in xrange(100):
-	for j in v:
-		c += j in a
-
-t_1 = time.time()
-
-for i in xrange(100):
-	for j in v:
-		c += j in b
-
-t_2 = time.time()
-
-print t_1 - t_0
-print t_2 - t_1
-
-
-sys.exit()
-
-
-
-
-
-
-
-
-
-
-
-
-
 def measure(prefix, D):
 	X = 0
 
@@ -107,8 +55,37 @@ def test_print():
 		buffer = cStringIO.StringIO()
 		print >> buffer, repr(J)
 		print >> buffer, repr(P)
-		print repr(J)
-		print repr(P)
+
+def test_iter():
+	J = judy.JudyIntObjectMap()
+	P = { }
+
+	random.seed(0)
+	k = [random.randint(0, 10000) for i in xrange(10)]
+	v = ['a', ['a'], [{},{'a':'b'}], 'k', u'arni', 1.00001, 7, 2, 1, 10]
+
+	for K, V in zip(k, v):
+		J[K] = V
+		P[K] = V
+
+	A = list(J)
+	B = sorted(list(P))
+	assert(A == B)
+
+	A = list(J.iterkeys())
+	B = sorted(list(P.iterkeys()))
+	assert(A == B)
+
+	A = sorted(J.itervalues())
+	B = sorted(P.itervalues())
+	assert(A == B)
+
+	print sorted(zip(k, v))
+	A = list(J.iteritems())
+	B = sorted(P.iteritems())
+	print 'A', A
+	print 'B', B
+	assert(A == B)
 
 def print_usage_exit():
 	sys.exit('usage: ./test.py (--measure | --test-sizeof)')
@@ -127,6 +104,8 @@ def main():
 		test_sizeof()
 	elif sys.argv[1] == '--test-print':
 		test_print()
+	elif sys.argv[1] == '--test-iter':
+		test_iter()
 	else:
 		print_usage_exit()
 

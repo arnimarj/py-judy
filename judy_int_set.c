@@ -208,12 +208,12 @@ static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
 	PyObject* s = 0;
 
 	if (set->s == 0)
-		return PyString_FromString("PyIntSet([])");
+		return PyString_FromString("JudyIntSet([])");
 
 	if ((comma_space = PyString_FromString(", ")) == 0)
 		goto cleanup;
 
-	retval = PyString_FromString("PyIntSet([");
+	retval = PyString_FromString("JudyIntSet([");
 
 	if (retval == 0)
 		goto cleanup;
