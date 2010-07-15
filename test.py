@@ -5,18 +5,60 @@ import sys, time, random, cStringIO
 p = sys.path
 
 try:
-	sys.path = ['/home/arni/py-judy/build/lib.linux-i686-2.6/']
+	sys.path = ['/home/arni/dohop/trunk/judy/py-judy/build/lib.linux-x86_64-2.6']
 	import judy
 finally:
 	sys.path = p
 
-s = judy.JudyIntSet()
-print 'S', s
-s.add(0xFFFFFFFF)
-print list(s)
-s.add(0xFFFFFFFFFFFF)
-print list(s)
+m = judy.JudyIntSet()
+for i in xrange(10):
+	m.add(i)
+print m
 sys.exit()
+
+
+print 'A'
+v = [random.randint(0, 2**32-1) for i in xrange(10000)]
+
+print 'B'
+
+a = set()
+b = judy.JudyIntSet()
+
+for i in v:
+	a.add(i)
+	b.add(i)
+c = 0
+
+t_0 = time.time()
+
+for i in xrange(100):
+	for j in v:
+		c += j in a
+
+t_1 = time.time()
+
+for i in xrange(100):
+	for j in v:
+		c += j in b
+
+t_2 = time.time()
+
+print t_1 - t_0
+print t_2 - t_1
+
+
+sys.exit()
+
+
+
+
+
+
+
+
+
+
 
 
 

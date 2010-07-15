@@ -3,6 +3,14 @@
 PyTypeObject PyJudyIntSetType;
 PyTypeObject PyJudyIntSetIterType;
 
+typedef struct {
+	PyObject_HEAD
+	int b;
+	Word_t i;
+	PyJudyIntSet* s;
+} PyJudyIntSetIter;
+
+
 static void print_word_and_error(const char* s, Word_t w, JError_t* e)
 {
 	switch (JU_ERRNO(e)) {
@@ -182,6 +190,91 @@ static int PyJudyIntSet_contains(PyJudyIntSet* self, PyObject* key)
 	return (i ? 1 : 0);
 }
 
+static PyObject* PyJudyIntSet_direct_contains(PyJudyIntSet* set, PyObject* key)
+{
+	int result = PyJudyIntSet_contains(set, key);
+
+	if (result == -1)
+		return 0;
+
+	return PyBool_FromLong(result);
+}
+
+static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
+{
+	char s_buffer[32];
+	PyObject* retval = 0;
+	PyObject* comma_space = 0;
+	PyObject* s = 0;
+
+	if (set->s == 0)
+		return PyString_FromString("PyIntSet([])");
+
+	if ((comma_space = PyString_FromString(", ")) == 0)
+		goto cleanup;
+
+	retval = PyString_FromString("PyIntSet([");
+
+	if (retval == 0)
+		goto cleanup;
+
+	JError_t JError;
+	Word_t v = 0;
+	Judy1First(set->s, &v, &JError);
+
+	sprintf(s_buffer, "%llu", (unsigned long long)v);
+	s = PyString_FromString(s_buffer);
+
+	if (s == 0) {
+		Py_CLEAR(retval);
+		goto cleanup;
+	}
+
+	PyString_ConcatAndDel(&retval, s);
+
+	if (retval == 0)
+		goto cleanup;
+
+	while (1) {
+		int i = Judy1Next(set->s, &v, &JError);
+
+		if (i == 0)
+			break;
+
+		PyString_ConcatAndDel(&retval, comma_space);
+
+		if (retval == 0)
+			goto cleanup;
+
+		sprintf(s_buffer, "%llu", (unsigned long long)v);
+		s = PyString_FromString(s_buffer);
+
+		if (s == 0) {
+			Py_CLEAR(retval);
+			goto cleanup;
+		}
+
+		PyString_ConcatAndDel(&retval, s);
+
+		if (retval == 0)
+			goto cleanup;
+	}
+
+	s = PyString_FromString("])");
+
+	if (s == 0)
+		goto cleanup;
+
+	PyString_ConcatAndDel(&retval, s);
+
+cleanup:
+
+	Py_XDECREF(comma_space);
+
+	return retval;
+}
+
+
 static PySequenceMethods PyJudyIntSet_as_sequence = {
 	0,                                 /* sq_length */
 	0,                                 /* sq_concat */
@@ -194,9 +287,10 @@ static PySequenceMethods PyJudyIntSet_as_sequence = {
 };
 
 static PyMethodDef PyJudyIntSet_methods[] = {
-	{"add",        (PyCFunction)PyJudyIntSet_add,    METH_O,       ""},
-	{"remove",     (PyCFunction)PyJudyIntSet_remove, METH_O,       ""},
-	{"__sizeof__", (PyCFunction)PyJudyIntSet_sizeof, METH_NOARGS,  ""},
+	{"add",          (PyCFunction)PyJudyIntSet_add,             METH_O,                ""},
+	{"remove",       (PyCFunction)PyJudyIntSet_remove,          METH_O,                ""},
+	{"__sizeof__",   (PyCFunction)PyJudyIntSet_sizeof,          METH_NOARGS,           ""},
+	{"__contains__", (PyCFunction)PyJudyIntSet_direct_contains, METH_O | METH_COEXIST, ""},
 	{NULL, NULL}
 };
 
@@ -211,7 +305,7 @@ PyTypeObject PyJudyIntSetType = {
 	0,                                        /*tp_getattr*/
 	0,                                        /*tp_setattr*/
 	0,                                        /*tp_compare*/
-	0,//PyJudyIntSet_repr,                    /*tp_repr*/
+	(reprfunc)PyJudyIntSet_repr,              /*tp_repr*/
 	0,                                        /*tp_as_number*/
 	&PyJudyIntSet_as_sequence,                /*tp_as_sequence*/
 	0,                                        /*tp_as_mapping*/

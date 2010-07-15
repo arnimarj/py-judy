@@ -2,7 +2,7 @@
 
 #define PYJUDY_IO_MAP_FOREACH(a, f, T) { Word_t i = 0; PWord_t v = 0; JLF(v, a, i); while ((v) != 0) { f((T)(*v)); JLN(v, a, i); } }
 
-static PyObject* judy_i_o_map_clear(PyObject* op)
+static PyObject* judy_io_map_clear(PyObject* op)
 {
 	PyJudyIntObjectMap* m = (PyJudyIntObjectMap*)op;
 	PYJUDY_IO_MAP_FOREACH(m->judy_L, Py_DECREF, PyObject*);
@@ -13,7 +13,7 @@ static PyObject* judy_i_o_map_clear(PyObject* op)
 	return Py_None;
 }
 
-static void judy_i_o_map_dealloc(PyJudyIntObjectMap* m)
+static void judy_io_map_dealloc(PyJudyIntObjectMap* m)
 {
  	PyObject_GC_UnTrack(m);
 	Py_TRASHCAN_SAFE_BEGIN(m)
@@ -25,7 +25,7 @@ static void judy_i_o_map_dealloc(PyJudyIntObjectMap* m)
 	Py_TRASHCAN_SAFE_END(m)
 }
 
-static int judy_i_o_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
+static int judy_io_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
 {
 	int status = Py_ReprEnter((PyObject*)m);
 
@@ -82,7 +82,7 @@ static int judy_i_o_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
 	return 0;
 }
 
-static PyObject* judy_i_o_map_repr(PyJudyIntObjectMap* m)
+static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 {
 	Py_ssize_t r = Py_ReprEnter((PyObject*)m);
 	PyObject* retval = 0;
@@ -176,7 +176,7 @@ cleanup:
 	return retval;
 }
 
-static int judy_i_o_map_traverse(PyObject* op, visitproc visit, void* arg)
+static int judy_io_map_traverse(PyObject* op, visitproc visit, void* arg)
 {
 	if (!PyJudyIntObjectMap_Check(op))
 		return 0;
@@ -187,7 +187,7 @@ static int judy_i_o_map_traverse(PyObject* op, visitproc visit, void* arg)
 	return 0;
 }
 
-static int judy_i_o_map_tp_clear(PyObject* op)
+static int judy_io_map_tp_clear(PyObject* op)
 {
 	PyJudyIntObjectMap* m = (PyJudyIntObjectMap*)op;
 	PYJUDY_IO_MAP_FOREACH(m->judy_L, Py_DECREF, PyObject*);
@@ -197,7 +197,7 @@ static int judy_i_o_map_tp_clear(PyObject* op)
 	return 0;
 }
 
-static Py_ssize_t judy_i_o_map_length(PyJudyIntObjectMap* m)
+static Py_ssize_t judy_io_map_length(PyJudyIntObjectMap* m)
 {
 	Word_t count;
 	JLC(count, m->judy_L, 0, -1);
@@ -205,7 +205,7 @@ static Py_ssize_t judy_i_o_map_length(PyJudyIntObjectMap* m)
 	return (Py_ssize_t)count;
 }
 
-static PyObject* judy_i_o_map_subscript(PyJudyIntObjectMap* m, PyObject* k)
+static PyObject* judy_io_map_subscript(PyJudyIntObjectMap* m, PyObject* k)
 {
 	Word_t k_ = 0;
 
@@ -226,7 +226,7 @@ static PyObject* judy_i_o_map_subscript(PyJudyIntObjectMap* m, PyObject* k)
 	return (PyObject*)(*v);
 }
 
-static int judy_i_o_map_ass_sub(PyJudyIntObjectMap* m, PyObject* k, PyObject* v)
+static int judy_io_map_ass_sub(PyJudyIntObjectMap* m, PyObject* k, PyObject* v)
 {
 	Word_t k_ = 0;
 	int i = 0;
@@ -287,13 +287,13 @@ static int judy_i_o_map_ass_sub(PyJudyIntObjectMap* m, PyObject* k, PyObject* v)
 	return 0;
 }
 
-static PyMappingMethods judy_i_o_map_as_mapping = {
-	(lenfunc)judy_i_o_map_length,        /*mp_length*/
-	(binaryfunc)judy_i_o_map_subscript,  /*mp_subscript*/
-	(objobjargproc)judy_i_o_map_ass_sub, /*mp_ass_subscript*/
+static PyMappingMethods judy_io_map_as_mapping = {
+	(lenfunc)judy_io_map_length,        /*mp_length*/
+	(binaryfunc)judy_io_map_subscript,  /*mp_subscript*/
+	(objobjargproc)judy_io_map_ass_sub, /*mp_ass_subscript*/
 };
 
-static int judy_i_o_map_contains(PyJudyIntObjectMap* m, PyObject* k)
+static int judy_io_map_contains(PyJudyIntObjectMap* m, PyObject* k)
 {
 	Word_t k_ = 0;
 
@@ -306,9 +306,9 @@ static int judy_i_o_map_contains(PyJudyIntObjectMap* m, PyObject* k)
 	return (v != 0);
 }
 
-static PyObject* judy_i_o_map_contains_(PyJudyIntObjectMap* m, PyObject* k)
+static PyObject* judy_io_map_contains_(PyJudyIntObjectMap* m, PyObject* k)
 {
-	int v = judy_i_o_map_contains(m, k);
+	int v = judy_io_map_contains(m, k);
 
 	if (v == -1)
 		return 0;
@@ -316,7 +316,7 @@ static PyObject* judy_i_o_map_contains_(PyJudyIntObjectMap* m, PyObject* k)
 	return PyBool_FromLong(v);
 }
 
-static PySequenceMethods judy_i_o_map_as_sequence = {
+static PySequenceMethods judy_io_map_as_sequence = {
 	0,			                        /* sq_length */
 	0,			                        /* sq_concat */
 	0,			                        /* sq_repeat */
@@ -324,19 +324,19 @@ static PySequenceMethods judy_i_o_map_as_sequence = {
 	0,			                        /* sq_slice */
 	0,			                        /* sq_ass_item */
 	0,			                        /* sq_ass_slice */
-	(objobjproc)judy_i_o_map_contains,  /* sq_contains */
+	(objobjproc)judy_io_map_contains,  /* sq_contains */
 	0,			                        /* sq_inplace_concat */
 	0 			                        /* sq_inplace_repeat */
 };
 
-static PyObject* judy_i_o_map_sizeof(PyJudyIntObjectMap* m)
+static PyObject* judy_io_map_sizeof(PyJudyIntObjectMap* m)
 {
 	Word_t w = 0;
 	JLMU(w, m->judy_L);
 	return PyLong_FromUnsignedLongLong(sizeof(PyJudyIntObjectMap) + w);
 }
 
-static PyObject* judy_i_o_map_value_sizeof(PyJudyIntObjectMap* m)
+static PyObject* judy_io_map_value_sizeof(PyJudyIntObjectMap* m)
 {
 	Word_t i = 0;
 	PWord_t v = 0;
@@ -394,7 +394,7 @@ static PyObject* judy_i_o_map_value_sizeof(PyJudyIntObjectMap* m)
 	return PyLong_FromSize_t(n_bytes);
 }
 
-static PyObject* judy_i_o_map_get(PyJudyIntObjectMap* m, PyObject* args)
+static PyObject* judy_io_map_get(PyJudyIntObjectMap* m, PyObject* args)
 {
 	PyObject* key = 0;
 	PyObject* failobj = Py_None;
@@ -421,7 +421,7 @@ static PyObject* judy_i_o_map_get(PyJudyIntObjectMap* m, PyObject* args)
 	return (PyObject*)(*v);
 }
 
-static PyObject* judy_i_o_map_pop(PyJudyIntObjectMap* m, PyObject* args)
+static PyObject* judy_io_map_pop(PyJudyIntObjectMap* m, PyObject* args)
 {
 	PyObject* key = 0;
 	PyObject* deflt = 0;
@@ -469,6 +469,10 @@ static PyObject* judy_i_o_map_pop(PyJudyIntObjectMap* m, PyObject* args)
 	return (PyObject*)v;
 }
 
+static PyObject* judy_io_map_iterkeys(PyJudyIntObjectMap* set);
+static PyObject* judy_io_map_itervalues(PyJudyIntObjectMap* set);
+static PyObject* judy_io_map_iteritems(PyJudyIntObjectMap* set);
+static PyObject* judy_io_map_iter(PyJudyIntObjectMap* set);
 
 PyDoc_STRVAR(contains__doc__, "");
 PyDoc_STRVAR(getitem__doc__,  "");
@@ -483,28 +487,28 @@ PyDoc_STRVAR(pop__doc__,      "");
 //PyDoc_STRVAR(fromkeys__doc__, "");
 PyDoc_STRVAR(clear__doc__,    "");
 //PyDoc_STRVAR(copy__doc__,     "");
-//PyDoc_STRVAR(iterkeys__doc__, "");
-//PyDoc_STRVAR(iervalues__doc__, "");
-//PyDoc_STRVAR(iteritems__doc__, "");
+PyDoc_STRVAR(iterkeys__doc__, "");
+PyDoc_STRVAR(itervalues__doc__, "");
+PyDoc_STRVAR(iteritems__doc__, "");
 
 static PyMethodDef judy_io_map_methods[] = {
-	{"__contains__",     (PyCFunction)judy_i_o_map_contains_,    METH_O | METH_COEXIST,        contains__doc__},
-	{"__getitem__",      (PyCFunction)judy_i_o_map_subscript,    METH_O | METH_COEXIST,        getitem__doc__},
-	{"__sizeof__",       (PyCFunction)judy_i_o_map_sizeof,       METH_NOARGS,                  sizeof__doc__},
-	{"__value_sizeof__", (PyCFunction)judy_i_o_map_value_sizeof, METH_NOARGS,                  sizeof__doc__},
-	{"get",              (PyCFunction)judy_i_o_map_get,          METH_VARARGS,                 get__doc__},
-	{"pop",              (PyCFunction)judy_i_o_map_pop,          METH_VARARGS,                 pop__doc__},
-//	{"popitem",          (PyCFunction)judy_i_o_map_popitem,      METH_NOARGS,                  popitem__doc__},
-//	{"keys",             (PyCFunction)judy_i_o_map_keys,         METH_NOARGS,                  keys__doc__},
-//	{"items",            (PyCFunction)judy_i_o_map_items,        METH_NOARGS,                  items__doc__},
-//	{"values",           (PyCFunction)judy_i_o_map_values,       METH_NOARGS,                  values__doc__},
-//	{"update",           (PyCFunction)judy_i_o_map_update,       METH_VARARGS | METH_KEYWORDS, update__doc__},
-//	{"fromkeys",         (PyCFunction)dict_fromkeys,             METH_VARARGS | METH_CLASS,    fromkeys__doc__},
-	{"clear",            (PyCFunction)judy_i_o_map_clear,        METH_NOARGS,                  clear__doc__},
-//	{"copy",             (PyCFunction)judy_i_o_map_copy,         METH_NOARGS,                  copy__doc__},
-//	{"iterkeys",         (PyCFunction)judy_i_o_map_iterkeys,     METH_NOARGS,                  iterkeys__doc__},
-//	{"itervalues",       (PyCFunction)judy_i_o_map_itervalues,   METH_NOARGS,                  itervalues__doc__},
-//	{"iteritems",        (PyCFunction)judy_i_o_map_iteritems,    METH_NOARGS,                  iteritems__doc__},
+	{"__contains__",     (PyCFunction)judy_io_map_contains_,    METH_O | METH_COEXIST,        contains__doc__},
+	{"__getitem__",      (PyCFunction)judy_io_map_subscript,    METH_O | METH_COEXIST,        getitem__doc__},
+	{"__sizeof__",       (PyCFunction)judy_io_map_sizeof,       METH_NOARGS,                  sizeof__doc__},
+	{"__value_sizeof__", (PyCFunction)judy_io_map_value_sizeof, METH_NOARGS,                  sizeof__doc__},
+	{"get",              (PyCFunction)judy_io_map_get,          METH_VARARGS,                 get__doc__},
+	{"pop",              (PyCFunction)judy_io_map_pop,          METH_VARARGS,                 pop__doc__},
+//	{"popitem",          (PyCFunction)judy_io_map_popitem,      METH_NOARGS,                  popitem__doc__},
+//	{"keys",             (PyCFunction)judy_io_map_keys,         METH_NOARGS,                  keys__doc__},
+//	{"items",            (PyCFunction)judy_io_map_items,        METH_NOARGS,                  items__doc__},
+//	{"values",           (PyCFunction)judy_io_map_values,       METH_NOARGS,                  values__doc__},
+//	{"update",           (PyCFunction)judy_io_map_update,       METH_VARARGS | METH_KEYWORDS, update__doc__},
+//	{"fromkeys",         (PyCFunction)judy_io_map_fromkeys,             METH_VARARGS | METH_CLASS,    fromkeys__doc__},
+	{"clear",            (PyCFunction)judy_io_map_clear,        METH_NOARGS,                  clear__doc__},
+//	{"copy",             (PyCFunction)judy_io_map_copy,         METH_NOARGS,                  copy__doc__},
+	{"iterkeys",         (PyCFunction)judy_io_map_iterkeys,     METH_NOARGS,                  iterkeys__doc__},
+	{"itervalues",       (PyCFunction)judy_io_map_itervalues,   METH_NOARGS,                  itervalues__doc__},
+	{"iteritems",        (PyCFunction)judy_io_map_iteritems,    METH_NOARGS,                  iteritems__doc__},
 	{NULL, NULL}
 };
 
@@ -513,7 +517,6 @@ static int judy_int_object_map_init(PyObject* self, PyObject* args, PyObject* kw
 	//! TBD: use parameters for something
 	return 0;
 }
-
 
 static PyObject* judy_int_object_map_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 {
@@ -533,29 +536,28 @@ PyTypeObject PyJudyIntObjectMapType = {
 	"PyJudyIntObjectMap",                /*tp_name*/
 	sizeof(PyJudyIntObjectMap),          /*tp_basicsize*/
 	0,                                   /*tp_itemsize*/
-	(destructor)judy_i_o_map_dealloc,    /*tp_dealloc*/
-	(printfunc)judy_i_o_map_print,       /*tp_print*/
+	(destructor)judy_io_map_dealloc,    /*tp_dealloc*/
+	(printfunc)judy_io_map_print,       /*tp_print*/
 	0,                                   /*tp_getattr*/
 	0,                                   /*tp_setattr*/
-	0,//(cmpfunc)judy_i_o_map_compare,   /*tp_compare*/
-	(reprfunc)judy_i_o_map_repr,         /*tp_repr*/
+	0,//(cmpfunc)judy_io_map_compare,   /*tp_compare*/
+	(reprfunc)judy_io_map_repr,         /*tp_repr*/
 	0,                                   /*tp_as_number*/
-	&judy_i_o_map_as_sequence,           /* tp_as_sequence */
-	&judy_i_o_map_as_mapping,            /* tp_as_mapping */
+	&judy_io_map_as_sequence,           /* tp_as_sequence */
+	&judy_io_map_as_mapping,            /* tp_as_mapping */
 	0,                                   /* tp_hash */
 	0,                                   /* tp_call */
 	0,                                   /* tp_str */
 	PyObject_GenericGetAttr,             /* tp_getattro */
 	0,                                   /* tp_setattro */
 	0,                                   /* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC |
-	Py_TPFLAGS_BASETYPE | Py_TPFLAGS_DICT_SUBCLASS, /* tp_flags */
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC | Py_TPFLAGS_BASETYPE, /* tp_flags */
 	0,//judy_int_object_map_doc,                        /* tp_doc */
-	judy_i_o_map_traverse,               /* tp_traverse */
-	judy_i_o_map_tp_clear,               /* tp_clear */
+	judy_io_map_traverse,               /* tp_traverse */
+	judy_io_map_tp_clear,               /* tp_clear */
 	0,//judy_int_object_map_richcompare, /* tp_richcompare */
 	0,                                   /* tp_weaklistoffset */
-	0,//(getiterfunc)judy_int_object_map_iter,          /* tp_iter */
+	(getiterfunc)judy_io_map_iter,        /* tp_iter */
 	0,                                   /* tp_iternext */
 	judy_io_map_methods,                 /* tp_methods */
 	0,                                   /* tp_members */
@@ -569,6 +571,256 @@ PyTypeObject PyJudyIntObjectMapType = {
 	PyType_GenericAlloc,                 /* tp_alloc */
 	judy_int_object_map_new,             /* tp_new */
 	PyObject_GC_Del                      /* tp_free */
+};
+
+extern PyTypeObject PyJudyIntObjectMapIterKey_Type;
+extern PyTypeObject PyJudyIntObjectMapIterValue_Type;
+extern PyTypeObject PyJudyIntObjectMapIterItem_Type;
+
+static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* set, PyTypeObject* type);
+
+static PyObject* judy_io_map_iterkeys(PyJudyIntObjectMap* set)
+{
+	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterKey_Type);
+}
+
+static PyObject* judy_io_map_itervalues(PyJudyIntObjectMap* set)
+{
+	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterValue_Type);
+}
+
+static PyObject* judy_io_map_iteritems(PyJudyIntObjectMap* set)
+{
+	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterItem_Type);
+}
+
+static PyObject* judy_io_map_iter(PyJudyIntObjectMap* set)
+{
+	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterKey_Type);
+}
+
+typedef struct {
+	PyObject_HEAD
+	PyJudyIntObjectMap* map;
+	int is_first;
+	Word_t i;
+	PyObject* result;
+} pyjudy_io_map_iter_object;
+
+static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* map, PyTypeObject* itertype)
+{
+	pyjudy_io_map_iter_object* mi;
+	mi = PyObject_GC_New(pyjudy_io_map_iter_object, itertype);
+
+	if (mi == 0)
+		return 0;
+
+	Py_INCREF(map);
+	mi->map = map;
+	mi->is_first = 1;
+	mi->i = 0;
+	mi->result = 0;
+
+	if (itertype == &PyJudyIntObjectMapIterItem_Type) {
+		mi->result = PyTuple_Pack(2, Py_None, Py_None);
+
+		if (mi->result == 0) {
+			Py_DECREF(mi);
+			return 0;
+		}
+	}
+
+	_PyObject_GC_TRACK(mi);
+	return (PyObject*)mi;
+}
+
+static void judy_io_map_iter_dealloc(pyjudy_io_map_iter_object* mi)
+{
+	Py_XDECREF(mi->map);
+	Py_XDECREF(mi->result);
+	PyObject_GC_Del(mi);
+}
+
+static int judy_io_map_iter_traverse(pyjudy_io_map_iter_object* mi, visitproc visit, void* arg)
+{
+	Py_VISIT(mi->map);
+	Py_VISIT(mi->result);
+	return 0;
+}
+
+static PyObject* judy_io_map_iter_iternextkey(pyjudy_io_map_iter_object* mi)
+{
+	JError_t JError;
+	PWord_t v = 0;
+
+	if (mi->is_first)
+		v = (Pvoid_t)JudyLFirst(mi->map->judy_L, &mi->i, &JError);
+	else
+		v = (Pvoid_t)JudyLNext(mi->map->judy_L, &mi->i, &JError);
+
+	mi->is_first = 0;
+
+	if (v == 0)
+		return 0;
+
+	return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG)mi->i);
+}
+
+PyTypeObject PyJudyIntObjectMapIterKey_Type = {
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
+	"judyintmap-keyiterator",                   /* tp_name */
+	sizeof(pyjudy_io_map_iter_object),          /* tp_basicsize */
+	0,                                          /* tp_itemsize */
+	(destructor)judy_io_map_iter_dealloc,       /* tp_dealloc */
+	0,                                          /* tp_print */
+	0,                                          /* tp_getattr */
+	0,                                          /* tp_setattr */
+	0,                                          /* tp_compare */
+	0,                                          /* tp_repr */
+	0,                                          /* tp_as_number */
+	0,                                          /* tp_as_sequence */
+	0,                                          /* tp_as_mapping */
+	0,                                          /* tp_hash */
+	0,                                          /* tp_call */
+	0,                                          /* tp_str */
+	PyObject_GenericGetAttr,                    /* tp_getattro */
+	0,                                          /* tp_setattro */
+	0,                                          /* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,    /* tp_flags */
+	0,                                          /* tp_doc */
+	(traverseproc)judy_io_map_iter_traverse,    /* tp_traverse */
+	0,                                          /* tp_clear */
+	0,                                          /* tp_richcompare */
+	0,                                          /* tp_weaklistoffset */
+	PyObject_SelfIter,                          /* tp_iter */
+	(iternextfunc)judy_io_map_iter_iternextkey, /* tp_iternext */
+	0,                                          /* tp_methods */
+	0,
+};
+
+static PyObject* judy_io_map_iter_iternextvalue(pyjudy_io_map_iter_object* mi)
+{
+	JError_t JError;
+	PWord_t v = 0;
+
+	if (mi->is_first)
+		v = (Pvoid_t)JudyLFirst(mi->map->judy_L, &mi->i, &JError);
+	else
+		v = (Pvoid_t)JudyLNext(mi->map->judy_L, &mi->i, &JError);
+
+	mi->is_first = 0;
+
+	if (v == 0)
+		return 0;
+
+	Py_INCREF((PyObject*)(*v));
+	return (PyObject*)(*v);
+}
+
+
+PyTypeObject PyJudyIntObjectMapIterValue_Type = {
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
+	"judyintmap-valueiterator",                   /* tp_name */
+	sizeof(pyjudy_io_map_iter_object),            /* tp_basicsize */
+	0,                                            /* tp_itemsize */
+	(destructor)judy_io_map_iter_dealloc,         /* tp_dealloc */
+	0,                                            /* tp_print */
+	0,                                            /* tp_getattr */
+	0,                                            /* tp_setattr */
+	0,                                            /* tp_compare */
+	0,                                            /* tp_repr */
+	0,                                            /* tp_as_number */
+	0,                                            /* tp_as_sequence */
+	0,                                            /* tp_as_mapping */
+	0,                                            /* tp_hash */
+	0,                                            /* tp_call */
+	0,                                            /* tp_str */
+	PyObject_GenericGetAttr,                      /* tp_getattro */
+	0,                                            /* tp_setattro */
+	0,                                            /* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,      /* tp_flags */
+	0,                                            /* tp_doc */
+	(traverseproc)judy_io_map_iter_traverse,      /* tp_traverse */
+	0,                                            /* tp_clear */
+	0,                                            /* tp_richcompare */
+	0,                                            /* tp_weaklistoffset */
+	PyObject_SelfIter,                            /* tp_iter */
+	(iternextfunc)judy_io_map_iter_iternextvalue, /* tp_iternext */
+	0,                                            /* tp_methods */
+	0,
+};
+
+static PyObject *judy_io_map_iter_iternextitem(pyjudy_io_map_iter_object* mi)
+{
+	JError_t JError;
+	PWord_t v = 0;
+
+	if (mi->is_first)
+		v = (Pvoid_t)JudyLFirst(mi->map->judy_L, &mi->i, &JError);
+	else
+		v = (Pvoid_t)JudyLNext(mi->map->judy_L, &mi->i, &JError);
+
+	mi->is_first = 0;
+
+	if (v == 0)
+		return 0;
+
+	PyObject* k = PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG)mi->i);
+
+	if (k == 0)
+		return 0;
+
+	if (mi->result->ob_refcnt == 1) {
+		Py_INCREF(mi->result);
+		Py_DECREF(PyTuple_GET_ITEM(mi->result, 0));
+		Py_DECREF(PyTuple_GET_ITEM(mi->result, 1));
+	} else {
+		mi->result = PyTuple_New(2);
+
+		if (mi->result == 0) {
+			Py_DECREF(k);
+			return 0;
+		}
+	}
+
+	Py_INCREF((PyObject*)(*v));
+
+	PyTuple_SET_ITEM(mi->result, 0, k);
+	PyTuple_SET_ITEM(mi->result, 1, (PyObject*)(*v));
+
+	return mi->result;
+}
+
+PyTypeObject PyJudyIntObjectMapIterItem_Type = {
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
+	"judyintmap-itemiterator",                    /* tp_name */
+	sizeof(pyjudy_io_map_iter_object),            /* tp_basicsize */
+	0,                                            /* tp_itemsize */
+	(destructor)judy_io_map_iter_dealloc,         /* tp_dealloc */
+	0,                                            /* tp_print */
+	0,                                            /* tp_getattr */
+	0,                                            /* tp_setattr */
+	0,                                            /* tp_compare */
+	0,                                            /* tp_repr */
+	0,                                            /* tp_as_number */
+	0,                                            /* tp_as_sequence */
+	0,                                            /* tp_as_mapping */
+	0,                                            /* tp_hash */
+	0,                                            /* tp_call */
+	0,                                            /* tp_str */
+	PyObject_GenericGetAttr,                      /* tp_getattro */
+	0,                                            /* tp_setattro */
+	0,                                            /* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,      /* tp_flags */
+	0,                                            /* tp_doc */
+	(traverseproc)judy_io_map_iter_traverse,      /* tp_traverse */
+	0,                                            /* tp_clear */
+	0,                                            /* tp_richcompare */
+	0,                                            /* tp_weaklistoffset */
+	PyObject_SelfIter,                            /* tp_iter */
+	(iternextfunc)judy_io_map_iter_iternextitem,  /* tp_iternext */
+	0,                                            /* tp_methods */
+	0,
 };
 
 PyObject* PyJudyIntObjectMap_New(void)
