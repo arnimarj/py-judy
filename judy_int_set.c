@@ -241,7 +241,7 @@ static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
 		if (i == 0)
 			break;
 
-		PyString_ConcatAndDel(&retval, comma_space);
+		PyString_Concat(&retval, comma_space);
 
 		if (retval == 0)
 			goto cleanup;
