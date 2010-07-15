@@ -275,15 +275,38 @@ cleanup:
 }
 
 
+static Py_ssize_t PyJudyIntSet_len(PyObject* set)
+{
+	Word_t count;
+	J1C(count, ((PyJudyIntSet*)set)->s, 0, -1);
+	//! 2**31-1 on 32-bit systems, 2**63-1 on 64-bit systems
+	return (Py_ssize_t)count;
+}
+
+static PyObject* PyJudyIntSet_item(PyJudyIntSet* set, Py_ssize_t i)
+{
+	Word_t w;
+	Word_t n = (Word_t)(i + 1);
+	int j;
+	J1BC(j, set->s, n, w)
+
+	if (j == 0) {
+		PyErr_SetString(PyExc_IndexError, "index out of range");
+		return 0;
+	}
+
+	return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG)w);
+}
+
 static PySequenceMethods PyJudyIntSet_as_sequence = {
-	0,                                 /* sq_length */
+	(lenfunc)PyJudyIntSet_len,                                 /* sq_length */
 	0,                                 /* sq_concat */
 	0,                                 /* sq_repeat */
-	0,                                 /* sq_item */
+	(ssizeargfunc)PyJudyIntSet_item,                                 /* sq_item */
 	0,                                 /* sq_slice */
 	0,                                 /* sq_ass_item */
 	0,                                 /* sq_ass_slice */
-	(objobjproc)PyJudyIntSet_contains, /* sq_contains */
+	(objobjproc)PyJudyIntSet_contains /* sq_contains */
 };
 
 static PyMethodDef PyJudyIntSet_methods[] = {
