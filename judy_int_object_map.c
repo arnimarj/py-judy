@@ -604,7 +604,6 @@ typedef struct {
 	PyJudyIntObjectMap* map;
 	int is_first;
 	Word_t i;
-	PyObject* result;
 } pyjudy_io_map_iter_object;
 
 static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* map, PyTypeObject* itertype)
@@ -619,16 +618,6 @@ static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* map, PyTypeObject* ite
 	mi->map = map;
 	mi->is_first = 1;
 	mi->i = 0;
-	mi->result = 0;
-
-	if (itertype == &PyJudyIntObjectMapIterItem_Type) {
-		mi->result = PyTuple_Pack(2, Py_None, Py_None);
-
-		if (mi->result == 0) {
-			Py_DECREF(mi);
-			return 0;
-		}
-	}
 
 	_PyObject_GC_TRACK(mi);
 	return (PyObject*)mi;
@@ -637,14 +626,12 @@ static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* map, PyTypeObject* ite
 static void judy_io_map_iter_dealloc(pyjudy_io_map_iter_object* mi)
 {
 	Py_XDECREF(mi->map);
-	Py_XDECREF(mi->result);
 	PyObject_GC_Del(mi);
 }
 
 static int judy_io_map_iter_traverse(pyjudy_io_map_iter_object* mi, visitproc visit, void* arg)
 {
 	Py_VISIT(mi->map);
-	Py_VISIT(mi->result);
 	return 0;
 }
 
@@ -770,25 +757,21 @@ static PyObject *judy_io_map_iter_iternextitem(pyjudy_io_map_iter_object* mi)
 	if (k == 0)
 		return 0;
 
-	if (mi->result->ob_refcnt == 1) {
-		Py_INCREF(mi->result);
-		Py_DECREF(PyTuple_GET_ITEM(mi->result, 0));
-		Py_DECREF(PyTuple_GET_ITEM(mi->result, 1));
-	} else {
-		mi->result = PyTuple_New(2);
+	printf("iteritems: %i\n", (int)mi->i);
 
-		if (mi->result == 0) {
-			Py_DECREF(k);
-			return 0;
-		}
+	PyObject* result = PyTuple_New(2);
+
+	if (result == 0) {
+		Py_DECREF(k);
+		return 0;
 	}
 
 	Py_INCREF((PyObject*)(*v));
 
-	PyTuple_SET_ITEM(mi->result, 0, k);
-	PyTuple_SET_ITEM(mi->result, 1, (PyObject*)(*v));
+	PyTuple_SET_ITEM(result, 0, k);
+	PyTuple_SET_ITEM(result, 1, (PyObject*)(*v));
 
-	return mi->result;
+	return result;
 }
 
 PyTypeObject PyJudyIntObjectMapIterItem_Type = {
