@@ -43,6 +43,12 @@ def test_print():
 	J = judy.JudyIntObjectMap()
 	P = { }
 
+	print '---------'
+	print J
+	print repr(J)
+	print '---------'
+	return
+
 	random.seed(0)
 	k = [random.randint(0, 10000) for i in xrange(10)]
 	v = ['a', ['a'], [{},{'a':'b'}], 'k', u'arni', 1.00001, 7, 2, 1, 10]
@@ -80,11 +86,8 @@ def test_iter():
 	B = sorted(P.itervalues())
 	assert(A == B)
 
-	print sorted(zip(k, v))
 	A = list(J.iteritems())
 	B = sorted(P.iteritems())
-	print 'A', A
-	print 'B', B
 	assert(A == B)
 
 def print_usage_exit():

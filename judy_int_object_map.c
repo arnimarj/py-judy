@@ -112,6 +112,11 @@ static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 
 	JLF(v, m->judy_L, i);
 
+	if (v == 0) {
+		retval = PyString_FromString("{}");
+		goto cleanup;
+	}
+
 	while (v != 0) {
 		Py_INCREF((PyObject*)(*v));
 
