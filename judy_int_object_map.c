@@ -762,8 +762,6 @@ static PyObject *judy_io_map_iter_iternextitem(pyjudy_io_map_iter_object* mi)
 	if (k == 0)
 		return 0;
 
-	printf("iteritems: %i\n", (int)mi->i);
-
 	PyObject* result = PyTuple_New(2);
 
 	if (result == 0) {
