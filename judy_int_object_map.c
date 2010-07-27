@@ -474,9 +474,9 @@ static PyObject* judy_io_map_pop(PyJudyIntObjectMap* m, PyObject* args)
 	return (PyObject*)v;
 }
 
-static PyObject* judy_io_map_iterkeys(PyJudyIntObjectMap* set);
-static PyObject* judy_io_map_itervalues(PyJudyIntObjectMap* set);
-static PyObject* judy_io_map_iteritems(PyJudyIntObjectMap* set);
+static PyObject* judy_io_map_iterkeys(PyJudyIntObjectMap* set, PyObject* args, PyObject* kwds);
+static PyObject* judy_io_map_itervalues(PyJudyIntObjectMap* set, PyObject* args, PyObject* kwds);
+static PyObject* judy_io_map_iteritems(PyJudyIntObjectMap* set, PyObject* args, PyObject* kwds);
 static PyObject* judy_io_map_iter(PyJudyIntObjectMap* set);
 
 PyDoc_STRVAR(contains__doc__, "");
@@ -511,9 +511,9 @@ static PyMethodDef judy_io_map_methods[] = {
 //	{"fromkeys",         (PyCFunction)judy_io_map_fromkeys,             METH_VARARGS | METH_CLASS,    fromkeys__doc__},
 	{"clear",            (PyCFunction)judy_io_map_clear,        METH_NOARGS,                  clear__doc__},
 //	{"copy",             (PyCFunction)judy_io_map_copy,         METH_NOARGS,                  copy__doc__},
-	{"iterkeys",         (PyCFunction)judy_io_map_iterkeys,     METH_NOARGS,                  iterkeys__doc__},
-	{"itervalues",       (PyCFunction)judy_io_map_itervalues,   METH_NOARGS,                  itervalues__doc__},
-	{"iteritems",        (PyCFunction)judy_io_map_iteritems,    METH_NOARGS,                  iteritems__doc__},
+	{"iterkeys",         (PyCFunction)judy_io_map_iterkeys,     METH_VARARGS | METH_KEYWORDS,                  iterkeys__doc__},
+	{"itervalues",       (PyCFunction)judy_io_map_itervalues,   METH_VARARGS | METH_KEYWORDS,                  itervalues__doc__},
+	{"iteritems",        (PyCFunction)judy_io_map_iteritems,    METH_VARARGS | METH_KEYWORDS,                  iteritems__doc__},
 	{NULL, NULL}
 };
 
@@ -582,26 +582,26 @@ extern PyTypeObject PyJudyIntObjectMapIterKey_Type;
 extern PyTypeObject PyJudyIntObjectMapIterValue_Type;
 extern PyTypeObject PyJudyIntObjectMapIterItem_Type;
 
-static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* set, PyTypeObject* type);
+static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* set, PyTypeObject* type, PyObject* args, PyObject* kwds);
 
-static PyObject* judy_io_map_iterkeys(PyJudyIntObjectMap* set)
+static PyObject* judy_io_map_iterkeys(PyJudyIntObjectMap* set, PyObject* args, PyObject* kwds)
 {
-	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterKey_Type);
+	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterKey_Type, args, kwds);
 }
 
-static PyObject* judy_io_map_itervalues(PyJudyIntObjectMap* set)
+static PyObject* judy_io_map_itervalues(PyJudyIntObjectMap* set, PyObject* args, PyObject* kwds)
 {
-	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterValue_Type);
+	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterValue_Type, args, kwds);
 }
 
-static PyObject* judy_io_map_iteritems(PyJudyIntObjectMap* set)
+static PyObject* judy_io_map_iteritems(PyJudyIntObjectMap* set, PyObject* args, PyObject* kwds)
 {
-	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterItem_Type);
+	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterItem_Type, args, kwds);
 }
 
 static PyObject* judy_io_map_iter(PyJudyIntObjectMap* set)
 {
-	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterKey_Type);
+	return judy_io_map_iter_new(set, &PyJudyIntObjectMapIterKey_Type, 0, 0);
 }
 
 typedef struct {
@@ -609,10 +609,32 @@ typedef struct {
 	PyJudyIntObjectMap* map;
 	int is_first;
 	Word_t i;
+	int is_from;
+	int is_to;
+	Word_t from;
+	Word_t to;
 } pyjudy_io_map_iter_object;
 
-static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* map, PyTypeObject* itertype)
+static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* map, PyTypeObject* itertype, PyObject* args, PyObject* kwds)
 {
+	PyObject* k_from_inc = 0;
+	PyObject* k_to_inc = 0;
+	Word_t _k_from_inc = 0;
+	Word_t _k_to_inc = 0;
+
+	if (args || kwds) {
+		static char* kwlist[] = {"k_from_inc", "k_to_inc", 0};
+
+		if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OO", kwlist, &k_from_inc, &k_to_inc))
+			return 0;
+
+		if (k_from_inc && !pyobject_as_word_t(k_from_inc, &_k_from_inc))
+			return 0;
+
+		if (k_to_inc && !pyobject_as_word_t(k_to_inc, &_k_to_inc))
+			return 0;
+	}
+
 	pyjudy_io_map_iter_object* mi;
 	mi = PyObject_GC_New(pyjudy_io_map_iter_object, itertype);
 
@@ -623,6 +645,10 @@ static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* map, PyTypeObject* ite
 	mi->map = map;
 	mi->is_first = 1;
 	mi->i = 0;
+	mi->is_from = (k_from_inc != 0);
+	mi->is_to = (k_to_inc != 0);
+	mi->from = _k_from_inc;
+	mi->to = _k_to_inc;
 
 	_PyObject_GC_TRACK(mi);
 	return (PyObject*)mi;
@@ -645,14 +671,23 @@ static PyObject* judy_io_map_iter_iternextkey(pyjudy_io_map_iter_object* mi)
 	JError_t JError;
 	PWord_t v = 0;
 
-	if (mi->is_first)
-		v = (Pvoid_t)JudyLFirst(mi->map->judy_L, &mi->i, &JError);
-	else
+	if (mi->is_first) {
+		if (mi->is_from && mi->from > 0) {
+			mi->i = mi->from - 1;
+			v = (Pvoid_t)JudyLNext(mi->map->judy_L, &mi->i, &JError);
+		} else {
+			v = (Pvoid_t)JudyLFirst(mi->map->judy_L, &mi->i, &JError);
+		}
+	} else {
 		v = (Pvoid_t)JudyLNext(mi->map->judy_L, &mi->i, &JError);
+	}
 
 	mi->is_first = 0;
 
 	if (v == 0)
+		return 0;
+
+	if (mi->is_to && mi->i > mi->to)
 		return 0;
 
 	return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG)mi->i);
@@ -695,14 +730,23 @@ static PyObject* judy_io_map_iter_iternextvalue(pyjudy_io_map_iter_object* mi)
 	JError_t JError;
 	PWord_t v = 0;
 
-	if (mi->is_first)
-		v = (Pvoid_t)JudyLFirst(mi->map->judy_L, &mi->i, &JError);
-	else
+	if (mi->is_first) {
+		if (mi->is_from && mi->from > 0) {
+			mi->i = mi->from - 1;
+			v = (Pvoid_t)JudyLNext(mi->map->judy_L, &mi->i, &JError);
+		} else {
+			v = (Pvoid_t)JudyLFirst(mi->map->judy_L, &mi->i, &JError);
+		}
+	} else {
 		v = (Pvoid_t)JudyLNext(mi->map->judy_L, &mi->i, &JError);
+	}
 
 	mi->is_first = 0;
 
 	if (v == 0)
+		return 0;
+
+	if (mi->is_to && mi->i > mi->to)
 		return 0;
 
 	Py_INCREF((PyObject*)(*v));
@@ -747,14 +791,23 @@ static PyObject *judy_io_map_iter_iternextitem(pyjudy_io_map_iter_object* mi)
 	JError_t JError;
 	PWord_t v = 0;
 
-	if (mi->is_first)
-		v = (Pvoid_t)JudyLFirst(mi->map->judy_L, &mi->i, &JError);
-	else
+	if (mi->is_first) {
+		if (mi->is_from && mi->from > 0) {
+			mi->i = mi->from - 1;
+			v = (Pvoid_t)JudyLNext(mi->map->judy_L, &mi->i, &JError);
+		} else {
+			v = (Pvoid_t)JudyLFirst(mi->map->judy_L, &mi->i, &JError);
+		}
+	} else {
 		v = (Pvoid_t)JudyLNext(mi->map->judy_L, &mi->i, &JError);
+	}
 
 	mi->is_first = 0;
 
 	if (v == 0)
+		return 0;
+
+	if (mi->is_to && mi->i > mi->to)
 		return 0;
 
 	PyObject* k = PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG)mi->i);
