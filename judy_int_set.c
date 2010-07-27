@@ -41,15 +41,26 @@ static void PyJudyIntSet_dealloc(PyJudyIntSet* self)
 		if (w == JERR)
 			print_word_and_error("PyJudyIntSet_dealloc", w, &JError);
 
+		self->s = 0;
 	}
+
 	self->ob_type->tp_free((PyObject*)self);
 }
 
 static void PyJudyIntSetIter_dealloc(PyJudyIntSetIter* self)
 {
+	PyObject_GC_UnTrack(self);
 	Py_XDECREF(self->s);
-	self->ob_type->tp_free((PyObject*)self);
+	self->s = 0;
+	PyObject_GC_Del(self);
 }
+
+static int PyJudyIntSetIter_traverse(PyJudyIntSetIter* self, visitproc visit, void* arg)
+{
+	Py_VISIT(self->s);
+	return 0;
+}
+
 
 PyObject* PyJudyIntSet_new(PyTypeObject* type, PyObject* args, PyObject* kwds)
 {
@@ -82,18 +93,14 @@ static int PyJudyIntSet_init(PyJudyIntSet* self, PyObject* args)
 
 		if (w == JERR)
 			print_word_and_error("PyJudyIntSet_init", w, &JError);
+
+		self->s = 0;
 	}
 
 	if (!PyArg_ParseTuple(args, ""))
 		return -1;
 
 	return 0;
-}
-
-static int PyJudyIntSetIter_init(PyJudyIntSetIter* self, PyObject* args)
-{
-	PyErr_SetString(PyExc_TypeError, "unable to instantiate PyJudyIntSetIter directly");
-	return -1;
 }
 
 static PyObject* PyJudyIntSet_iter(PyObject* s)
@@ -103,18 +110,18 @@ static PyObject* PyJudyIntSet_iter(PyObject* s)
 		return 0;
 	}
 
-	PyJudyIntSetIter* iter = PyObject_New(PyJudyIntSetIter, &PyJudyIntSetIterType);
+	PyJudyIntSetIter* iter = PyObject_GC_New(PyJudyIntSetIter, &PyJudyIntSetIterType);
 
 	if (iter == 0)
 		return 0;
-
-	iter = (PyJudyIntSetIter*)PyObject_Init((PyObject*)iter, &PyJudyIntSetIterType);
 
 	Py_INCREF(s);
 
 	iter->b = 0;
 	iter->i = 0;
 	iter->s = (PyJudyIntSet*)s;
+
+	PyObject_GC_Track(iter);
 
 	return (PyObject*)iter;
 }
@@ -413,23 +420,12 @@ PyTypeObject PyJudyIntSetIterType = {
 	0,                                               /*tp_getattro*/
 	0,                                               /*tp_setattro*/
 	0,                                               /*tp_as_buffer*/
-	Py_TPFLAGS_DEFAULT,                              /*tp_flags*/
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,         /*tp_flags*/
 	"PyJudyIntSetIter",                              /*tp_doc */
-	0,                                               /*tp_traverse */
+	(traverseproc)PyJudyIntSetIter_traverse,         /*tp_traverse */
 	0,                                               /*tp_clear */
 	0,                                               /*tp_richcompare */
 	0,                                               /*tp_weaklistoffset */
 	PyObject_SelfIter,                               /*tp_iter */
-	(iternextfunc)PyJudyIntSetIter_iternext,         /*tp_iternext */
-	0,                                               /*tp_methods */
-	0,                                               /*tp_members */
-	0,                                               /*tp_getset */
-	0,                                               /*tp_base */
-	0,                                               /*tp_dict */
-	0,                                               /*tp_descr_get */
-	0,                                               /*tp_descr_set */
-	0,                                               /*tp_dictoffset */
-	(initproc)PyJudyIntSetIter_init,                 /*tp_init */
-	0,                                               /*tp_alloc */
-	PyJudyIntSetIter_new,                            /*tp_new */
+	(iternextfunc)PyJudyIntSetIter_iternext          /*tp_iternext */
 };
