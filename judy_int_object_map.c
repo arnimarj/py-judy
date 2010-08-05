@@ -27,6 +27,9 @@ static void judy_io_map_dealloc(PyJudyIntObjectMap* m)
 
 static int judy_io_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
 {
+	if (!m->allow_print)
+		return fprintf(fp, "<%s object at %p>", Py_TYPE(m)->tp_name, (void*)m);
+
 	int status = Py_ReprEnter((PyObject*)m);
 
 	if (status != 0) {
@@ -84,6 +87,9 @@ static int judy_io_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
 
 static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 {
+	if (!m->allow_print)
+		return PyString_FromFormat("<%s object at %p>", Py_TYPE(m)->tp_name, (void*)m);
+
 	Py_ssize_t r = Py_ReprEnter((PyObject*)m);
 	PyObject* retval = 0;
 	PyObject* left_bracket = 0;
@@ -517,9 +523,18 @@ static PyMethodDef judy_io_map_methods[] = {
 	{NULL, NULL}
 };
 
-static int judy_int_object_map_init(PyObject* self, PyObject* args, PyObject* kwds)
+static int judy_int_object_map_init(PyJudyIntObjectMap* self, PyObject* args, PyObject* kwds)
 {
-	//! TBD: use parameters for something
+	self->allow_print = 1;
+	PyObject* allow_print = Py_True;
+	static char* kwargs[] = {"allow_print", 0};
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O!", kwargs, &PyBool_Type, &allow_print))
+		return -1;
+
+	if (allow_print == Py_False)
+		self->allow_print = 0;
+
 	return 0;
 }
 
@@ -572,7 +587,7 @@ PyTypeObject PyJudyIntObjectMapType = {
 	0,                                   /* tp_descr_get */
 	0,                                   /* tp_descr_set */
 	0,                                   /* tp_dictoffset */
-	judy_int_object_map_init,            /* tp_init */
+	(initproc)judy_int_object_map_init,  /* tp_init */
 	PyType_GenericAlloc,                 /* tp_alloc */
 	judy_int_object_map_new,             /* tp_new */
 	PyObject_GC_Del                      /* tp_free */

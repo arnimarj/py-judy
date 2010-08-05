@@ -14,11 +14,13 @@
 typedef struct {
 	PyObject_HEAD
 	Pvoid_t judy_L;
+	int allow_print;
 } PyJudyIntObjectMap;
 
 typedef struct {
 	PyObject_HEAD
 	Pvoid_t s;
+	int allow_print;
 } PyJudyIntSet;
 
 extern PyTypeObject PyJudyIntObjectMapType;

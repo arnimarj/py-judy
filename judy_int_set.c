@@ -85,8 +85,18 @@ PyObject* PyJudyIntSetIter_new(PyTypeObject* type, PyObject* args, PyObject* kwd
 	return (PyObject*)self;
 }
 
-static int PyJudyIntSet_init(PyJudyIntSet* self, PyObject* args)
+static int PyJudyIntSet_init(PyJudyIntSet* self, PyObject* args, PyObject* kwds)
 {
+	self->allow_print = 1;
+	PyObject* allow_print = Py_True;
+	static char* kwargs[] = {"allow_print", 0};
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O!", kwargs, &PyBool_Type, &allow_print))
+		return -1;
+
+	if (allow_print == Py_False)
+		self->allow_print = 0;
+
 	if (self->s) {
 		JError_t JError;
 		Word_t w = Judy1FreeArray(&self->s, &JError);
@@ -96,9 +106,6 @@ static int PyJudyIntSet_init(PyJudyIntSet* self, PyObject* args)
 
 		self->s = 0;
 	}
-
-	if (!PyArg_ParseTuple(args, ""))
-		return -1;
 
 	return 0;
 }
@@ -209,6 +216,9 @@ static PyObject* PyJudyIntSet_direct_contains(PyJudyIntSet* set, PyObject* key)
 
 static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
 {
+	if (!set->allow_print)
+		return PyString_FromFormat("<%s object at %p>", Py_TYPE(set)->tp_name, (void*)set);
+
 	char s_buffer[32];
 	PyObject* retval = 0;
 	PyObject* comma_space = 0;
