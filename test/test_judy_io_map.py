@@ -22,11 +22,11 @@ class JudyIntObjectMapTest(unittest.TestCase):
 		self.assert_(4 in k)
 		self.assertRaises(TypeError, j.iterkeys, None)
 
-#	def test_bool(self):
-#		self.assert_(not {})
-#		self.assert_({1: 2})
-#		self.assert_(bool({}) is False)
-#		self.assert_(bool({1: 2}) is True)
+	def test_bool(self):
+		self.assert_(not {})
+		self.assert_({1: 2})
+		self.assert_(bool({}) is False)
+		self.assert_(bool({1: 2}) is True)
 
 	def test_values(self):
 		j = judy.JudyIntObjectMap()
@@ -68,44 +68,6 @@ class JudyIntObjectMapTest(unittest.TestCase):
 		j[1] = 'a'
 		j[2] = 'b'
 		self.assertEqual(len(j), 2)
-
-#	def test_getitem(self):
-#		d = {'a': 1, 'b': 2}
-#		self.assertEqual(d['a'], 1)
-#		self.assertEqual(d['b'], 2)
-#		d['c'] = 3
-#		d['a'] = 4
-#		self.assertEqual(d['c'], 3)
-#		self.assertEqual(d['a'], 4)
-#		del d['b']
-#		self.assertEqual(d, {'a': 4, 'c': 3})
-#
-#		self.assertRaises(TypeError, d.__getitem__)
-#
-#		class BadEq(object):
-#			def __eq__(self, other):
-#				raise Exc()
-#			def __hash__(self):
-#				return 24
-#
-#		d = {}
-#		d[BadEq()] = 42
-#		self.assertRaises(KeyError, d.__getitem__, 23)
-#
-#		class Exc(Exception): pass
-#
-#		class BadHash(object):
-#			fail = False
-#			def __hash__(self):
-#				if self.fail:
-#					raise Exc()
-#				else:
-#					return 42
-#
-#		x = BadHash()
-#		d[x] = 42
-#		x.fail = True
-#		self.assertRaises(Exc, d.__getitem__, x)
 
 	def test_clear(self):
 		j = judy.JudyIntObjectMap()
@@ -261,7 +223,6 @@ class JudyIntObjectMapTest(unittest.TestCase):
 		self.assertEqual(j.get(1, 3), 'a')
 		self.assertRaises(TypeError, j.get)
 		self.assertRaises(TypeError, j.get, None, None, None)
-
 
 #	def test_setdefault(self):
 #		# dict.setdefault()
