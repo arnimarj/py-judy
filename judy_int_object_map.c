@@ -643,11 +643,15 @@ static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* map, PyTypeObject* ite
 		if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OO", kwlist, &k_from_inc, &k_to_inc))
 			return 0;
 
-		if (k_from_inc && !pyobject_as_word_t(k_from_inc, &_k_from_inc))
+		if (k_from_inc && !pyobject_as_word_t(k_from_inc, &_k_from_inc)) {
+			PyErr_SetString(PyExc_TypeError, "range lower-bound is not an integer or out-of-bounds");
 			return 0;
+		}
 
-		if (k_to_inc && !pyobject_as_word_t(k_to_inc, &_k_to_inc))
+		if (k_to_inc && !pyobject_as_word_t(k_to_inc, &_k_to_inc)) {
+			PyErr_SetString(PyExc_TypeError, "range upper-bound is not an integer or out-of-bounds");
 			return 0;
+		}
 	}
 
 	pyjudy_io_map_iter_object* mi;
