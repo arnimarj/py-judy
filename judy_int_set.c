@@ -316,10 +316,10 @@ static PyObject* PyJudyIntSet_item(PyJudyIntSet* set, Py_ssize_t i)
 }
 
 static PySequenceMethods PyJudyIntSet_as_sequence = {
-	(lenfunc)PyJudyIntSet_len,                                 /* sq_length */
+	(lenfunc)PyJudyIntSet_len,         /* sq_length */
 	0,                                 /* sq_concat */
 	0,                                 /* sq_repeat */
-	(ssizeargfunc)PyJudyIntSet_item,                                 /* sq_item */
+	(ssizeargfunc)PyJudyIntSet_item,   /* sq_item */
 	0,                                 /* sq_slice */
 	0,                                 /* sq_ass_item */
 	0,                                 /* sq_ass_slice */

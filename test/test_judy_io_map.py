@@ -11,6 +11,18 @@ class JudyIntObjectMapTest(unittest.TestCase):
 	def test_empty_constructor(self):
 		self.assertEqual(list(judy.JudyIntObjectMap().iteritems()), list({}.iteritems()))
 
+	def test_by_index(self):
+		j = judy.JudyIntObjectMap()
+
+		j[1000] = 1
+		j[500] = 2
+		j[1500] = 3
+
+		self.assertEquals(j.by_index(0), 2)
+		self.assertEquals(j.by_index(1), 1)
+		self.assertEquals(j.by_index(2), 3)
+		self.assertRaises(IndexError, j.by_index, 3)
+
 	def test_keys(self):
 		j = judy.JudyIntObjectMap()
 		self.assertEqual(list(j.iterkeys()), [])

@@ -405,6 +405,29 @@ static PyObject* judy_io_map_value_sizeof(PyJudyIntObjectMap* m)
 	return PyLong_FromSize_t(n_bytes);
 }
 
+static PyObject* judy_io_map_by_index(PyJudyIntObjectMap* m, PyObject* args)
+{
+	PyObject* i = 0;
+	Word_t i_= 0;
+
+	if (!PyArg_UnpackTuple(args, "by_index", 1, 1, &i) || !pyobject_as_word_t(i, &i_))
+		return 0;
+
+	// NOTE: judy index is 1-based
+	i_ += 1;
+	Word_t k = 0;
+	PWord_t v = 0;
+	JLBC(v, m->judy_L, i_, k);
+
+	if (v == 0) {
+		PyErr_SetString(PyExc_IndexError, "index out of range");
+		return 0;
+	}
+
+	Py_INCREF((PyObject*)(*v));
+	return (PyObject*)(*v);
+}
+
 static PyObject* judy_io_map_get(PyJudyIntObjectMap* m, PyObject* args)
 {
 	PyObject* key = 0;
@@ -488,6 +511,7 @@ static PyObject* judy_io_map_iter(PyJudyIntObjectMap* set);
 PyDoc_STRVAR(contains__doc__, "");
 PyDoc_STRVAR(getitem__doc__,  "");
 PyDoc_STRVAR(sizeof__doc__,   "");
+PyDoc_STRVAR(by_index__doc__,      "");
 PyDoc_STRVAR(get__doc__,      "");
 PyDoc_STRVAR(pop__doc__,      "");
 //PyDoc_STRVAR(popitem__doc__,  "");
@@ -507,6 +531,7 @@ static PyMethodDef judy_io_map_methods[] = {
 	{"__getitem__",      (PyCFunction)judy_io_map_subscript,    METH_O | METH_COEXIST,        getitem__doc__},
 	{"__sizeof__",       (PyCFunction)judy_io_map_sizeof,       METH_NOARGS,                  sizeof__doc__},
 	{"__value_sizeof__", (PyCFunction)judy_io_map_value_sizeof, METH_NOARGS,                  sizeof__doc__},
+	{"by_index",         (PyCFunction)judy_io_map_by_index,     METH_VARARGS,                 by_index__doc__},
 	{"get",              (PyCFunction)judy_io_map_get,          METH_VARARGS,                 get__doc__},
 	{"pop",              (PyCFunction)judy_io_map_pop,          METH_VARARGS,                 pop__doc__},
 //	{"popitem",          (PyCFunction)judy_io_map_popitem,      METH_NOARGS,                  popitem__doc__},
@@ -514,12 +539,12 @@ static PyMethodDef judy_io_map_methods[] = {
 //	{"items",            (PyCFunction)judy_io_map_items,        METH_NOARGS,                  items__doc__},
 //	{"values",           (PyCFunction)judy_io_map_values,       METH_NOARGS,                  values__doc__},
 //	{"update",           (PyCFunction)judy_io_map_update,       METH_VARARGS | METH_KEYWORDS, update__doc__},
-//	{"fromkeys",         (PyCFunction)judy_io_map_fromkeys,             METH_VARARGS | METH_CLASS,    fromkeys__doc__},
+//	{"fromkeys",         (PyCFunction)judy_io_map_fromkeys,     METH_VARARGS | METH_CLASS,    fromkeys__doc__},
 	{"clear",            (PyCFunction)judy_io_map_clear,        METH_NOARGS,                  clear__doc__},
 //	{"copy",             (PyCFunction)judy_io_map_copy,         METH_NOARGS,                  copy__doc__},
-	{"iterkeys",         (PyCFunction)judy_io_map_iterkeys,     METH_VARARGS | METH_KEYWORDS,                  iterkeys__doc__},
-	{"itervalues",       (PyCFunction)judy_io_map_itervalues,   METH_VARARGS | METH_KEYWORDS,                  itervalues__doc__},
-	{"iteritems",        (PyCFunction)judy_io_map_iteritems,    METH_VARARGS | METH_KEYWORDS,                  iteritems__doc__},
+	{"iterkeys",         (PyCFunction)judy_io_map_iterkeys,     METH_VARARGS | METH_KEYWORDS, iterkeys__doc__},
+	{"itervalues",       (PyCFunction)judy_io_map_itervalues,   METH_VARARGS | METH_KEYWORDS, itervalues__doc__},
+	{"iteritems",        (PyCFunction)judy_io_map_iteritems,    METH_VARARGS | METH_KEYWORDS, iteritems__doc__},
 	{NULL, NULL}
 };
 
