@@ -249,11 +249,26 @@ static int judy_io_map_ass_sub(PyJudyIntObjectMap* m, PyObject* k, PyObject* v)
 
 	// delete
 	if (v == 0) {
+		// find/delete the object
+		i = 0;
+		PWord_t v_ = 0;
+		Word_t v__ = 0;
+		JLG(v_, m->judy_L, k_);
+
+		// if no object: key error
+		if (v_ == 0) {
+			set_key_error(k);
+			return -1;
+		}
+
+		v__ = *v_;
+
 		i = 0;
 		JLD(i, m->judy_L, k_);
 
 		if (i == 0) {
-			set_key_error(k);
+			//! NOTE: should not fail
+			PyErr_BadInternalCall();
 			return -1;
 		}
 
@@ -261,6 +276,8 @@ static int judy_io_map_ass_sub(PyJudyIntObjectMap* m, PyObject* k, PyObject* v)
 			PyErr_NoMemory();
 			return -1;
 		}
+
+		Py_DECREF((PyObject*)(v__));
 
 		if (i != 1) {
 			PyErr_BadInternalCall();
