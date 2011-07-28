@@ -3,7 +3,14 @@ from distutils.core import setup, Extension
 
 print 'INFO: building judy static library...'
 
-a, b = commands.getstatusoutput('(cd judy/src; COPT=\'-O3 -fPIC\' ./sh_build)')
+if sys.maxint == 2**63-1:
+	CFLAGS = '-O3 -fPIC -DJU_64BIT'
+elif sys.maxint == 2**31-1:
+	CFLAGS = '-O3 -fPIC'
+else:
+	sys.exit('bad sys.maxint')
+
+a, b = commands.getstatusoutput('(cd judy/src; COPT=\'%s\' ./sh_build)' % (CFLAGS,))
 
 if a != 0:
 	sys.exit(b)
