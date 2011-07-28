@@ -9,15 +9,16 @@ if a != 0:
 	sys.exit(b)
 
 setup(
-	name = 'Judy Python API',
+	name = 'judy',
 	version = '1.0',
 	maintainer = 'Arni Mar Jonsson',
 	maintainer_email = 'arnimarj@gmail.com',
 	description = 'A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
 	url = 'http://code.google.com/p/py-judy/',
+	download_url = 'http://py-judy.googlecode.com/files/judy.tar.gz',
 
 	classifiers = [
-		'Development Status :: 4 - Production',
+		'Development Status :: 5 - Production/Stable',
 		'Environment :: Other Environment',
 		'Intended Audience :: Developers',
 		'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
