@@ -10,7 +10,7 @@ elif sys.maxint == 2**31-1:
 else:
 	sys.exit('bad sys.maxint')
 
-a, b = commands.getstatusoutput('(cd judy/src; COPT=\'%s\' ./sh_build)' % (CFLAGS,))
+a, b = commands.getstatusoutput('(cd judy/src; COPT=\'%s\' sh ./sh_build)' % (CFLAGS,))
 
 if a != 0:
 	sys.exit(b)
