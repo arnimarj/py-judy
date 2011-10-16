@@ -1,5 +1,7 @@
 #include "judy_wrapper.h"
 
+#define JUDY_WORD_MAX (~(Word_t)0)
+
 int judy_w_destroy(PPvoid_t judy)
 {
 	JError_t error;
@@ -26,81 +28,113 @@ int judy_w_insert(PPvoid_t judy, Word_t index, Word_t value)
 	return 1;
 }
 
-#include <assert.h>
-#include <stdio.h>
-
 int judy_1_set(PPvoid_t judy, Word_t index)
 {
+	JError_t error;
+	int i = Judy1Set(judy, index, &error);
+	return (i != JERR);
+}
+
+int judy_w_remove(PPvoid_t judy, Word_t index)
+{
+	JError_t error;
+	int i = JudyLDel(judy, index, &error);
+	return (i != JERR);
+}
+
+int judy_1_remove(PPvoid_t judy, Word_t index)
+{
+	JError_t error;
+	int i = Judy1Unset(judy, index, &error);
+	return (i != JERR);
+}
+
+int judy_w_replace(PPvoid_t judy, Word_t index, Word_t* old_value, Word_t value)
+{
+	// we ignore error conditions, only occur on corrupt data
+	JError_t error;
+	PWord_t p_value = (PWord_t)JudyLGet(judy, index, &error);
+
+	if (p_value == 0)
+		return 0;
+
+	if (old_value)
+		*old_value = *p_value;
+
+	*p_value = value;
+	return 1;
 }
 
 int judy_w_contains(Pvoid_t judy, Word_t index)
 {
+	// we ignore error conditions, only occur on corrupt data
 	JError_t error;
 	PWord_t value = (PWord_t)JudyLGet(judy, index, &error);
-
-	//! fix
-	assert(value != PJERR);
-
-	if (value == 0)
-		return 0;
-
-	printf("value: %u\n", (unsigned int)(*value));
-	return 1;
+	return (value != 0);
 }
 
-int judy_1_contains()
+int judy_1_contains(Pvoid_t judy, Word_t index)
 {
+	JError_t error;
+	int i = Judy1Test(judy, index, &error);
+	assert(i == 0 || i == 1);
+	return i;
 }
 
-int judy_w_remove()
+void judy_w_walk_range(Pvoid_t judy, judy_w_walk_cb cb, Word_t a, Word_t b, void* user)
 {
-}
+	JError_t error;
+	Word_t index;
+	PWord_t value;
 
-int judy_1_remove()
-{
-}
-
-//JLI(PValue, PLArray, Index);
-//if (PValue == PJERR) goto out_of_memory_handling;
-
-//init
-//insert
-//delete
-//iterate
-//range iterate
-//walk
-//destroy
-
-// PPvoid_t JudyLIns(       PPvoid_t PPJLArray, Word_t    Index, PJError_t PJError);
-// int      JudyLDel(       PPvoid_t PPJLArray, Word_t    Index, PJError_t PJError);
-// PPvoid_t JudyLGet(       Pcvoid_t  PJLArray, Word_t    Index, PJError_t PJError);
-// Word_t   JudyLCount(     Pcvoid_t  PJLArray, Word_t    Index1, Word_t    Index2, PJError_t PJError);
-// PPvoid_t JudyLByCount(   Pcvoid_t  PJLArray, Word_t    Nth,  Word_t * PIndex,  PJError_t PJError);
-// Word_t   JudyLFreeArray( PPvoid_t PPJLArray, PJError_t PJError);
-// Word_t   JudyLMemUsed(   Pcvoid_t  PJLArray);
-// PPvoid_t JudyLFirst(     Pcvoid_t  PJLArray, Word_t * PIndex, PJError_t PJError);
-// PPvoid_t JudyLNext(      Pcvoid_t  PJLArray, Word_t * PIndex, PJError_t PJError);
-// PPvoid_t JudyLLast(      Pcvoid_t  PJLArray, Word_t * PIndex, PJError_t PJError);
-// PPvoid_t JudyLPrev(      Pcvoid_t  PJLArray, Word_t * PIndex, PJError_t PJError);
-// int      JudyLFirstEmpty(Pcvoid_t  PJLArray, Word_t * PIndex, PJError_t PJError);
-// int      JudyLNextEmpty( Pcvoid_t  PJLArray, Word_t * PIndex, PJError_t PJError);
-// int      JudyLLastEmpty( Pcvoid_t  PJLArray, Word_t * PIndex, PJError_t PJError);
-// int      JudyLPrevEmpty( Pcvoid_t  PJLArray, Word_t * PIndex, PJError_t PJError);
-
-#include <stdio.h>
-
-int main()
-{
-	Pvoid_t judy = 0;
-
-	if (!judy_w_insert(&judy, 1, 100)) {
-		printf("error A\n");
-		return 0;
+	if (a == 0)
+		value = (PWord_t)JudyLFirst(judy, &index, &error);
+	else {
+		index = a - 1;
+		value = (PWord_t)JudyLNext(judy, &index, &error);
 	}
 
-	if (!judy_w_contains(judy, 1)) {
-		printf("error B\n");
-		return 0;
+	while (value) {
+		cb(index, *value, user);
+		value = (PWord_t)JudyLNext(judy, &index, &error);
+
+		if (b != JUDY_WORD_MAX && b > index)
+			break;
+	}
+}
+
+void judy_w_walk(Pvoid_t judy, judy_w_walk_cb cb, void* user)
+{
+	judy_w_walk_range(judy, cb, 0, JUDY_WORD_MAX, user);
+}
+
+void judy_1_walk_range(Pvoid_t judy, judy_1_walk_cb cb, Word_t a, Word_t b, void* user)
+{
+	JError_t error;
+	Word_t index;
+	int i;
+
+	if (a == 0) {
+		i = Judy1First(judy, &index, &error);
+		assert(i == 0 || i == 1);
+	} else {
+		index = a - 1;
+		i = Judy1Next(judy, &index, &error);
+		assert(i == 0 || i == 1);
 	}
 
+	while (i) {
+		cb(index, user);
+
+		i = Judy1Next(judy, &index, &error);
+		assert(i == 0 || i == 1);
+
+		if (b != JUDY_WORD_MAX && b > index)
+			break;
+	}
+}
+
+void judy_1_walk(Pvoid_t judy, judy_1_walk_cb cb, void* user)
+{
+	judy_1_walk_range(judy, cb, 0, JUDY_WORD_MAX, user);
 }
