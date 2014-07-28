@@ -19,9 +19,9 @@ def build_judy():
 
 build_judy()
 
-extra_link_args = ['-L./judy/src', '-Bstatic', '-lJudy', '-Bdynamic', '-lm']
+extra_link_args = ['-L./judy-1.0.5/src', '-Bstatic', '-lJudy', '-Bdynamic', '-lm']
 extra_compile_args = [
-	'-I./judy/src',
+	'-I./judy-1.0.5/src',
 	'-I./include',
 	'-I/usr/local/include',
 	'-Wall',
@@ -66,8 +66,8 @@ setup(
 
 	ext_modules = [
 		Extension('judy',
-			include_dirs = [ './judy/src', '/usr/include' ],
-			library_dirs = [ '/usr/lib' ],
+			include_dirs = [ './judy-1.0.5/src', '/usr/include' ],
+			library_dirs = [ './judy-1.0.5/src', '/usr/lib' ],
 
 			sources = [
 				'judy.c',
