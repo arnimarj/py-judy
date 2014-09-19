@@ -6,11 +6,14 @@ def build_judy():
 
 	# DRAGON WARNING: GCC 4.8.1 produces wrong code on all but -O0 optimization levels, falling back for now
 	if sys.maxint == 2**63-1:
-		CFLAGS = '-O0 -fPIC -DJU_64BIT'
+		CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
 	elif sys.maxint == 2**31-1:
-		CFLAGS = '-O0 -fPIC'
+		CFLAGS = '           -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
 	else:
 		sys.exit('bad sys.maxint')
+
+	a, b = commands.getstatusoutput('(cd judy-1.0.5/src; COPT=\'%s\' sh ./sh_build)' % (CFLAGS,))
+
 
 	a, b = commands.getstatusoutput('(cd judy-1.0.5/src; COPT=\'%s\' sh ./sh_build)' % (CFLAGS,))
 
