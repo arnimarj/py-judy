@@ -711,7 +711,7 @@ static PyObject* judy_io_map_iter_new(PyJudyIntObjectMap* map, PyTypeObject* ite
 	mi->from = _k_from_inc;
 	mi->to = _k_to_inc;
 
-	_PyObject_GC_TRACK(mi);
+	PyObject_GC_Track(mi);
 	return (PyObject*)mi;
 }
 
