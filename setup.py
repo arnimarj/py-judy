@@ -44,7 +44,8 @@ def build_judy():
 
 	print output
 
-build_judy()
+if not os.path.isfile('./judy-1.0.5/src/libJudy.a'):
+	build_judy()
 
 extra_link_args = ['-L./judy-1.0.5/src', '-Bstatic', '-lJudy', '-Bdynamic', '-lm']
 extra_compile_args = [
