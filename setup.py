@@ -67,12 +67,12 @@ extra_compile_args = [
 
 setup(
 	name = 'judy',
-	version = '1.0',
+	version = '1.0.1',
 	maintainer = 'Arni Mar Jonsson',
 	maintainer_email = 'arnimarj@gmail.com',
 	description = 'A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
-	url = 'http://code.google.com/p/py-judy/',
-	download_url = 'http://py-judy.googlecode.com/files/judy.tar.gz',
+	url = 'https://github.com/arnimarj/py-judy/',
+	download_url = 'https://github.com/arnimarj/py-judy/archive/v1.0.1.tar.gz',
 
 	classifiers = [
 		'Development Status :: 5 - Production/Stable',
