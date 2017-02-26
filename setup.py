@@ -16,8 +16,10 @@ def build_judy():
 		sys.exit(output)
 
 	if 'clang' in output:
+		print 'INFO: compiler is Clang'
 		is_clang = True
 	elif 'gcc version 4.6' in output:
+		print 'INFO: compiler is GCC 4.6'
 		is_gcc_46 = True
 
 	# adding last two flags because of compiler and/or code bugs
