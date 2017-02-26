@@ -7,21 +7,24 @@ def build_judy():
 	CC = os.environ.get('CC', 'cc')
 
 	is_clang = False
+	is_gcc_46 = False
 
-	# test if CC is clang
-	exitcode, output = commands.getstatusoutput('%s --version' % (CC,))
+	# test if CC is clang/gcc-4.6
+	exitcode, output = commands.getstatusoutput('%s -v' % (CC,))
 
 	if exitcode != 0:
 		sys.exit(output)
 
 	if 'clang' in output:
 		is_clang = True
+	elif 'gcc version 4.6' in output:
+		is_gcc_46 = True
 
 	# adding last two flags because of compiler and/or code bugs
 	# see http://sourceforge.net/p/judy/mailman/message/32417284/
 	assert(sys.maxint in (2**63-1, 2**31-1))
 
-	if is_clang:
+	if is_clang or is_gcc_46:
 		if sys.maxint == 2**63-1:
 			CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing'
 		else:
