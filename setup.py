@@ -1,5 +1,12 @@
-import sys, commands, os
+import sys, os, subprocess
 from distutils.core import setup, Extension
+
+if hasattr(subprocess, 'getstatusoutput'):
+	getstatusoutput = subprocess.getstatusoutput
+else:
+	import commands
+	getstatusoutput = commands.getstatusoutput
+
 
 def build_judy():
 	print('INFO: building judy static library...')
@@ -7,39 +14,45 @@ def build_judy():
 	CC = os.environ.get('CC', 'cc')
 
 	is_clang = False
+	is_gcc_46 = False
 
-	# test if CC is clang
-	exitcode, output = commands.getstatusoutput('%s --version' % (CC,))
+	# test if CC is clang/gcc-4.6
+	exitcode, output = getstatusoutput('%s -v' % (CC,))
 
 	if exitcode != 0:
 		sys.exit(output)
 
 	if 'clang' in output:
+		print('INFO: compiler is Clang')
 		is_clang = True
+	elif 'gcc version 4.6' in output:
+		print('INFO: compiler is GCC 4.6')
+		is_gcc_46 = True
 
 	# adding last two flags because of compiler and/or code bugs
 	# see http://sourceforge.net/p/judy/mailman/message/32417284/
-	assert(sys.maxint in (2**63-1, 2**31-1))
+	assert(sys.maxsize in (2**63-1, 2**31-1))
 
-	if is_clang:
-		if sys.maxint == 2**63-1:
+	if is_clang or is_gcc_46:
+		if sys.maxsize == 2**63-1:
 			CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing'
 		else:
 			CFLAGS = '           -O0 -fPIC -fno-strict-aliasing'
 	else:
-		if sys.maxint == 2**63-1:
+		if sys.maxsize == 2**63-1:
 			CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
 		else:
 			CFLAGS = '           -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
 
-	exitcode, output = commands.getstatusoutput('(cd judy-1.0.5/src; CC=\'%s\' COPT=\'%s\' sh ./sh_build)' % (CC, CFLAGS))
+	exitcode, output = getstatusoutput('(cd judy-1.0.5/src; CC=\'%s\' COPT=\'%s\' sh ./sh_build)' % (CC, CFLAGS))
 
 	if exitcode != 0:
 		sys.exit(output)
 
-	print output
+	print(output)
 
-build_judy()
+if not os.path.isfile('./judy-1.0.5/src/libJudy.a'):
+	build_judy()
 
 extra_link_args = ['-L./judy-1.0.5/src', '-Bstatic', '-lJudy', '-Bdynamic', '-lm']
 extra_compile_args = [
@@ -77,8 +90,12 @@ setup(
 		'Operating System :: POSIX',
 		'Programming Language :: C',
 		'Programming Language :: Python',
-		'Programming Language :: Python :: 2.6',
+		'Programming Language :: Python :: 2',
 		'Programming Language :: Python :: 2.7',
+		'Programming Language :: Python :: 3',
+		'Programming Language :: Python :: 3.4',
+		'Programming Language :: Python :: 3.5',
+		'Programming Language :: Python :: 3.6',
 		'Topic :: Database',
 		'Topic :: Software Development :: Libraries'
 	],

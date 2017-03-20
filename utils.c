@@ -4,6 +4,7 @@ int pyobject_as_word_t(PyObject* p, Word_t* v)
 {
 	unsigned PY_LONG_LONG pv = 0;
 
+#if PY_MAJOR_VERSION < 3
 	if (PyInt_Check(p)) {
 		long pv_ = PyInt_AS_LONG(p);
 
@@ -11,7 +12,9 @@ int pyobject_as_word_t(PyObject* p, Word_t* v)
 			 return 0;
 
 		pv = (unsigned PY_LONG_LONG)pv_;
-	} else if (PyLong_Check(p)) {
+	} else
+#endif
+	if (PyLong_Check(p)) {
 		pv = PyLong_AsUnsignedLongLong(p);
 
 		// not in range of [0, 2**64-1]

@@ -44,7 +44,7 @@ static void PyJudyIntSet_dealloc(PyJudyIntSet* self)
 		self->s = 0;
 	}
 
-	self->ob_type->tp_free((PyObject*)self);
+	PyObject_GC_Del(self);
 }
 
 static void PyJudyIntSetIter_dealloc(PyJudyIntSetIter* self)
@@ -214,24 +214,58 @@ static PyObject* PyJudyIntSet_direct_contains(PyJudyIntSet* set, PyObject* key)
 	return PyBool_FromLong(result);
 }
 
+static void PyUnicode_ConcatAndDel(PyObject **left, PyObject *right)
+{
+	PyObject *newobj;
+	newobj = PyUnicode_Concat(*left, right);
+	Py_DECREF(*left);
+	Py_DECREF(right);
+	*left = newobj;
+}
+
+static void PyUnicode_Concat2(PyObject **left, PyObject *right)
+{
+	PyObject *newobj;
+	newobj = PyUnicode_Concat(*left, right);
+	Py_DECREF(*left);
+	*left = newobj;
+}
+
 static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
 {
-	if (!set->allow_print)
+	if (!set->allow_print) {
+#if PY_MAJOR_VERSION < 3
 		return PyString_FromFormat("<%s object at %p>", Py_TYPE(set)->tp_name, (void*)set);
+#else
+		return PyUnicode_FromFormat("<%s object at %p>", Py_TYPE(set)->tp_name, (void*)set);
+#endif
+	}
 
 	char s_buffer[32];
 	PyObject* retval = 0;
 	PyObject* comma_space = 0;
 	PyObject* s = 0;
 
-	if (set->s == 0)
+	if (set->s == 0) {
+#if PY_MAJOR_VERSION < 3
 		return PyString_FromString("JudyIntSet([])");
+#else
+		return PyUnicode_FromString("JudyIntSet([])");
+#endif
+	}
 
+#if PY_MAJOR_VERSION < 3
 	if ((comma_space = PyString_FromString(", ")) == 0)
 		goto cleanup;
 
 	retval = PyString_FromString("JudyIntSet([");
+#else
 
+	if ((comma_space = PyUnicode_FromString(", ")) == 0)
+		goto cleanup;
+
+	retval = PyUnicode_FromString("JudyIntSet([");
+#endif
 	if (retval == 0)
 		goto cleanup;
 
@@ -240,14 +274,22 @@ static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
 	Judy1First(set->s, &v, &JError);
 
 	sprintf(s_buffer, "%llu", (unsigned long long)v);
+
+#if PY_MAJOR_VERSION < 3
 	s = PyString_FromString(s_buffer);
+#else
+	s = PyUnicode_FromString(s_buffer);
+#endif
 
 	if (s == 0) {
 		Py_CLEAR(retval);
 		goto cleanup;
 	}
-
+#if PY_MAJOR_VERSION < 3
 	PyString_ConcatAndDel(&retval, s);
+#else
+	PyUnicode_ConcatAndDel(&retval, s);
+#endif
 
 	if (retval == 0)
 		goto cleanup;
@@ -257,32 +299,48 @@ static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
 
 		if (i == 0)
 			break;
-
+#if PY_MAJOR_VERSION < 3
 		PyString_Concat(&retval, comma_space);
+#else
+		PyUnicode_Concat2(&retval, comma_space);
+#endif
 
 		if (retval == 0)
 			goto cleanup;
 
 		sprintf(s_buffer, "%llu", (unsigned long long)v);
+#if PY_MAJOR_VERSION < 3
 		s = PyString_FromString(s_buffer);
-
+#else
+		s = PyUnicode_FromString(s_buffer);
+#endif
 		if (s == 0) {
 			Py_CLEAR(retval);
 			goto cleanup;
 		}
-
+#if PY_MAJOR_VERSION < 3
 		PyString_ConcatAndDel(&retval, s);
+#else
+		PyUnicode_ConcatAndDel(&retval, s);
+#endif
 
 		if (retval == 0)
 			goto cleanup;
 	}
-
+#if PY_MAJOR_VERSION < 3
 	s = PyString_FromString("])");
+#else
+	s = PyUnicode_FromString("])");
+#endif
 
 	if (s == 0)
 		goto cleanup;
 
+#if PY_MAJOR_VERSION < 3
 	PyString_ConcatAndDel(&retval, s);
+#else
+	PyUnicode_ConcatAndDel(&retval, s);
+#endif
 
 cleanup:
 
@@ -335,8 +393,7 @@ static PyMethodDef PyJudyIntSet_methods[] = {
 };
 
 PyTypeObject PyJudyIntSetType = {
-	PyObject_HEAD_INIT(NULL)
-	0,                                        /*ob_size*/
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"judy.PyJudyIntSet",                      /*tp_name*/
 	sizeof(PyJudyIntSet),                     /*tp_basicsize*/
 	0,                                        /*tp_itemsize*/
@@ -410,8 +467,7 @@ static PyObject* PyJudyIntSetIter_iternext(PyJudyIntSetIter* iter)
 }
 
 PyTypeObject PyJudyIntSetIterType = {
-	PyObject_HEAD_INIT(NULL)
-	0,                                               /*ob_size*/
+	PyVarObject_HEAD_INIT(NULL, 0)
 	"judy.PyJudyIntSetIter",                         /*tp_name*/
 	sizeof(PyJudyIntSetIter),                        /*tp_basicsize*/
 	0,                                               /*tp_itemsize*/
