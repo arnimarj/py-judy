@@ -44,7 +44,7 @@ static void PyJudyIntSet_dealloc(PyJudyIntSet* self)
 		self->s = 0;
 	}
 
-	PyObject_GC_Del(self);
+	Py_TYPE(self)->tp_free(self);
 }
 
 static void PyJudyIntSetIter_dealloc(PyJudyIntSetIter* self)
