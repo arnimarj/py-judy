@@ -13,6 +13,67 @@ static PyObject* judy_io_map_clear(PyObject* op)
 	return Py_None;
 }
 
+#ifdef PYPY_VERSION
+
+#define KEY "Py_Repr"
+
+static int
+my_Py_ReprEnter(PyObject *obj)
+{
+    PyObject *dict;
+    PyObject *list;
+    Py_ssize_t i;
+
+    dict = PyThreadState_GetDict();
+    if (dict == NULL)
+        return 0;
+    list = PyDict_GetItemString(dict, KEY);
+    if (list == NULL) {
+        list = PyList_New(0);
+        if (list == NULL)
+            return -1;
+        if (PyDict_SetItemString(dict, KEY, list) < 0)
+            return -1;
+        Py_DECREF(list);
+    }
+    i = PyList_GET_SIZE(list);
+    while (--i >= 0) {
+        if (PyList_GET_ITEM(list, i) == obj)
+            return 1;
+    }
+    PyList_Append(list, obj);
+    return 0;
+}
+
+static void
+my_Py_ReprLeave(PyObject *obj)
+{
+    PyObject *dict;
+    PyObject *list;
+    Py_ssize_t i;
+
+    dict = PyThreadState_GetDict();
+    if (dict == NULL)
+        return;
+    list = PyDict_GetItemString(dict, KEY);
+    if (list == NULL || !PyList_Check(list))
+        return;
+    i = PyList_GET_SIZE(list);
+    /* Count backwards because we always expect obj to be list[-1] */
+    while (--i >= 0) {
+        if (PyList_GET_ITEM(list, i) == obj) {
+            PyList_SetSlice(list, i, i + 1, NULL);
+            break;
+        }
+    }
+}
+
+#else
+	#define my_Py_ReprEnter Py_ReprEnter 
+	#define my_Py_ReprLeave Py_ReprLeave 
+#endif
+
+
 static void judy_io_map_dealloc(PyJudyIntObjectMap* m)
 {
  	PyObject_GC_UnTrack(m);
@@ -30,7 +91,7 @@ static int judy_io_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
 	if (!m->allow_print)
 		return fprintf(fp, "<%s object at %p>", Py_TYPE(m)->tp_name, (void*)m);
 
-	int status = Py_ReprEnter((PyObject*)m);
+	int status = my_Py_ReprEnter((PyObject*)m);
 
 	if (status != 0) {
 		if (status < 0)
@@ -67,7 +128,7 @@ static int judy_io_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
 
 		if (PyObject_Print((PyObject*)(*v), fp, 0) != 0) {
 			Py_DECREF((PyObject*)(*v));
-			Py_ReprLeave((PyObject*)m);
+			my_Py_ReprLeave((PyObject*)m);
 			return -1;
 		}
 
@@ -80,11 +141,12 @@ static int judy_io_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
 	fprintf(fp, "}");
 	Py_END_ALLOW_THREADS
 
-	Py_ReprLeave((PyObject*)m);
+	my_Py_ReprLeave((PyObject*)m);
 
 	return 0;
 }
 
+#if PY_MAJOR_VERSION < 3
 static void PyUnicode_ConcatAndDel(PyObject **left, PyObject *right)
 {
 	PyObject *newobj;
@@ -92,6 +154,28 @@ static void PyUnicode_ConcatAndDel(PyObject **left, PyObject *right)
 	Py_DECREF(*left);
 	Py_DECREF(right);
 	*left = newobj;
+}
+#endif
+
+static int _string_to_list(PyObject* list, const char* string)
+{
+#if PY_MAJOR_VERSION < 3
+	PyObject* s = PyString_FromString(string);
+#else
+	PyObject* s = PyUnicode_FromString(string);
+#endif
+
+	if (s == 0)
+		return 0;
+
+	int i = (PyList_Append(list, s) == 0);
+	Py_DECREF(s);
+	return i;
+}
+
+static int _object_to_list(PyObject* list, PyObject* object)
+{
+	return (PyList_Append(list, object) == 0);
 }
 
 static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
@@ -104,15 +188,11 @@ static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 #endif
 	}
 
-	Py_ssize_t r = Py_ReprEnter((PyObject*)m);
+	Py_ssize_t r = my_Py_ReprEnter((PyObject*)m);
 	PyObject* retval = 0;
-	PyObject* left_bracket = 0;
-	PyObject* right_bracket = 0;
 	PyObject* pieces = 0;
 	PyObject* s = 0;
-	PyObject* t = 0;
 	char s_buffer[32];
-	int status;
 
 	if (r != 0) {
 #if PY_MAJOR_VERSION < 3
@@ -120,22 +200,6 @@ static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 #else
 		return r > 0 ? PyUnicode_FromString("{...}") : 0;
 #endif
-	}
-
-#if PY_MAJOR_VERSION < 3
-	if ((left_bracket = PyString_FromString("{")) == 0) {
-#else
-	if ((left_bracket = PyUnicode_FromString("{")) == 0) {
-#endif
-		goto cleanup;
-	}
-
-#if PY_MAJOR_VERSION < 3
-	if ((right_bracket = PyString_FromString("}")) == 0) {
-#else
-	if ((right_bracket = PyUnicode_FromString("}")) == 0) {
-#endif
-		goto cleanup;
 	}
 
 	if ((pieces = PyList_New(0)) == 0) {
@@ -157,76 +221,48 @@ static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 		goto cleanup;
 	}
 
+	if (!_string_to_list(pieces, "{"))
+		goto cleanup;
+
+	int first_iteration = 1;
+
 	while (v != 0) {
-		Py_INCREF((PyObject*)(*v));
+		if (!first_iteration) {
+			if (!_string_to_list(pieces, ","))
+				goto cleanup;
+
+			if (!_string_to_list(pieces, " "))
+				goto cleanup;
+		}
+
+		first_iteration = 0;
 
 		sprintf(s_buffer, "%llu: ", (unsigned long long)i);
 
-#if PY_MAJOR_VERSION < 3
-		s = PyString_FromString(s_buffer);
-		PyString_ConcatAndDel(&s, PyObject_Repr((PyObject*)(*v)));
-#else
-		s = PyUnicode_FromString(s_buffer);
-		PyUnicode_ConcatAndDel(&s, PyObject_Repr((PyObject*)(*v)));
-#endif
+		if (!_string_to_list(pieces, s_buffer))
+			goto cleanup;
+
+		Py_INCREF((PyObject*)(*v));
+		PyObject* repr = PyObject_Repr((PyObject*)(*v));
 		Py_DECREF((PyObject*)(*v));
 
-		if (s == 0)
+		if (!_object_to_list(pieces, repr)) {
+			Py_DECREF(repr);
 			goto cleanup;
+		}
 
-		status = PyList_Append(pieces, s);
-		Py_DECREF(s);
-
-		if (status < 0)
-			goto cleanup;
+		Py_DECREF(repr);
 
 		JLN(v, m->judy_L, i);
 	}
 
-#if PY_MAJOR_VERSION < 3
-	s = PyString_FromString("{");
-#else
-	s = PyUnicode_FromString("{");
-#endif
-
-	if (s == 0)
-		goto cleanup;
-
-	t = PyList_GET_ITEM(pieces, 0);
-#if PY_MAJOR_VERSION < 3
-	PyString_ConcatAndDel(&s, t);
-#else
-	PyUnicode_ConcatAndDel(&s, t);
-#endif
-	PyList_SET_ITEM(pieces, 0, s);
-
-	if (s == 0)
+	if (!_string_to_list(pieces, "}"))
 		goto cleanup;
 
 #if PY_MAJOR_VERSION < 3
-	s = PyString_FromString("}");
+	s = PyString_FromString("");
 #else
-	s = PyUnicode_FromString("}");
-#endif
-
-	if (s == 0)
-		goto cleanup;
-
-	t = PyList_GET_ITEM(pieces, PyList_GET_SIZE(pieces) - 1);
-#if PY_MAJOR_VERSION < 3
-	PyString_ConcatAndDel(&t, s);
-#else
-	PyUnicode_ConcatAndDel(&t, s);
-#endif
-	PyList_SET_ITEM(pieces, PyList_GET_SIZE(pieces) - 1, t);
-
-	if (t == 0)
-		goto cleanup;
-
-#if PY_MAJOR_VERSION < 3
-	s = PyString_FromString(", ");
-#else
-	s = PyUnicode_FromString(", ");
+	s = PyUnicode_FromString("");
 #endif
 
 	if (s == 0)
@@ -238,14 +274,12 @@ static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 	retval = PyUnicode_Join(s, pieces);
 #endif
 	Py_DECREF(s);
+	s = 0;
 
 cleanup:
 
 	Py_XDECREF(pieces);
-	Py_XDECREF(left_bracket);
-	Py_XDECREF(right_bracket);
-
-	Py_ReprLeave((PyObject*)m);
+	my_Py_ReprLeave((PyObject*)m);
 
 	return retval;
 }
