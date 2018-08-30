@@ -1,4 +1,4 @@
-import sys, os, subprocess
+import sys, os, subprocess, setuptools
 from distutils.core import setup, Extension
 
 if hasattr(subprocess, 'getstatusoutput'):
@@ -75,12 +75,11 @@ extra_compile_args = [
 
 setup(
 	name = 'judy',
-	version = '1.0.1',
+	version = '1.0.5',
 	maintainer = 'Arni Mar Jonsson',
 	maintainer_email = 'arnimarj@gmail.com',
 	description = 'A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
 	url = 'https://github.com/arnimarj/py-judy/',
-	download_url = 'https://github.com/arnimarj/py-judy/archive/v1.0.1.tar.gz',
 
 	classifiers = [
 		'Development Status :: 5 - Production/Stable',
