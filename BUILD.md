@@ -27,9 +27,6 @@ done
 for whl in ./wheelhouse/*.whl; do
   auditwheel repair "$whl" -w ./dist
 done
-
-# Remove linux build wheels
-rm ./dist/*linux*.whl
 ```
 
 ## 2) Mac OS X Build
