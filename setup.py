@@ -1,11 +1,8 @@
-import sys, os, subprocess, setuptools
-from distutils.core import setup, Extension
+import sys
+import os
+import subprocess
 
-if hasattr(subprocess, 'getstatusoutput'):
-	getstatusoutput = subprocess.getstatusoutput
-else:
-	import commands
-	getstatusoutput = commands.getstatusoutput
+from setuptools import setup, Extension
 
 
 def build_judy():
@@ -17,7 +14,7 @@ def build_judy():
 	is_gcc_46 = False
 
 	# test if CC is clang/gcc-4.6
-	exitcode, output = getstatusoutput('%s -v' % (CC,))
+	exitcode, output = subprocess.getstatusoutput('%s -v' % (CC,))
 
 	if exitcode != 0:
 		sys.exit(output)
@@ -31,25 +28,26 @@ def build_judy():
 
 	# adding last two flags because of compiler and/or code bugs
 	# see http://sourceforge.net/p/judy/mailman/message/32417284/
-	assert(sys.maxsize in (2**63-1, 2**31-1))
+	assert(sys.maxsize in (2**63 - 1, 2**31 - 1))
 
 	if is_clang or is_gcc_46:
-		if sys.maxsize == 2**63-1:
+		if sys.maxsize == 2**63 - 1:
 			CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing'
 		else:
 			CFLAGS = '           -O0 -fPIC -fno-strict-aliasing'
 	else:
-		if sys.maxsize == 2**63-1:
+		if sys.maxsize == 2**63 - 1:
 			CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
 		else:
 			CFLAGS = '           -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
 
-	exitcode, output = getstatusoutput('(cd judy-1.0.5/src; CC=\'%s\' COPT=\'%s\' sh ./sh_build)' % (CC, CFLAGS))
+	exitcode, output = subprocess.getstatusoutput('(cd judy-1.0.5/src; CC=\'%s\' COPT=\'%s\' sh ./sh_build)' % (CC, CFLAGS))
 
 	if exitcode != 0:
 		sys.exit(output)
 
 	print(output)
+
 
 if not os.path.isfile('./judy-1.0.5/src/libJudy.a'):
 	build_judy()
@@ -75,7 +73,7 @@ extra_compile_args = [
 
 setup(
 	name = 'judy',
-	version = '1.0.5',
+	version = '1.0.6',
 	maintainer = 'Arni Mar Jonsson',
 	maintainer_email = 'arnimarj@gmail.com',
 	description = 'A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
@@ -89,12 +87,12 @@ setup(
 		'Operating System :: POSIX',
 		'Programming Language :: C',
 		'Programming Language :: Python',
-		'Programming Language :: Python :: 2',
-		'Programming Language :: Python :: 2.7',
 		'Programming Language :: Python :: 3',
 		'Programming Language :: Python :: 3.4',
 		'Programming Language :: Python :: 3.5',
 		'Programming Language :: Python :: 3.6',
+		'Programming Language :: Python :: 3.7',
+		'Programming Language :: Python :: 3.8',
 		'Topic :: Database',
 		'Topic :: Software Development :: Libraries'
 	],
@@ -103,9 +101,10 @@ setup(
 	package_dir = {'judy': ''},
 
 	ext_modules = [
-		Extension('judy',
-			include_dirs = [ './judy-1.0.5/src', '/usr/include' ],
-			library_dirs = [ './judy-1.0.5/src', '/usr/lib' ],
+		Extension(
+			'judy',
+			include_dirs = ['./judy-1.0.5/src', '/usr/include'],
+			library_dirs = ['./judy-1.0.5/src', '/usr/lib'],
 
 			sources = [
 				'judy.c',
