@@ -146,24 +146,10 @@ static int judy_io_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
 	return 0;
 }
 
-#if PY_MAJOR_VERSION < 3
-static void PyUnicode_ConcatAndDel(PyObject **left, PyObject *right)
-{
-	PyObject *newobj;
-	newobj = PyUnicode_Concat(*left, right);
-	Py_DECREF(*left);
-	Py_DECREF(right);
-	*left = newobj;
-}
-#endif
 
 static int _string_to_list(PyObject* list, const char* string)
 {
-#if PY_MAJOR_VERSION < 3
-	PyObject* s = PyString_FromString(string);
-#else
 	PyObject* s = PyUnicode_FromString(string);
-#endif
 
 	if (s == 0)
 		return 0;
@@ -181,11 +167,7 @@ static int _object_to_list(PyObject* list, PyObject* object)
 static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 {
 	if (!m->allow_print) {
-#if PY_MAJOR_VERSION < 3
-		return PyString_FromFormat("<%s object at %p>", Py_TYPE(m)->tp_name, (void*)m);
-#else
 		return PyUnicode_FromFormat("<%s object at %p>", Py_TYPE(m)->tp_name, (void*)m);
-#endif
 	}
 
 	Py_ssize_t r = my_Py_ReprEnter((PyObject*)m);
@@ -195,11 +177,7 @@ static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 	char s_buffer[32];
 
 	if (r != 0) {
-#if PY_MAJOR_VERSION < 3
-		return r > 0 ? PyString_FromString("{...}") : 0;
-#else
 		return r > 0 ? PyUnicode_FromString("{...}") : 0;
-#endif
 	}
 
 	if ((pieces = PyList_New(0)) == 0) {
@@ -213,11 +191,7 @@ static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 	JLF(v, m->judy_L, i);
 
 	if (v == 0) {
-#if PY_MAJOR_VERSION < 3
-		retval = PyString_FromString("{}");
-#else
 		retval = PyUnicode_FromString("{}");
-#endif
 		goto cleanup;
 	}
 
@@ -259,20 +233,12 @@ static PyObject* judy_io_map_repr(PyJudyIntObjectMap* m)
 	if (!_string_to_list(pieces, "}"))
 		goto cleanup;
 
-#if PY_MAJOR_VERSION < 3
-	s = PyString_FromString("");
-#else
 	s = PyUnicode_FromString("");
-#endif
 
 	if (s == 0)
 		goto cleanup;
 
-#if PY_MAJOR_VERSION < 3
-	retval = _PyString_Join(s, pieces);
-#else
 	retval = PyUnicode_Join(s, pieces);
-#endif
 	Py_DECREF(s);
 	s = 0;
 
@@ -485,19 +451,6 @@ static PyObject* judy_io_map_value_sizeof(PyJudyIntObjectMap* m)
 		if (V == 0)
 			return 0;
 
-#if PY_MAJOR_VERSION < 3
-		if (PyInt_Check(V)) {
-			L = (long long)PyInt_AS_LONG(V);
-
-			if (L < 0) {
-				PyErr_SetString(PyExc_ValueError, "__sizeof__() returned a negative integer");
-				Py_DECREF(V);
-				return 0;
-			}
-
-			n_bytes += L;
-		} else
-#endif
 		if (PyLong_Check(V)) {
 			L = PyLong_AsLongLong(V);
 
@@ -659,9 +612,9 @@ static PyMethodDef judy_io_map_methods[] = {
 //	{"fromkeys",         (PyCFunction)judy_io_map_fromkeys,     METH_VARARGS | METH_CLASS,    fromkeys__doc__},
 	{"clear",            (PyCFunction)judy_io_map_clear,        METH_NOARGS,                  clear__doc__},
 //	{"copy",             (PyCFunction)judy_io_map_copy,         METH_NOARGS,                  copy__doc__},
-	{"iterkeys",         (PyCFunction)judy_io_map_iterkeys,     METH_VARARGS | METH_KEYWORDS, iterkeys__doc__},
-	{"itervalues",       (PyCFunction)judy_io_map_itervalues,   METH_VARARGS | METH_KEYWORDS, itervalues__doc__},
-	{"iteritems",        (PyCFunction)judy_io_map_iteritems,    METH_VARARGS | METH_KEYWORDS, iteritems__doc__},
+	{"keys",             (PyCFunction)judy_io_map_iterkeys,     METH_VARARGS | METH_KEYWORDS, iterkeys__doc__},
+	{"values",           (PyCFunction)judy_io_map_itervalues,   METH_VARARGS | METH_KEYWORDS, itervalues__doc__},
+	{"items",            (PyCFunction)judy_io_map_iteritems,    METH_VARARGS | METH_KEYWORDS, iteritems__doc__},
 	{NULL, NULL}
 };
 

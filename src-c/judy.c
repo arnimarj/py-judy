@@ -9,14 +9,7 @@ static PyMethodDef judy_module_methods[] =
 struct judy_module_state {
 };
 
-#if PY_MAJOR_VERSION >= 3
 #define GETSTATE(m) ((struct judy_module_state*)PyModule_GetState(m))
-#else
-#define GETSTATE(m) (&_state)
-static struct judy_module_state _state;
-#endif
-
-#if PY_MAJOR_VERSION >= 3
 
 static int judy_module_traverse(PyObject* m, visitproc visit, void* arg)
 {
@@ -39,33 +32,18 @@ static struct PyModuleDef moduledef = {
 	judy_module_clear,
 	NULL
 };
-#endif
 
 extern PyTypeObject PyJudyIntObjectMapType;
 extern PyTypeObject PyJudyIntSetType;
 
-#if PY_MAJOR_VERSION >= 3
 #define MODULEINITERROR return NULL
 PyMODINIT_FUNC
-#else
-#define MODULEINITERROR return
-void
-#endif
 
-#if PY_MAJOR_VERSION >= 3
-PyInit_judy(void)
-#else
-initjudy(void)
-#endif
-
+PyInit__judy(void)
 {
 	PyObject* module_judy = 0;
 
-#if PY_MAJOR_VERSION >= 3
 	module_judy = PyModule_Create(&moduledef);
-#else
-	module_judy = Py_InitModule4("judy", judy_module_methods, "Judy Python API", 0, PYTHON_API_VERSION);
-#endif
 
 	if (module_judy == 0) {
 		MODULEINITERROR;
@@ -95,9 +73,7 @@ initjudy(void)
 		}
 	}
 
-#if PY_MAJOR_VERSION >= 3
 	return module_judy;
-#endif
 }
 
 #undef MODULEINITERROR

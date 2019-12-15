@@ -4,16 +4,6 @@ int pyobject_as_word_t(PyObject* p, Word_t* v)
 {
 	unsigned PY_LONG_LONG pv = 0;
 
-#if PY_MAJOR_VERSION < 3
-	if (PyInt_Check(p)) {
-		long pv_ = PyInt_AS_LONG(p);
-
-		if (pv_ < 0)
-			 return 0;
-
-		pv = (unsigned PY_LONG_LONG)pv_;
-	} else
-#endif
 	if (PyLong_Check(p)) {
 		pv = PyLong_AsUnsignedLongLong(p);
 

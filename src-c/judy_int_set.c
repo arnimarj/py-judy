@@ -234,11 +234,7 @@ static void PyUnicode_Concat2(PyObject **left, PyObject *right)
 static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
 {
 	if (!set->allow_print) {
-#if PY_MAJOR_VERSION < 3
-		return PyString_FromFormat("<%s object at %p>", Py_TYPE(set)->tp_name, (void*)set);
-#else
 		return PyUnicode_FromFormat("<%s object at %p>", Py_TYPE(set)->tp_name, (void*)set);
-#endif
 	}
 
 	char s_buffer[32];
@@ -247,25 +243,14 @@ static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
 	PyObject* s = 0;
 
 	if (set->s == 0) {
-#if PY_MAJOR_VERSION < 3
-		return PyString_FromString("JudyIntSet([])");
-#else
 		return PyUnicode_FromString("JudyIntSet([])");
-#endif
 	}
-
-#if PY_MAJOR_VERSION < 3
-	if ((comma_space = PyString_FromString(", ")) == 0)
-		goto cleanup;
-
-	retval = PyString_FromString("JudyIntSet([");
-#else
 
 	if ((comma_space = PyUnicode_FromString(", ")) == 0)
 		goto cleanup;
 
 	retval = PyUnicode_FromString("JudyIntSet([");
-#endif
+
 	if (retval == 0)
 		goto cleanup;
 
@@ -275,21 +260,13 @@ static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
 
 	sprintf(s_buffer, "%llu", (unsigned long long)v);
 
-#if PY_MAJOR_VERSION < 3
-	s = PyString_FromString(s_buffer);
-#else
 	s = PyUnicode_FromString(s_buffer);
-#endif
 
 	if (s == 0) {
 		Py_CLEAR(retval);
 		goto cleanup;
 	}
-#if PY_MAJOR_VERSION < 3
-	PyString_ConcatAndDel(&retval, s);
-#else
 	PyUnicode_ConcatAndDel(&retval, s);
-#endif
 
 	if (retval == 0)
 		goto cleanup;
@@ -299,48 +276,29 @@ static PyObject* PyJudyIntSet_repr(PyJudyIntSet* set)
 
 		if (i == 0)
 			break;
-#if PY_MAJOR_VERSION < 3
-		PyString_Concat(&retval, comma_space);
-#else
+
 		PyUnicode_Concat2(&retval, comma_space);
-#endif
 
 		if (retval == 0)
 			goto cleanup;
 
 		sprintf(s_buffer, "%llu", (unsigned long long)v);
-#if PY_MAJOR_VERSION < 3
-		s = PyString_FromString(s_buffer);
-#else
 		s = PyUnicode_FromString(s_buffer);
-#endif
 		if (s == 0) {
 			Py_CLEAR(retval);
 			goto cleanup;
 		}
-#if PY_MAJOR_VERSION < 3
-		PyString_ConcatAndDel(&retval, s);
-#else
 		PyUnicode_ConcatAndDel(&retval, s);
-#endif
 
 		if (retval == 0)
 			goto cleanup;
 	}
-#if PY_MAJOR_VERSION < 3
-	s = PyString_FromString("])");
-#else
 	s = PyUnicode_FromString("])");
-#endif
 
 	if (s == 0)
 		goto cleanup;
 
-#if PY_MAJOR_VERSION < 3
-	PyString_ConcatAndDel(&retval, s);
-#else
 	PyUnicode_ConcatAndDel(&retval, s);
-#endif
 
 cleanup:
 
