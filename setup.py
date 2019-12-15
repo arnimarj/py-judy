@@ -72,14 +72,14 @@ extra_compile_args = [
 ]
 
 setup(
-	name = 'judy',
-	version = '1.0.7',
-	maintainer = 'Arni Mar Jonsson',
-	maintainer_email = 'arnimarj@gmail.com',
-	description = 'A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
-	url = 'https://github.com/arnimarj/py-judy/',
+	name='judy',
+	version='1.0.8',
+	maintainer='Arni Mar Jonsson',
+	maintainer_email='arnimarj@gmail.com',
+	description='A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
+	url='https://github.com/arnimarj/py-judy/',
 
-	classifiers = [
+	classifiers=[
 		'Development Status :: 5 - Production/Stable',
 		'Environment :: Other Environment',
 		'Intended Audience :: Developers',
@@ -88,7 +88,6 @@ setup(
 		'Programming Language :: C',
 		'Programming Language :: Python',
 		'Programming Language :: Python :: 3',
-		'Programming Language :: Python :: 3.4',
 		'Programming Language :: Python :: 3.5',
 		'Programming Language :: Python :: 3.6',
 		'Programming Language :: Python :: 3.7',
@@ -97,24 +96,27 @@ setup(
 		'Topic :: Software Development :: Libraries'
 	],
 
-	packages = ['judy'],
-	package_dir = {'judy': ''},
-
-	ext_modules = [
+	packages=['judy'],
+	package_dir={'judy': 'src'},
+	package_data={
+		'judy': ['py.typed', '*.pyi'],
+	},
+	include_package_data=True,
+	ext_modules=[
 		Extension(
-			'judy',
-			include_dirs = ['./judy-1.0.5/src', '/usr/include'],
-			library_dirs = ['./judy-1.0.5/src', '/usr/lib'],
+			'_judy',
+			include_dirs=['./judy-1.0.5/src', '/usr/include'],
+			library_dirs=['./judy-1.0.5/src', '/usr/lib'],
 
-			sources = [
-				'judy.c',
-				'judy_int_object_map.c',
-				'judy_int_set.c',
-				'utils.c'
+			sources=[
+				'src-c/judy.c',
+				'src-c/judy_int_object_map.c',
+				'src-c/judy_int_set.c',
+				'src-c/utils.c'
 			],
 
-			extra_compile_args = extra_compile_args,
-			extra_link_args = extra_link_args
+			extra_compile_args=extra_compile_args,
+			extra_link_args=extra_link_args
 		)
 	]
 )
