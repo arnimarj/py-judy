@@ -69,7 +69,7 @@ script:
         if [[ "$TRAVIS_BRANCH" == "master" ]]; then
           set -e
           pip3 install twine
-          python3 -m twine upload -u __token__ ./wheelhouse/*
+          python3 -m twine upload --non-interactive --skip-existing -u __token__ ./wheelhouse/*
         fi
       fi
     fi
