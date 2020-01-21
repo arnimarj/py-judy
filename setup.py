@@ -73,7 +73,7 @@ extra_compile_args = [
 
 setup(
 	name='judy',
-	version='1.0.9',
+	version='1.0.10',
 	maintainer='Arni Mar Jonsson',
 	maintainer_email='arnimarj@gmail.com',
 	description='A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
@@ -105,8 +105,8 @@ setup(
 	ext_modules=[
 		Extension(
 			'_judy',
-			include_dirs=['./judy-1.0.5/src', '/usr/include'],
-			library_dirs=['./judy-1.0.5/src', '/usr/lib'],
+			include_dirs=['./judy-1.0.5/src', './src-c'],
+			library_dirs=['./judy-1.0.5/src'],
 
 			sources=[
 				'src-c/judy.c',

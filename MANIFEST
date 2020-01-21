@@ -1,7 +1,0 @@
-judy.c
-judy.h
-judy_int_object_map.c
-judy_int_set.c
-setup.py
-utils.c
-utils.h
