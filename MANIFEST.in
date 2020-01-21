@@ -1,0 +1,2 @@
+recursive-include ./judy-1.0.5 *
+recursive-include ./src-c *.h
