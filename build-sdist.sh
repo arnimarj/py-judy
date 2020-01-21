@@ -2,7 +2,6 @@
 
 set -e
 
-rm -rf ./wheelhouse
 mkdir -p ./wheelhouse
 
 python3 setup.py build sdist --dist-dir ./wheelhouse
