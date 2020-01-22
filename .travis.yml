@@ -60,6 +60,7 @@ script:
   - if [[ "$RUNTESTS" == "1" ]]; then echo we should test stuff; fi
 
   - if [[ "$RUNTESTS" == "0" && "$TRAVIS_OS_NAME" == "linux" ]]; then ./build-manylinux.sh || travis_terminate 1; fi
+  - if [[ "$RUNTESTS" == "0" && "$TRAVIS_OS_NAME" == "linux" ]]; then ./build-sdist.sh     || travis_terminate 1; fi
   - if [[ "$RUNTESTS" == "0" && "$TRAVIS_OS_NAME" == "osx"   ]]; then ./build-macos.sh     || travis_terminate 1; fi
 
   - |
