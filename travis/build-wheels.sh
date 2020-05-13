@@ -8,8 +8,9 @@ set -ex
 mkdir -p ./wheels
 
 _clean() {
-	rm -rf /io/build
-	rm -rf /io/dist
+	rm -rf /io/build/
+	rm -rf /io/dist/
+	rm -rf /io/judy.egg-info/
 	rm -rf /io/judy-1.0.5/src/libJudy.a
 }
 
@@ -36,3 +37,5 @@ for whl in wheels/*.whl; do
 done
 
 cp wheelhouse/*.whl /io/wheelhouse/
+
+_clean;
