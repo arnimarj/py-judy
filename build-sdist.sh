@@ -4,7 +4,7 @@ set -e
 
 mkdir -p ./wheelhouse
 
-python3 setup.py build sdist --dist-dir ./wheelhouse
+python3 setup.py sdist --dist-dir ./wheelhouse
 
 # test it
 pip3 install -U pip virtualenv
