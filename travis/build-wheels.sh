@@ -24,7 +24,7 @@ for PYBIN in /opt/python/*/bin; do
 		fi
 	# cpython
 	else
-		if [[ $PYBIN =~ cp35|cp36|cp37|cp38|cp39 ]]; then
+		if [[ $PYBIN =~ cp36|cp37|cp38|cp39 ]]; then
 			_clean;
 			"${PYBIN}/pip" install -U pip
 			"${PYBIN}/pip" wheel /io/ -w wheels/
