@@ -5,7 +5,7 @@ jobs:
     - name: Unit Tests 3.6
       language: python
       os: linux
-      dist: bionic
+      dist: focal
       python:
         - '3.6'
       env:
@@ -13,7 +13,7 @@ jobs:
     - name: Unit Tests 3.7
       language: python
       os: linux
-      dist: bionic
+      dist: focal
       python:
         - '3.7'
       env:
@@ -21,7 +21,7 @@ jobs:
     - name: Unit Tests 3.8
       language: python
       os: linux
-      dist: bionic
+      dist: focal
       python:
         - '3.8'
       env:
@@ -29,14 +29,14 @@ jobs:
     - name: Unit Tests 3.9
       language: python
       os: linux
-      dist: bionic
+      dist: focal
       python:
         - '3.8'
       env:
         - RUNTESTS=1
     - name: Build and Upload Linux Wheels
       os: linux
-      dist: bionic
+      dist: focal
       language: python
       python:
         - '3.7'
