@@ -2,14 +2,6 @@
 
 jobs:
   include:
-    - name: Unit Tests 3.5
-      language: python
-      os: linux
-      dist: bionic
-      python:
-        - '3.5'
-      env:
-        - RUNTESTS=1
     - name: Unit Tests 3.6
       language: python
       os: linux
@@ -34,6 +26,14 @@ jobs:
         - '3.8'
       env:
         - RUNTESTS=1
+    - name: Unit Tests 3.9
+      language: python
+      os: linux
+      dist: bionic
+      python:
+        - '3.8'
+      env:
+        - RUNTESTS=1
     - name: Build and Upload Linux Wheels
       os: linux
       dist: bionic
@@ -44,21 +44,39 @@ jobs:
         - RUNTESTS=0
     - name: Build and Upload MacOS 10.15 Wheels
       os: osx
-      osx_image: xcode11.4
+      osx_image: xcode12.2
       language: c
       env:
         - RUNTESTS=0
+      cache:
+        directories:
+          - $HOME/.pyenv/versions/3.6.12
+          - $HOME/.pyenv/versions/3.7.9
+          - $HOME/.pyenv/versions/3.8.6
+          - $HOME/.pyenv/versions/3.9.1
     - name: Build and Upload MacOS 10.14 Wheels
       os: osx
-      osx_image: xcode11.2
+      osx_image: xcode11.3
       language: c
       env:
         - RUNTESTS=0
+      cache:
+        directories:
+          - $HOME/.pyenv/versions/3.6.12
+          - $HOME/.pyenv/versions/3.7.9
+          - $HOME/.pyenv/versions/3.8.6
+          - $HOME/.pyenv/versions/3.9.1
     - name: Build and Upload MacOS 10.13 Wheels
       os: osx
       osx_image: xcode10.1
       env:
         - RUNTESTS=0
+      cache:
+        directories:
+          - $HOME/.pyenv/versions/3.6.12
+          - $HOME/.pyenv/versions/3.7.9
+          - $HOME/.pyenv/versions/3.8.6
+          - $HOME/.pyenv/versions/3.9.1
 install:
   - if [[ "$RUNTESTS" == "1" ]]; then python3 -m pip install -U pip;            fi
   - if [[ "$RUNTESTS" == "1" ]]; then python3 -m pip install .;                 fi
