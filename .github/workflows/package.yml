@@ -28,7 +28,6 @@ jobs:
 
       - name: Build
         run: |
-          cd py-flights
           if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
             ./build-macos.sh
           elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
