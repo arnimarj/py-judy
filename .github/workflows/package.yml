@@ -30,8 +30,8 @@ jobs:
         run: |
           if [[ "${{ matrix.os }}" == "macos-11" ]]; then
             # see https://github.com/pyenv/pyenv/issues/1643
-            sudo xcode-select --switch /Library/Developer/CommandLineTools
-            export SYSTEM_VERSION_COMPAT=1
+            sudo rm -rf /Library/Developer/CommandLineTools
+            xcode-select --install
             ./build-macos.sh
           elif [[ "${{ matrix.os }}" == "macos-10.15" ]]; then
             ./build-macos.sh
