@@ -26,20 +26,20 @@ jobs:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           submodules: true
 
-      - name: Build
-        run: |
-          if [[ "${{ matrix.os }}" == "macos-11" ]]; then
-            ./build-macos.sh
-          elif [[ "${{ matrix.os }}" == "macos-10.15" ]]; then
-            brew install readline xz openssl@1.1 zlib
-            ./build-macos.sh
-          elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            ./build-manylinux.sh
-          else
-            echo "Do not know which build script to run for ${{ matrix.os }}!"
-            exit 3
-          fi
-          ls -l ./wheelhouse
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==2.2.2
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: pp* cp36-* cp37-* cp38-* cp39-* cp310-*
+          CIBW_SKIP: "*-win32 *-manylinux_i686"
+
+      - name: Build sdist
+        run: ./build-sdist.sh
+
+      - name: List wheels
+        run: ls -l ./wheelhouse
 
       - name: Upload
         uses: pypa/gh-action-pypi-publish@release/v1
