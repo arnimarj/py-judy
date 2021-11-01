@@ -1,0 +1,29 @@
+---
+
+name: Build and Validate
+on: push
+
+jobs:
+  validate:
+    name: Syntax check all code in repository
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.6', '3.7', '3.8', '3.9' '3.10']
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          submodules: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Test
+        run: |
+          python3 -m pip install -U pip;
+          python3 -m pip install .;
