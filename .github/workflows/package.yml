@@ -1,6 +1,7 @@
 ---
 
 name: Python Packaging
+on: push
 
 jobs:
   install:
