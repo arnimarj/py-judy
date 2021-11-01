@@ -41,7 +41,8 @@ jobs:
       - name: Upload
         if: github.ref == 'refs/heads/master'
         env:
+          TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
         run: |
           pip install twine
-          twine upload wheelhouse/*
+          twine upload --skip-existing wheelhouse/*
