@@ -5,6 +5,7 @@ on: push
 
 jobs:
   install:
+    needs: validate
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
