@@ -1,8 +1,8 @@
-import sys
 import os
 import subprocess
+import sys
 
-from setuptools import setup, Extension
+from setuptools import Extension, setup
 
 
 def build_judy():
@@ -73,7 +73,7 @@ extra_compile_args = [
 
 setup(
 	name='judy',
-	version='1.0.14',
+	version='1.0.15',
 	maintainer='Arni Mar Jonsson',
 	maintainer_email='arnimarj@gmail.com',
 	description='A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
@@ -92,6 +92,7 @@ setup(
 		'Programming Language :: Python :: 3.7',
 		'Programming Language :: Python :: 3.8',
 		'Programming Language :: Python :: 3.9',
+		'Programming Language :: Python :: 3.10',
 		'Topic :: Database',
 		'Topic :: Software Development :: Libraries'
 	],

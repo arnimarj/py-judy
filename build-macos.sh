@@ -14,7 +14,7 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 
 eval "$(pyenv init -)"
 
-declare -a pythons=("3.6.12" "3.7.9" "3.8.6" "3.9.1")
+declare -a pythons=("3.6.15" "3.7.12" "3.8.12" "3.9.7", "3.10.0")
 
 for py in "${pythons[@]}"
 do

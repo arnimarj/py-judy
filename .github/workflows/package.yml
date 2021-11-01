@@ -1,0 +1,54 @@
+---
+
+name: Python Packaging
+on:
+  push:
+    paths:
+      - 'py-flights/**'
+
+jobs:
+  install:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        python-version: ['3.9']
+
+    env:
+      TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+
+    steps:
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: git checkout
+        uses: actions/checkout@v2
+        with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          submodules: true
+
+      - name: Build
+        run: |
+          cd py-flights
+          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            ./build-macos.sh
+          elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            ./build-manylinux.sh
+          else
+            echo "Do not know which build script to run for ${{ matrix.os }}!"
+            exit 3
+          fi
+          ls -l ./wheelhouse
+
+      - name: Upload
+        uses: pypa/gh-action-pypi-publish@release/v1
+        if: github.ref == 'refs/heads/master'
+
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          verbose: true
+          skip_existing: true
+          packages_dir: wheelhouse/
