@@ -28,7 +28,9 @@ jobs:
 
       - name: Build
         run: |
-          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          if [[ "${{ matrix.os }}" == "macos-11" ]]; then
+            ./build-macos.sh
+          elif [[ "${{ matrix.os }}" == "macos-10.15" ]]; then
             ./build-macos.sh
           elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
             ./build-manylinux.sh
