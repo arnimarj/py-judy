@@ -1,11 +1,14 @@
 ---
 
 name: Python Packaging
-on: push
+on:
+  workflow_run:
+    workflows: ["Build and Validate"]
+    types:
+      - completed
 
 jobs:
   install:
-    needs: validate
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
