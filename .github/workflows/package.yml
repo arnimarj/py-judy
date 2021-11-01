@@ -1,10 +1,6 @@
 ---
 
 name: Python Packaging
-on:
-  push:
-    paths:
-      - 'py-flights/**'
 
 jobs:
   install:
