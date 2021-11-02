@@ -3,7 +3,7 @@
 name: Python Packaging
 on:
   workflow_run:
-    workflows: ["Build and Validate"]
+    workflows: ["Validate"]
     types:
       - completed
 

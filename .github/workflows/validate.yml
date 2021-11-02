@@ -1,6 +1,6 @@
 ---
 
-name: Build and Validate
+name: Validate
 on: push
 
 jobs:
