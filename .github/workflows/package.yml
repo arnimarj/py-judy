@@ -34,7 +34,7 @@ jobs:
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BUILD: pp* cp36-* cp37-* cp38-* cp39-* cp310-*
-          CIBW_SKIP: "*-win32 *-manylinux_i686"
+          CIBW_ARCHS: "auto64"
 
       - name: Build sdist
         run: ./build-sdist.sh
