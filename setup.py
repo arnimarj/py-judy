@@ -14,7 +14,7 @@ def build_judy():
 	is_gcc_46 = False
 
 	# test if CC is clang/gcc-4.6
-	exitcode, output = subprocess.getstatusoutput('%s -v' % (CC,))
+	exitcode, output = subprocess.getstatusoutput(f'{CC} -v')
 
 	if exitcode != 0:
 		sys.exit(output)
@@ -41,7 +41,7 @@ def build_judy():
 		else:
 			CFLAGS = '           -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
 
-	exitcode, output = subprocess.getstatusoutput('(cd judy-1.0.5/src; CC=\'%s\' COPT=\'%s\' sh ./sh_build)' % (CC, CFLAGS))
+	exitcode, output = subprocess.getstatusoutput(f'(cd judy-1.0.5/src; CC=\'{CC}\' COPT=\'{CFLAGS}\' sh ./sh_build)')
 
 	if exitcode != 0:
 		sys.exit(output)
@@ -63,13 +63,17 @@ extra_compile_args = [
 	'-D_GNU_SOURCE',
 	'-O2',
 	'-DNDEBUG',
-#	'-fno-omit-frame-pointer',
-#	'-pg',
-#	'-fno-inline-functions',
-#	'-fno-inline-functions-called-once',
-#	'-fno-optimize-sibling-calls',
-#	'-fno-inline'
 ]
+
+if False:
+	extra_compile_args.extend([
+		'-fno-omit-frame-pointer',
+		'-pg',
+		'-fno-inline-functions',
+		'-fno-inline-functions-called-once',
+		'-fno-optimize-sibling-calls',
+		'-fno-inline'
+	])
 
 setup(
 	name='judy',
@@ -88,7 +92,6 @@ setup(
 		'Programming Language :: C',
 		'Programming Language :: Python',
 		'Programming Language :: Python :: 3',
-		'Programming Language :: Python :: 3.6',
 		'Programming Language :: Python :: 3.7',
 		'Programming Language :: Python :: 3.8',
 		'Programming Language :: Python :: 3.9',

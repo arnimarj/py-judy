@@ -1,7 +1,9 @@
-#!/usr/bin/python
+import random
+import sys
+import urllib
 
-import sys, random, urllib
 import judy
+
 
 # mapping memory excluding values
 def judy_io_map_mem(j):

@@ -1,10 +1,11 @@
-from typing import overload, Generic, Iterator, Mapping, Optional, Sequence, Tuple, TypeVar, Union
-
-VT = TypeVar('VT')
-DT = TypeVar('DT')
+from typing import Generic, Iterator, Mapping, NoReturn, overload, Sequence, TypeVar
 
 
-class JudyIntObjectMap(Mapping[int, VT], Sequence[VT], Generic[VT]):
+_VT = TypeVar('_VT')
+_DT = TypeVar('_DT')
+
+
+class JudyIntObjectMap(Mapping[int, _VT], Generic[_VT]):
 	def __sizeof__(self) -> int:
 		...
 
@@ -14,29 +15,34 @@ class JudyIntObjectMap(Mapping[int, VT], Sequence[VT], Generic[VT]):
 	def __len__(self) -> int:
 		...
 
-	def __contains__(self, key: int) -> bool:
-		...
-
-	def __getitem__(self, key: int) -> VT:
-		...
-
-	def __setitem__(self, key: int, value: VT) -> None:
+	def __contains__(self, key: object) -> bool:
 		...
 
 	@overload
-	def get(self, key: int) -> Optional[VT]:
-		...
-
-	@overload  # noqa: F811
-	def get(self, key: int, default: DT = ...) -> Union[DT, VT]:
+	def __getitem__(self, key: int) -> _VT:
 		...
 
 	@overload
-	def pop(self, key: int) -> VT:
+	def __getitem__(self, key: slice) -> NoReturn:
+		...
+
+	def __setitem__(self, key: int, value: _VT) -> None:
+		...
+
+	@overload
+	def get(self, key: int) -> _VT | None:
 		...
 
 	@overload  # noqa: F811
-	def pop(self, key: int, default: DT = ...) -> Union[DT, VT]:
+	def get(self, key: int, default: _DT = ...) -> _DT | _VT:
+		...
+
+	@overload
+	def pop(self, key: int) -> _VT:
+		...
+
+	@overload  # noqa: F811
+	def pop(self, key: int, default: _DT = ...) -> _DT | _VT:
 		...
 
 	def clear(self) -> None:
@@ -48,10 +54,10 @@ class JudyIntObjectMap(Mapping[int, VT], Sequence[VT], Generic[VT]):
 	def keys(self) -> Iterator[int]:
 		...
 
-	def values(self) -> Iterator[VT]:
+	def values(self) -> Iterator[_VT]:
 		...
 
-	def items(self) -> Iterator[Tuple[int, VT]]:
+	def items(self) -> Iterator[tuple[int, _VT]]:
 		...
 
 
@@ -62,13 +68,18 @@ class JudyIntSet(Sequence[int]):
 	def __sizeof__(self) -> int:
 		...
 
-	def __contains__(self, key: int) -> bool:
+	def __contains__(self, key: object) -> bool:
 		...
 
 	def __iter__(self) -> Iterator[int]:
 		...
 
+	@overload
 	def __getitem__(self, index: int) -> int:
+		...
+
+	@overload
+	def __getitem__(self, index: slice) -> NoReturn:
 		...
 
 	def add(self, key: int) -> None:
