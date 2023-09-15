@@ -73,7 +73,7 @@ extra_compile_args = [
 
 setup(
 	name='judy',
-	version='1.0.17',
+	version='1.0.18',
 	maintainer='Arni Mar Jonsson',
 	maintainer_email='arnimarj@gmail.com',
 	description='A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
@@ -88,11 +88,11 @@ setup(
 		'Programming Language :: C',
 		'Programming Language :: Python',
 		'Programming Language :: Python :: 3',
-		'Programming Language :: Python :: 3.7',
 		'Programming Language :: Python :: 3.8',
 		'Programming Language :: Python :: 3.9',
 		'Programming Language :: Python :: 3.10',
 		'Programming Language :: Python :: 3.11',
+		'Programming Language :: Python :: 3.12',
 		'Topic :: Database',
 		'Topic :: Software Development :: Libraries'
 	],
