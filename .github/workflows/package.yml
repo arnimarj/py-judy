@@ -14,11 +14,11 @@ jobs:
       matrix:
         # see https://github.com/actions/runner-images#available-images
         os: [macos-latest, ubuntu-latest]
-        python-version: ['3.11']
+        python-version: ['3.12']
 
     steps:
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -45,7 +45,7 @@ jobs:
         run: ls -l ./wheelhouse
 
       - name: Upload
-        if: github.ref == 'refs/heads/master'
+        if: ${{ github.ref_name == 'master' }}
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
