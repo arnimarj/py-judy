@@ -28,18 +28,12 @@ def build_judy():
 
 	# adding last two flags because of compiler and/or code bugs
 	# see http://sourceforge.net/p/judy/mailman/message/32417284/
-	assert(sys.maxsize in (2**63 - 1, 2**31 - 1))
+	assert sys.maxsize == (2**63 - 1)
 
 	if is_clang or is_gcc_46:
-		if sys.maxsize == 2**63 - 1:
-			CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing'
-		else:
-			CFLAGS = '           -O0 -fPIC -fno-strict-aliasing'
+		CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing'
 	else:
-		if sys.maxsize == 2**63 - 1:
-			CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
-		else:
-			CFLAGS = '           -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
+		CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
 
 	exitcode, output = subprocess.getstatusoutput('(cd judy-1.0.5/src; CC=\'%s\' COPT=\'%s\' sh ./sh_build)' % (CC, CFLAGS))
 
@@ -73,7 +67,7 @@ extra_compile_args = [
 
 setup(
 	name='judy',
-	version='1.0.18',
+	version='1.0.19',
 	maintainer='Arni Mar Jonsson',
 	maintainer_email='arnimarj@gmail.com',
 	description='A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
@@ -93,6 +87,7 @@ setup(
 		'Programming Language :: Python :: 3.10',
 		'Programming Language :: Python :: 3.11',
 		'Programming Language :: Python :: 3.12',
+		'Programming Language :: Python :: 3.13',
 		'Topic :: Database',
 		'Topic :: Software Development :: Libraries'
 	],
