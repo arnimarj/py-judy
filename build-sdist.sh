@@ -4,6 +4,7 @@ set -e
 
 mkdir -p ./wheelhouse
 
+pip3 install setuptools
 python3 setup.py sdist --dist-dir ./wheelhouse
 
 # test it

@@ -33,9 +33,6 @@ jobs:
 
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
-        env:
-          CIBW_BUILD: pp* cp38-* cp39-* cp310-* cp311-* cp312-* cp313-*
-          CIBW_ARCHS: "auto64"
 
       - name: Build sdist
         if: ${{ matrix.os == 'ubuntu-latest' }}

@@ -1,6 +1,7 @@
 dist/
 build/
 wheelhouse/
+judy.egg-info/
 
 *.o
 *.a
