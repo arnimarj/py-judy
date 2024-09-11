@@ -1,6 +1,7 @@
 [tool.cibuildwheel]
 test-command = [
     "python -m pip install -U pip",
+    "{package}/build_judy.sh",
     "(cd {package} && PYTHONPATH=$(pwd) python -c 'import judy')",
 ]
 
