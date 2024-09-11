@@ -13,12 +13,12 @@ jobs:
     strategy:
       matrix:
         # see https://github.com/actions/runner-images#available-images
-        os: [macos-13, macos-latest, ubuntu-latest]
-        python-version: ['3.11']
+        os: [macos-latest, ubuntu-latest]
+        python-version: ['3.12']
 
     steps:
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -38,13 +38,14 @@ jobs:
           CIBW_ARCHS: "auto64"
 
       - name: Build sdist
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: ./build-sdist.sh
 
       - name: List wheels
         run: ls -l ./wheelhouse
 
       - name: Upload
-        if: github.ref == 'refs/heads/master'
+        if: ${{ github.ref_name == 'master' }}
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
