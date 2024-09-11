@@ -77,13 +77,13 @@ my_Py_ReprLeave(PyObject *obj)
 static void judy_io_map_dealloc(PyJudyIntObjectMap* m)
 {
  	PyObject_GC_UnTrack(m);
-	Py_TRASHCAN_SAFE_BEGIN(m)
+	Py_TRASHCAN_BEGIN(m, judy_io_map_dealloc)
 	PYJUDY_IO_MAP_FOREACH(m->judy_L, Py_DECREF, PyObject*);
 	Word_t bytes_freed;
 	JLFA(bytes_freed, m->judy_L);
 	m->judy_L = 0;
 	Py_TYPE(m)->tp_free((PyObject*)m);
-	Py_TRASHCAN_SAFE_END(m)
+	Py_TRASHCAN_END
 }
 
 static int judy_io_map_print(PyJudyIntObjectMap* m, FILE* fp, int flags)
