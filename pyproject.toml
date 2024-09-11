@@ -1,0 +1,19 @@
+[tool.cibuildwheel]
+test-command = [
+    "python -m pip install -U pip",
+    "(cd {package} && PYTHONPATH=$(pwd) python -c 'import judy')",
+]
+
+build = [ "cp38-*", "cp39-*", "cp310-*", "cp311-*" , "cp312-*" , "cp313-*"]
+archs = [ "auto64"]
+build-verbosity = 1
+
+[tool.cibuildwheel.linux]
+environment = "CC=gcc"
+
+[tool.cibuildwheel.macos]
+environment = "CC=clang"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-musllinux*"
+environment = "CC=gcc"
