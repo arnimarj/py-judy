@@ -25,5 +25,5 @@ jobs:
 
       - name: Test
         run: |
-          python3 -m pip install -U pip;
-          python3 -m pip install .;
+          python3 -m pip install -U pip
+          python3 -m pip install .
