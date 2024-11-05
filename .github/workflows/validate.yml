@@ -1,15 +1,15 @@
 ---
 
 name: Validate
-on: push
+on: [ push, pull_request, workflow_dispatch ]
 
 jobs:
   validate:
     name: Syntax check all code in repository
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [macos-14, macos-14, ubuntu-latest]
         python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     steps:
@@ -27,3 +27,4 @@ jobs:
         run: |
           python3 -m pip install -U pip
           python3 -m pip install .
+          python3 -c "import judy"
