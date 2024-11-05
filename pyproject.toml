@@ -4,14 +4,29 @@ test-command = [
     "(cd {package} && PYTHONPATH=$(pwd) python -c 'import judy')",
 ]
 
-build = [ "cp38-*", "cp39-*", "cp310-*", "cp311-*" , "cp312-*" , "cp313-*"]
+build = [ "cp39-*", "cp310-*", "cp311-*" , "cp312-*" , "cp313-*"]
 archs = [ "auto64"]
 build-verbosity = 1
 
 [tool.cibuildwheel.linux]
+archs = ["auto64", "aarch64"]
 environment = "CC=gcc"
 
+# since we run the aarch64 builds in QEMU, they are slow, so
+# we skip tests on all versions but 3.12
+test-skip = [
+    "cp39-manylinux_aarch64",
+    "cp39-musllinux_aarch64",
+    "cp310-manylinux_aarch64",
+    "cp310-musllinux_aarch64",
+    "cp311-manylinux_aarch64",
+    "cp311-musllinux_aarch64",
+    "cp313-manylinux_aarch64",
+    "cp313-musllinux_aarch64",
+]
+
 [tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
 environment = "CC=clang"
 
 [[tool.cibuildwheel.overrides]]

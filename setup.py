@@ -9,6 +9,7 @@ def build_judy():
 	print('INFO: building judy static library...')
 
 	CC = os.environ.get('CC', 'cc')
+	ARCH_FLAGS = os.environ.get('ARCHFLAGS', '')
 
 	is_clang = False
 	is_gcc_46 = False
@@ -31,7 +32,7 @@ def build_judy():
 	assert sys.maxsize == (2**63 - 1)
 
 	if is_clang or is_gcc_46:
-		CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing'
+		CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing' + ARCH_FLAGS
 	else:
 		CFLAGS = '-DJU_64BIT -O0 -fPIC -fno-strict-aliasing -fno-aggressive-loop-optimizations'
 
@@ -43,8 +44,8 @@ def build_judy():
 	print(output)
 
 
-if not os.path.isfile('./judy-1.0.5/src/libJudy.a'):
-	build_judy()
+build_judy()
+
 
 extra_link_args = ['-L./judy-1.0.5/src', '-Bstatic', '-lJudy', '-Bdynamic', '-lm']
 extra_compile_args = [
@@ -67,7 +68,7 @@ extra_compile_args = [
 
 setup(
 	name='judy',
-	version='1.0.19',
+	version='1.0.20',
 	maintainer='Arni Mar Jonsson',
 	maintainer_email='arnimarj@gmail.com',
 	description='A Python wrapper for Judy arrays, which provide fast and space-efficient integer mappings and integer sets, along with ranged ordered iterations',
