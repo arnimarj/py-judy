@@ -1,9 +1,46 @@
-[tool.cibuildwheel]
-test-command = [
-    "python -m pip install -U pip",
-    "(cd {package} && PYTHONPATH=$(pwd) python -c 'import judy')",
+[build-system]
+requires = ["scikit-build-core >=0.11.5", "nanobind >=2.7.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "judy"
+version = "2.0.0"
+description = "An example minimal project that compiles bindings using nanobind and scikit-build"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Arni Mar Jonsson", email = "arnimarj@gmail.com" },
+]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Other Environment',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
+    'Operating System :: POSIX',
+    'Programming Language :: C',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Topic :: Database',
+    'Topic :: Software Development :: Libraries'
 ]
 
+[project.urls]
+Homepage = "https://github.com/arnimarj/py-judy"
+
+[tool.scikit-build]# Protect the configuration against future changes in scikit-build-core
+minimum-version = "build-system.requires"
+build-dir = "build/{wheel_tag}"
+wheel.py-api = "cp312"
+
+[tool.cibuildwheel]
+test-command = "pytest {project}/tests"
+test-requires = "pytest"
 build = [ "cp39-*", "cp310-*", "cp311-*" , "cp312-*" , "cp313-*"]
 
 [tool.cibuildwheel.linux]
@@ -13,6 +50,10 @@ environment = "CC=gcc"
 [tool.cibuildwheel.macos]
 archs = ["x86_64", "arm64"]
 environment = "CC=clang"
+
+# Needed for full C++17 support
+[[tool.cibuildwheel.macos.environment]]
+MACOSX_DEPLOYMENT_TARGET = "10.14"
 
 [[tool.cibuildwheel.overrides]]
 select = "*-musllinux*"

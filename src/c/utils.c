@@ -1,39 +1,5 @@
 #include "utils.h"
 
-int pyobject_as_word_t(PyObject* p, Word_t* v)
-{
-	unsigned PY_LONG_LONG pv = 0;
-
-	if (PyLong_Check(p)) {
-		pv = PyLong_AsUnsignedLongLong(p);
-
-		// not in range of [0, 2**64-1]
-		if (PyErr_Occurred()) {
-			PyErr_Clear();
-			return 0;
-		}
-	} else {
-		return 0;
-	}
-
-	if (pv > ULONG_MAX)
-		return 0;
-
-	*v = (Word_t)pv;
-	return 1;
-}
-
-void set_key_error(PyObject* arg)
-{
-	PyObject* tup = PyTuple_Pack(1, arg);
-
-	if (tup == 0)
-		return;
-
-	PyErr_SetObject(PyExc_KeyError, tup);
-	Py_DECREF(tup);
-}
-
 void judy_set_error(JError_t* error)
 {
 	switch (JU_ERRNO(error)) {
