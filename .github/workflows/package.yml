@@ -4,8 +4,8 @@ name: Python Packaging
 on:
   workflow_run:
     workflows: ['Validate']
-    types:
-      - completed
+    types: ['completed']
+    branches: ['**']
 
 jobs:
   install:
