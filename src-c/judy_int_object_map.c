@@ -564,13 +564,6 @@ static PyObject* judy_io_map_pop(PyJudyIntObjectMap* m, PyObject* args)
 
 	if (i == JERR)
 		return PyErr_NoMemory();
-
-	if (i != 1) {
-		PyErr_BadInternalCall();
-		return 0;
-	}
-
-	return (PyObject*)v;
 }
 
 static PyObject* judy_io_map_iterkeys(PyJudyIntObjectMap* set, PyObject* args, PyObject* kwds);

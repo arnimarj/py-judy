@@ -1,13 +1,16 @@
 #!/usr/bin/python
 
-import unittest, judy
-
+import unittest
 from test.mapping_tests import TestMappingProtocol
 
-class JudyTestMappingProtocol(TestMappingProtocol):
-	type2test = judy.JudyIntObjectMap
+import judy
 
-	def test_update(self):
-		raise unittest.SkipTest('update not supported yet')
+
+class JudyTestMappingProtocol(TestMappingProtocol):
+    type2test = judy.JudyIntObjectMap
+
+    def test_update(self):
+        raise unittest.SkipTest("update not supported yet")
+
 
 del TestMappingProtocol
