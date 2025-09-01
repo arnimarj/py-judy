@@ -55,6 +55,22 @@ bool JudyIntSet::Contains(Word_t value)
     return i ? true : false;
 }
 
+Word_t JudyIntSet::size()
+{
+    nb::ft_lock_guard guard(mutex);
+    Word_t count;
+    J1C(count, judy_set, 0, -1);
+    return count;
+}
+
+Word_t JudyIntSet::size_of()
+{
+    nb::ft_lock_guard guard(mutex);
+    Word_t size = 0;
+    J1MU(size, judy_set);
+    return size + sizeof(*this);
+}
+
 void JudyIntSet::Add(Word_t value)
 {
     nb::ft_lock_guard guard(mutex);
@@ -78,10 +94,7 @@ Word_t JudyIntSet::GetItem(Py_ssize_t index)
     Word_t n = (Word_t)(index + 1);
     int i;
 
-    {
-        nb::ft_lock_guard guard(mutex);
-        J1BC(i, judy_set, n, w);
-    }
+    J1BC(i, judy_set, n, w);
 
     if (i == 0)
         throw nb::index_error();
@@ -112,51 +125,44 @@ void JudyIntSet::Remove(Word_t value)
 }
 
 
-struct JudyIntSetIterator {
-    std::shared_ptr<JudyIntSet> judy_set_object;
-    bool started;
-    bool ended;
-    Word_t cursor;
+JudyIntSetIterator::JudyIntSetIterator(std::shared_ptr<JudyIntSet> parent)
+    : judy_set_object(parent)
+{
+    started = false;
+    ended = false;
+    cursor = 0;
+}
 
-    JudyIntSetIterator(std::shared_ptr<JudyIntSet> parent)
-        : judy_set_object(parent)
-    {
-        started = false;
-        ended = false;
-        cursor = 0;
-    }
+Word_t JudyIntSetIterator::Next()
+{
+    nb::ft_lock_guard guard(judy_set_object->mutex);
 
-    Word_t Next()
-    {
-        nb::ft_lock_guard guard(judy_set_object->mutex);
-
-        // already exhausted
-        if (ended)
-            throw nb::stop_iteration();
-
-        int i = 0;
-
-        // first item
-        if (!started) {
-            J1F(i, judy_set_object->judy_set, cursor);
-
-            started = true;
-
-            if (i == 0) {
-                ended = true;
-                throw nb::stop_iteration();
-            }
-            return cursor;
-        }
-
-        // next item
-        J1N(i, judy_set_object->judy_set, cursor);
-
-        if (i != 0)
-            return cursor;
-
-        // ...beyond last item
-        ended = true;
+    // already exhausted
+    if (ended)
         throw nb::stop_iteration();
+
+    int i = 0;
+
+    // first item
+    if (!started) {
+        J1F(i, judy_set_object->judy_set, cursor);
+
+        started = true;
+
+        if (i == 0) {
+            ended = true;
+            throw nb::stop_iteration();
+        }
+        return cursor;
     }
-};
+
+    // next item
+    J1N(i, judy_set_object->judy_set, cursor);
+
+    if (i != 0)
+        return cursor;
+
+    // ...beyond last item
+    ended = true;
+    throw nb::stop_iteration();
+}

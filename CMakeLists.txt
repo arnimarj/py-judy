@@ -29,10 +29,9 @@ set_target_properties(judy PROPERTIES
 nanobind_add_module(
     _judy_nb
     STABLE_ABI FREE_THREADED
-    #src/judy/cpp/judy.cpp
-    #src/judy/cpp/judy_int_object_mapping.cpp
-    #src/judy/cpp/judy_int_int_mapping.cpp
-    #src/judy/cpp/judy_int_set.cpp
+    src/judy/cpp/judy.cpp
+    src/judy/cpp/judy_int_int_mapping.cpp
+    src/judy/cpp/judy_int_set.cpp
 )
 target_link_libraries(_judy_nb PRIVATE judy)
 
