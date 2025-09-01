@@ -1,19 +1,40 @@
-[tool.cibuildwheel]
-test-command = [
-    "python -m pip install -U pip",
-    "(cd {package} && PYTHONPATH=$(pwd) python -c 'import judy')",
+# TBD license/url/description
+
+[project]
+name = "judy"
+authors = [
+	{ name = "Arni Mar Jonsson", email = "arnimarj@gmail.com" },
+]
+readme = "README.md"
+version = "1.0.21"
+requires-python = ">=3.9"
+classifiers = [
+	"Development Status :: 5 - Production/Stable",
+	"Environment :: Other Environment",
+	"Intended Audience :: Developers",
+	"Operating System :: POSIX",
+	"Programming Language :: C",
+	"Programming Language :: Python",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3.13",
+	"Topic :: Database",
+	"Topic :: Software Development :: Libraries",
 ]
 
-build = [ "cp39-*", "cp310-*", "cp311-*" , "cp312-*" , "cp313-*"]
+[build-system]
+requires = [
+    "scikit-build-core>=0.11.6",
+    "nanobind>=2.8.0"
+]
 
-[tool.cibuildwheel.linux]
-archs = ["auto64", "aarch64"]
-environment = "CC=gcc"
+build-backend = "scikit_build_core.build"
 
-[tool.cibuildwheel.macos]
-archs = ["x86_64", "arm64"]
-environment = "CC=clang"
+[tool.scikit-build.wheel.packages]
+"judy" = "./src/judy"
 
-[[tool.cibuildwheel.overrides]]
-select = "*-musllinux*"
-environment = "CC=gcc"
+[tool.cibuildwheel]
+archs = "auto64"
