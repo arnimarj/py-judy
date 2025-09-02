@@ -38,7 +38,11 @@ build-backend = "scikit_build_core.build"
 
 [tool.cibuildwheel]
 archs = "auto64"
-build-verbosity = 1
+test-requires = "pytest"
+
+test-command = [
+	"pytest tests"
+]
 
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "10.14"
