@@ -28,7 +28,8 @@ struct JudyIntIntMap {
     void Clear();
     Word_t GetItem(Word_t key);
     std::string ToString();
-    std::variant<Word_t, std::optional<nb::handle>> Get(Word_t key, std::optional<nb::handle> failobj);
+    std::optional<Word_t> Get(Word_t key);
+    std::variant<Word_t, std::optional<nb::handle>> GetDefault(Word_t key, std::optional<nb::handle> failobj);
     void SetItem(Word_t key, Word_t value);
     Word_t Pop(Word_t key);
     std::variant<Word_t, std::optional<nb::handle>> PopDefault(Word_t key, std::optional<nb::handle> failobj);

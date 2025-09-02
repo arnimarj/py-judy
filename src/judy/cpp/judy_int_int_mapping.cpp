@@ -89,7 +89,19 @@ std::string JudyIntIntMap::ToString()
     return sbuf.str();
 }
 
-std::variant<Word_t, std::optional<nb::handle>> JudyIntIntMap::Get(Word_t key, std::optional<nb::handle> failobj)
+std::optional<Word_t> JudyIntIntMap::Get(Word_t key)
+{
+    nb::ft_lock_guard guard(mutex);
+    void* v = nullptr;
+    JLG(v, judy_map, key);
+
+    if (v == nullptr)
+        return std::nullopt;
+
+    return *((Word_t*)v);
+}
+
+std::variant<Word_t, std::optional<nb::handle>> JudyIntIntMap::GetDefault(Word_t key, std::optional<nb::handle> failobj)
 {
     nb::ft_lock_guard guard(mutex);
     void* v = nullptr;

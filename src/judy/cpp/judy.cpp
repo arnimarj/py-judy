@@ -25,6 +25,8 @@ std::pair<Word_t, Word_t> _SelectItem(Word_t key, Word_t value)
 
 
 NB_MODULE(_judy_nb, m) {
+    m.attr("_T") = nb::type_var("_T");
+
     nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")
         .def(nb::init<>())
         .def("__contains__", &JudyIntIntMap::Contains)
@@ -32,7 +34,7 @@ NB_MODULE(_judy_nb, m) {
             "__contains__",
             [](const JudyIntIntMap&, std::optional<nb::handle>) { return false; },
             nb::arg("index").none(),
-            nb::sig("def __contains__(self, index: typing.Any) -> typing.Literal[False]")
+            nb::sig("def __contains__(self, index: typing.Any, /) -> typing.Literal[False]")
         )
         .def("__len__", &JudyIntIntMap::size)
         .def("clear", &JudyIntIntMap::Clear)
@@ -40,23 +42,36 @@ NB_MODULE(_judy_nb, m) {
         .def(
             "__getitem__",
             [](const JudyIntIntMap&, std::optional<nb::handle>) { throw nb::key_error(); },
-            nb::arg("index").none(),            nb::sig("def __getitem__(self, index: typing.Any) -> typing.NoReturn")
+            nb::arg("index").none(),
+            nb::sig("def __getitem__(self, index: typing.Any, /) -> typing.NoReturn")
         )
         .def("__setitem__", &JudyIntIntMap::SetItem)
         .def("__str__", &JudyIntIntMap::ToString)
         .def("__repr__", &JudyIntIntMap::ToString)
         .def("__sizeof__", &JudyIntIntMap::size_of)
+        .def("get", &JudyIntIntMap::Get, nb::arg("index"))
         .def(
             "get",
-            &JudyIntIntMap::Get,
+            &JudyIntIntMap::GetDefault,
             nb::arg("index"),
             nb::arg("default").none() = nb::none(),
-            nb::sig("def get(self, x: int, /) -> int"),
-            nb::sig("def get(self, x: typing.Any, /) -> None")
+            nb::sig("def get(self, index: int, default: _T, /) -> int | _T")
         )
         .def("pop", &JudyIntIntMap::Pop, nb::arg("index"))
-        .def("pop", &JudyIntIntMap::PopDefault, nb::arg("index"), nb::arg("default").none() = nb::none())
-        .def("pop", [](const JudyIntIntMap&, std::optional<nb::handle> def) { return def; }, nb::arg("index"))
+        .def(
+            "pop",
+            &JudyIntIntMap::PopDefault,
+            nb::arg("index"),
+            nb::arg("default").none() = nb::none(),
+            nb::sig("def pop(self, index: int, default: _T = ..., /) -> int | _T | None")
+        )
+        .def(
+            "pop",
+            [](const JudyIntIntMap&, nb::handle index, std::optional<nb::handle> def) { return def; },
+            nb::arg("index"),
+            nb::arg("default"),
+            nb::sig("def pop(self, index: typing.Any, default: _T, /) -> _T")
+        )
         .def("by_index", &JudyIntIntMap::ByIndex)
         .def("__iter__", [](std::shared_ptr<JudyIntIntMap>& s) {
             std::optional<Word_t> empty;
@@ -94,11 +109,21 @@ NB_MODULE(_judy_nb, m) {
     nb::class_<JudyIntSet>(m, "JudyIntSet")
         .def(nb::init<>())
         .def("__contains__", &JudyIntSet::Contains)
-        .def("__contains__", [](const JudyIntSet&, std::optional<nb::handle>) { return false; }, nb::arg("index").none())
+        .def(
+            "__contains__",
+            [](const JudyIntSet&, std::optional<nb::handle>) { return false; },
+            nb::arg("index"),
+            nb::sig("def __contains__(self, index: typing.Any, /) -> typing.Literal[False]")
+        )
         .def("add", &JudyIntSet::Add)
         .def("remove", &JudyIntSet::Remove)
         .def("__getitem__", &JudyIntSet::GetItem)
-        .def("__getitem__", [](const JudyIntSet&, std::optional<nb::handle>) { throw nb::key_error(); }, nb::arg("index").none())
+        .def(
+            "__getitem__",
+            [](const JudyIntSet&, std::optional<nb::handle>) { throw nb::key_error(); },
+            nb::arg("index").none(),
+            nb::sig("def __getitem__(self, index: typing.Any, /) -> typing.NoReturn")
+        )
         .def("__iter__", [](std::shared_ptr<JudyIntSet>& s) {
             return JudyIntSetIterator(s);
         }, nb::rv_policy::reference)
