@@ -11,7 +11,7 @@ JudyIntIntMap::~JudyIntIntMap()
     nb::ft_lock_guard guard(mutex);
     Word_t bytes_freed;
     JLFA(bytes_freed, judy_map);
-    judy_map = 0;
+    judy_map = nullptr;
 }
 
 bool JudyIntIntMap::Contains(Word_t value)
@@ -176,7 +176,7 @@ Word_t JudyIntIntMap::ByIndex(Py_ssize_t index)
 
     // NOTE: judy index is 1-based
     Word_t k = 0;
-    void* v = 0;
+    void* v = nullptr;
     JLBC(v, judy_map, index + 1, k);
 
     if (v == nullptr)

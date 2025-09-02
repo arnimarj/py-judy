@@ -34,14 +34,17 @@ nanobind_add_module(
     src/judy/cpp/judy_int_set.cpp
 )
 
+target_link_libraries(_judy_nb PRIVATE judy)
+install(TARGETS _judy_nb LIBRARY DESTINATION judy)
+
 nanobind_add_stub(
-    _judy_nb_stub
-    MODULE _judy_nb
-    OUTPUT _judy_nb.pyi
-    PYTHON_PATH $<TARGET_FILE_DIR:_judy_nb>
-    DEPENDS _judy_nb
+  _judy_nb_stub
+  INSTALL_TIME
+  MODULE judy._judy_nb
+  OUTPUT _judy_nb.pyi
+  PYTHON_PATH $<TARGET_FILE_DIR:judy>
+  DEPENDS _judy_nb
+  MARKER_FILE py.typed
 )
 
-target_link_libraries(_judy_nb PRIVATE judy)
-
-install(TARGETS _judy_nb LIBRARY DESTINATION judy)
+install(FILES py.typed _judy_nb.pyi DESTINATION judy)
