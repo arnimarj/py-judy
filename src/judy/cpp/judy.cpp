@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include <nanobind/nanobind.h>
+#include <nanobind/typing.h>
 #include <nanobind/stl/optional.h>
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/pair.h>
@@ -24,19 +25,35 @@ std::pair<Word_t, Word_t> _SelectItem(Word_t key, Word_t value)
 
 
 NB_MODULE(_judy_nb, m) {
-    nb::class_<JudyIntIntMap>(m, "_JudyIntIntMap")
+    nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")
         .def(nb::init<>())
         .def("__contains__", &JudyIntIntMap::Contains)
-        .def("__contains__", [](const JudyIntIntMap&, std::optional<nb::handle>) { return false; }, nb::arg("index").none())
+        .def(
+            "__contains__",
+            [](const JudyIntIntMap&, std::optional<nb::handle>) { return false; },
+            nb::arg("index").none(),
+            nb::sig("def __contains__(self, index: typing.Any) -> typing.Literal[False]")
+        )
         .def("__len__", &JudyIntIntMap::size)
         .def("clear", &JudyIntIntMap::Clear)
         .def("__getitem__", &JudyIntIntMap::GetItem)
-        .def("__getitem__", [](const JudyIntIntMap&, std::optional<nb::handle>) { throw nb::key_error(); }, nb::arg("index").none())
+        .def(
+            "__getitem__",
+            [](const JudyIntIntMap&, std::optional<nb::handle>) { throw nb::key_error(); },
+            nb::arg("index").none(),            nb::sig("def __getitem__(self, index: typing.Any) -> typing.NoReturn")
+        )
         .def("__setitem__", &JudyIntIntMap::SetItem)
         .def("__str__", &JudyIntIntMap::ToString)
         .def("__repr__", &JudyIntIntMap::ToString)
         .def("__sizeof__", &JudyIntIntMap::size_of)
-        .def("get", &JudyIntIntMap::Get, nb::arg("index"), nb::arg("default").none() = nb::none())
+        .def(
+            "get",
+            &JudyIntIntMap::Get,
+            nb::arg("index"),
+            nb::arg("default").none() = nb::none(),
+            nb::sig("def get(self, x: int, /) -> int"),
+            nb::sig("def get(self, x: typing.Any, /) -> None")
+        )
         .def("pop", &JudyIntIntMap::Pop, nb::arg("index"))
         .def("pop", &JudyIntIntMap::PopDefault, nb::arg("index"), nb::arg("default").none() = nb::none())
         .def("pop", [](const JudyIntIntMap&, std::optional<nb::handle> def) { return def; }, nb::arg("index"))
@@ -59,22 +76,22 @@ NB_MODULE(_judy_nb, m) {
         }, nb::rv_policy::reference)
     ;
 
-    nb::class_<JudyIntIntMapIterator<Word_t, _SelectKey>>(m, "_JudyIntIntMapKeyIterator")
-        .def("__iter__", [](nb::handle h) { return h; })
+    nb::class_<JudyIntIntMapIterator<Word_t, _SelectKey>>(m, "JudyIntIntMapKeyIterator")
+        .def("__iter__", [](nb::handle h) { return h; }, nb::sig("def __iter__(self) -> typing.Self"))
         .def("__next__", &JudyIntIntMapIterator<Word_t, _SelectKey>::Next)
     ;
 
-    nb::class_<JudyIntIntMapIterator<Word_t, _SelectValue>>(m, "_JudyIntIntMapValueIterator")
-        .def("__iter__", [](nb::handle h) { return h; })
+    nb::class_<JudyIntIntMapIterator<Word_t, _SelectValue>>(m, "JudyIntIntMapValueIterator")
+        .def("__iter__", [](nb::handle h) { return h; }, nb::sig("def __iter__(self) -> typing.Self"))
         .def("__next__", &JudyIntIntMapIterator<Word_t, _SelectValue>::Next)
     ;
 
-    nb::class_<JudyIntIntMapIterator<std::pair<Word_t, Word_t>, _SelectItem>>(m, "_JudyIntIntMapItemIterator")
-        .def("__iter__", [](nb::handle h) { return h; })
+    nb::class_<JudyIntIntMapIterator<std::pair<Word_t, Word_t>, _SelectItem>>(m, "JudyIntIntMapItemIterator")
+        .def("__iter__", [](nb::handle h) { return h; }, nb::sig("def __iter__(self) -> typing.Self"))
         .def("__next__", &JudyIntIntMapIterator<std::pair<Word_t, Word_t>, _SelectItem>::Next)
     ;
 
-    nb::class_<JudyIntSet>(m, "_JudyIntSet")
+    nb::class_<JudyIntSet>(m, "JudyIntSet")
         .def(nb::init<>())
         .def("__contains__", &JudyIntSet::Contains)
         .def("__contains__", [](const JudyIntSet&, std::optional<nb::handle>) { return false; }, nb::arg("index").none())
@@ -91,8 +108,8 @@ NB_MODULE(_judy_nb, m) {
         .def("__sizeof__", &JudyIntSet::size_of)
     ;
 
-    nb::class_<JudyIntSetIterator>(m, "_JudyIntSetIterator")
-        .def("__iter__", [](nb::handle h) { return h; })
+    nb::class_<JudyIntSetIterator>(m, "JudyIntSetIterator")
+        .def("__iter__", [](nb::handle h) { return h; }, nb::sig("def __iter__(self) -> typing.Self"))
         .def("__next__", &JudyIntSetIterator::Next)
     ;
 }
