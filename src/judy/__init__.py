@@ -88,6 +88,18 @@ class JudyIntIntMap:
     def pop(self, key: Any, default: _T | None = None) -> int | _T | None:
         return self._m.pop(key, default)
 
+    def __iter__(self) -> Iterator[int]:
+        return iter(self._m)
+
+    def keys(self) -> Iterator[int]:
+        return self._m.keys()
+
+    def values(self) -> Iterator[int]:
+        return self._m.values()
+
+    def items(self) -> Iterator[tuple[int, int]]:
+        return self._m.items()
+
 
 class JudyIntSet:
     def __init__(self):

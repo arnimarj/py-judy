@@ -69,19 +69,19 @@ std::string JudyIntIntMap::ToString()
         nb::ft_lock_guard guard(mutex);
 
         void* v = nullptr;
-        Word_t i = 0;
-        JLF(v, judy_map, i);
+        Word_t key = 0;
+        JLF(v, judy_map, key);
 
-        if (v != 0)
-            os << i << ": " << *((Word_t*)v);
+        if (v != nullptr)
+            os << key << ": " << *((Word_t*)v);
 
         while (true) {
-            JLN(v, judy_map, i);
+            JLN(v, judy_map, key);
 
-            if (v == 0)
+            if (v == nullptr)
                 break;
 
-            os << ", " << i << ": " << *((Word_t*)v);
+            os << ", " << key << ": " << *((Word_t*)v);
         }
     }
 

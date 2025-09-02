@@ -31,7 +31,7 @@ struct JudyIntSetIterator {
     std::shared_ptr<JudyIntSet> judy_set_object;
     bool started;
     bool ended;
-    Word_t cursor;
+    Word_t key;
 
     JudyIntSetIterator(std::shared_ptr<JudyIntSet> parent);
     Word_t Next();

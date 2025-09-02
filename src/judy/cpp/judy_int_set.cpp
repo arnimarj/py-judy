@@ -130,7 +130,7 @@ JudyIntSetIterator::JudyIntSetIterator(std::shared_ptr<JudyIntSet> parent)
 {
     started = false;
     ended = false;
-    cursor = 0;
+    key = 0;
 }
 
 Word_t JudyIntSetIterator::Next()
@@ -145,22 +145,22 @@ Word_t JudyIntSetIterator::Next()
 
     // first item
     if (!started) {
-        J1F(i, judy_set_object->judy_set, cursor);
-
+        J1F(i, judy_set_object->judy_set, key);
         started = true;
 
         if (i == 0) {
             ended = true;
             throw nb::stop_iteration();
         }
-        return cursor;
+
+        return key;
     }
 
     // next item
-    J1N(i, judy_set_object->judy_set, cursor);
+    J1N(i, judy_set_object->judy_set, key);
 
     if (i != 0)
-        return cursor;
+        return key;
 
     // ...beyond last item
     ended = true;
