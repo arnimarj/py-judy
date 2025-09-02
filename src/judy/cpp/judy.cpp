@@ -70,7 +70,7 @@ NB_MODULE(_judy_nb, m) {
             [](const JudyIntIntMap&, nb::handle index, std::optional<nb::handle> def) { return def; },
             nb::arg("index"),
             nb::arg("default"),
-            nb::sig("def pop(self, arg typing.Any, default: _T, /) -> _T")
+            nb::sig("def pop(self, arg: typing.Any, default: _T, /) -> _T")
         )
         .def("by_index", &JudyIntIntMap::ByIndex)
         .def("__iter__", [](std::shared_ptr<JudyIntIntMap>& s) {
