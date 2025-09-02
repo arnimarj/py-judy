@@ -43,4 +43,4 @@ nanobind_add_stub(
 )
 
 install(TARGETS _judy_nb LIBRARY DESTINATION judy)
-install(FILES py.typed _judy_nb.pyi DESTINATION judy)
+install(FILES build/py.typed build/_judy_nb.pyi DESTINATION judy)
