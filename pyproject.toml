@@ -38,3 +38,7 @@ build-backend = "scikit_build_core.build"
 
 [tool.cibuildwheel]
 archs = "auto64"
+build-verbosity = 1
+
+[tool.cibuildwheel.macos.environment]
+MACOSX_DEPLOYMENT_TARGET = "10.14"

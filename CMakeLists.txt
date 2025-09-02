@@ -4,7 +4,8 @@ project(_judy_nb LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-find_package(Python 3.9 COMPONENTS Interpreter Development REQUIRED)
+# from https://github.com/pypa/cibuildwheel/issues/639#issuecomment-1397443143
+find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
 
 execute_process(
     COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
