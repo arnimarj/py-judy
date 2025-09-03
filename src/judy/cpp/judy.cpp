@@ -29,9 +29,10 @@ static std::pair<Word_t, Word_t> _SelectItem(Word_t key, Word_t value)
 
 
 NB_MODULE(_judy_nb, m) {
+    m.attr("T") = nb::type_var("T");
     m.attr("_T") = nb::type_var("_T");
 
-    nb::class_<JudyIntObjectMap>(m, "JudyIntObjectMap")
+    nb::class_<JudyIntObjectMap>(m, "JudyIntObjectMap", nb::is_generic(), nb::sig("class JudyIntObjectMap(typing.Generic[T])"))
         .def(nb::init<>())
         .def("__contains__", &JudyIntObjectMap::Contains)
         .def(
@@ -41,6 +42,8 @@ NB_MODULE(_judy_nb, m) {
             nb::sig("def __contains__(self, arg: typing.Any, /) -> typing.Literal[False]")
         )
         .def("__len__", &JudyIntObjectMap::size)
+        .def("clear", &JudyIntObjectMap::Clear)
+        .def("__sizeof__", &JudyIntObjectMap::size_of)
     ;
 
     nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")

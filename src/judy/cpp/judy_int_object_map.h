@@ -30,10 +30,10 @@ struct JudyIntObjectMap {
 
     bool Contains(Word_t value);
     Word_t size();
+    Word_t size_of();
     void Clear();
 
     /*
-    Word_t size_of();
     nb::object GetItem(Word_t key);
     std::string ToString();
     std::optional<nb::object> Get(Word_t key);

@@ -32,6 +32,15 @@ Word_t JudyIntObjectMap::size()
 }
 
 
+Word_t JudyIntObjectMap::size_of()
+{
+    nb::ft_lock_guard guard(mutex);
+    Word_t size = 0;
+    JLMU(size, judy_map);
+    return size + sizeof(*this);
+}
+
+
 void JudyIntObjectMap::Clear()
 {
     nb::ft_lock_guard guard(mutex);
