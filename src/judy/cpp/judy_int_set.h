@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <optional>
 #include <span>
 #include <sstream>
 #include <string>
@@ -8,6 +9,7 @@
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
+#include <nanobind/stl/optional.h>
 #include <nanobind/stl/shared_ptr.h>
 
 namespace nb = nanobind;
@@ -54,8 +56,17 @@ struct JudyIntSetIterator {
     std::shared_ptr<JudyIntSet> judy_set_object;
     bool started;
     bool ended;
+    std::optional<Word_t> lower_inclusive;
+    std::optional<Word_t> upper_inclusive;
     Word_t key;
 
-    JudyIntSetIterator(std::shared_ptr<JudyIntSet> parent);
+    JudyIntSetIterator(
+        std::shared_ptr<JudyIntSet> parent,
+        std::optional<Word_t> lower_inclusive,
+        std::optional<Word_t> upper_inclusive
+    );
     Word_t Next();
+
+private:
+    void CheckPastUpper(Word_t key);
 };

@@ -118,20 +118,37 @@ void JudyIntSet::Remove(Word_t value)
             if (i == 0)
                 key_error = true;
         }
-    }   
+    }
 
     if (key_error)
         throw nb::key_error(std::to_string(value).c_str());
 }
 
 
-JudyIntSetIterator::JudyIntSetIterator(std::shared_ptr<JudyIntSet> parent)
+JudyIntSetIterator::JudyIntSetIterator(
+    std::shared_ptr<JudyIntSet> parent,
+    std::optional<Word_t> lower_inclusive,
+    std::optional<Word_t> upper_inclusive
+)
     : judy_set_object(parent)
+    , lower_inclusive(lower_inclusive)
+    , upper_inclusive(upper_inclusive)
 {
     started = false;
     ended = false;
     key = 0;
 }
+
+
+void JudyIntSetIterator::CheckPastUpper(Word_t key)
+{
+    // maybe past upper limit, if any
+    if (upper_inclusive.has_value() and key > upper_inclusive.value()) {
+        ended = true;
+        throw nb::stop_iteration();
+    }
+}
+
 
 Word_t JudyIntSetIterator::Next()
 {
@@ -145,7 +162,13 @@ Word_t JudyIntSetIterator::Next()
 
     // first item
     if (!started) {
-        J1F(i, judy_set_object->judy_set, key);
+        if (lower_inclusive.has_value() && lower_inclusive.value() > 0) {
+            key = lower_inclusive.value() - 1;
+            J1N(i, judy_set_object->judy_set, key);
+        } else {
+            J1F(i, judy_set_object->judy_set, key);
+        }
+
         started = true;
 
         if (i == 0) {
@@ -153,14 +176,17 @@ Word_t JudyIntSetIterator::Next()
             throw nb::stop_iteration();
         }
 
+        CheckPastUpper(key);
         return key;
     }
 
     // next item
     J1N(i, judy_set_object->judy_set, key);
 
-    if (i != 0)
+    if (i != 0) {
+        CheckPastUpper(key);
         return key;
+    }
 
     // ...beyond last item
     ended = true;

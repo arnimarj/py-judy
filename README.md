@@ -1,11 +1,9 @@
 TBD
 
 KeysView/ValuesView/ItemsView for iterators
-Make classes generic
 TestSuite
 CI+Build Setup
 StressTestSuite for free threading
-Avoid installing CPP files on pip-install
 Ranged Iterators
 (batched) BisectLeft
 
@@ -21,3 +19,5 @@ cibuildwheel --config-file pyproject.toml --output-dir wheelhouse
 
 DONE
 * Auto Stub Generation
+* Make classes generic
+* Avoid installing CPP files on pip-install

@@ -92,22 +92,54 @@ NB_MODULE(_judy_nb, m) {
             nb::sig("def pop(self, arg: typing.Any, default: _T, /) -> _T")
         )
         .def("by_index", &JudyIntIntMap::ByIndex)
-        .def("__iter__", [](std::shared_ptr<JudyIntIntMap>& s) {
-            std::optional<Word_t> empty;
-            return JudyIntIntMapIterator<Word_t, _SelectKey>(s, empty, empty);
-        }, nb::rv_policy::reference)
-        .def("keys", [](std::shared_ptr<JudyIntIntMap>& s) {
-            std::optional<Word_t> empty;
-            return JudyIntIntMapIterator<Word_t, _SelectKey>(s, empty, empty);
-        }, nb::rv_policy::reference)
-        .def("values", [](std::shared_ptr<JudyIntIntMap>& s) {
-            std::optional<Word_t> empty;
-            return JudyIntIntMapIterator<Word_t, _SelectValue>(s, empty, empty);
-        }, nb::rv_policy::reference)
-        .def("items", [](std::shared_ptr<JudyIntIntMap>& s) {
-            std::optional<Word_t> empty;
-            return JudyIntIntMapIterator<std::pair<Word_t, Word_t>, _SelectItem>(s, empty, empty);
-        }, nb::rv_policy::reference)
+        .def("__iter__", [](
+            std::shared_ptr<JudyIntIntMap>& s,
+            std::optional<Word_t> lower_inclusive,
+            std::optional<Word_t> upper_inclusive
+        ) {
+            return JudyIntIntMapIterator<Word_t, _SelectKey>(s, lower_inclusive, upper_inclusive);
+        },
+            nb::kw_only(),
+            nb::arg("lower_inclusive").none() = nb::none(),
+            nb::arg("upper_inclusive").none() = nb::none(),
+            nb::rv_policy::reference
+        )
+        .def("keys", [](
+            std::shared_ptr<JudyIntIntMap>& s,
+            std::optional<Word_t> lower_inclusive,
+            std::optional<Word_t> upper_inclusive
+        ) {
+            return JudyIntIntMapIterator<Word_t, _SelectKey>(s, lower_inclusive, upper_inclusive);
+        },
+            nb::kw_only(),
+            nb::arg("lower_inclusive").none() = nb::none(),
+            nb::arg("upper_inclusive").none() = nb::none(),
+            nb::rv_policy::reference
+        )
+        .def("values", [](
+            std::shared_ptr<JudyIntIntMap>& s,
+            std::optional<Word_t> lower_inclusive,
+            std::optional<Word_t> upper_inclusive
+        ) {
+            return JudyIntIntMapIterator<Word_t, _SelectValue>(s, lower_inclusive, upper_inclusive);
+        },
+            nb::kw_only(),
+            nb::arg("lower_inclusive").none() = nb::none(),
+            nb::arg("upper_inclusive").none() = nb::none(),
+            nb::rv_policy::reference
+        )
+        .def("items", [](
+            std::shared_ptr<JudyIntIntMap>& s,
+            std::optional<Word_t> lower_inclusive,
+            std::optional<Word_t> upper_inclusive
+        ) {
+            return JudyIntIntMapIterator<std::pair<Word_t, Word_t>, _SelectItem>(s, lower_inclusive, upper_inclusive);
+        },
+            nb::kw_only(),
+            nb::arg("lower_inclusive").none() = nb::none(),
+            nb::arg("upper_inclusive").none() = nb::none(),
+            nb::rv_policy::reference
+        )
 
         // TBD: how to specialize across all combos of u8/16/32/64
         .def_static("FromArray", [](
@@ -156,9 +188,18 @@ NB_MODULE(_judy_nb, m) {
             nb::arg("index").none(),
             nb::sig("def __getitem__(self, arg: typing.Any, /) -> typing.NoReturn")
         )
-        .def("__iter__", [](std::shared_ptr<JudyIntSet>& s) {
-            return JudyIntSetIterator(s);
-        }, nb::rv_policy::reference)
+        .def("__iter__", [](
+            std::shared_ptr<JudyIntSet>& s,
+            std::optional<Word_t> lower_inclusive,
+            std::optional<Word_t> upper_inclusive
+        ) {
+            return JudyIntSetIterator(s, lower_inclusive, upper_inclusive);
+        },
+            nb::kw_only(),
+            nb::arg("lower_inclusive").none() = nb::none(),
+            nb::arg("upper_inclusive").none() = nb::none(),
+            nb::rv_policy::reference
+        )
         .def("__str__", &JudyIntSet::ToString)
         .def("__repr__", &JudyIntSet::ToString)
         .def("__len__", &JudyIntSet::size)

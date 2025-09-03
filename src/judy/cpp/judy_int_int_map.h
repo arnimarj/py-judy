@@ -75,17 +75,17 @@ struct JudyIntIntMapIterator {
     Word_t key;
 
     // for range iteration
-    std::optional<Word_t> lower_range;
-    std::optional<Word_t> upper_range;
+    std::optional<Word_t> lower_inclusive;
+    std::optional<Word_t> upper_inclusive;
 
     JudyIntIntMapIterator(
         std::shared_ptr<JudyIntIntMap>& parent,
-        std::optional<Word_t> lower_range,
-        std::optional<Word_t> upper_range
+        std::optional<Word_t> lower_inclusive,
+        std::optional<Word_t> upper_inclusive
     )
         : judy_map_object(parent)
-        , lower_range(lower_range)
-        , upper_range(upper_range)
+        , lower_inclusive(lower_inclusive)
+        , upper_inclusive(upper_inclusive)
 
     {
         started = false;
@@ -105,7 +105,13 @@ struct JudyIntIntMapIterator {
 
         // first item
         if (!started) {
-            JLF(v, judy_map_object->judy_map, key);
+            if (lower_inclusive.has_value() && lower_inclusive.value() > 0) {
+                key = lower_inclusive.value() - 1;
+                JLN(v, judy_map_object->judy_map, key);
+            } else {
+                JLF(v, judy_map_object->judy_map, key);
+            }
+
             started = true;
 
             if (v == nullptr) {
@@ -113,17 +119,30 @@ struct JudyIntIntMapIterator {
                 throw nb::stop_iteration();
             }
 
+            CheckPastUpper(*((Word_t*)v));
             return Func(key, *((Word_t*)v));
         }
 
         // next item
         JLN(v, judy_map_object->judy_map, key);
 
-        if (v != nullptr)
+        if (v != nullptr) {
+            CheckPastUpper(*((Word_t*)v));
             return Func(key, *((Word_t*)v));
+        }
 
         // beyond last item
         ended = true;
         throw nb::stop_iteration();
+    }
+
+private:
+    void CheckPastUpper(Word_t key)
+    {
+        // maybe past upper limit, if any
+        if (upper_inclusive.has_value() and key > upper_inclusive.value()) {
+            ended = true;
+            throw nb::stop_iteration();
+        }
     }
 };
