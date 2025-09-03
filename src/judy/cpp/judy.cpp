@@ -14,21 +14,34 @@
 
 #include "judy_int_set.h"
 #include "judy_int_int_map.h"
+#include "judy_int_object_map.h"
 
 namespace nb = nanobind;
 using namespace nb::literals;
 
 
-Word_t _SelectKey(Word_t key, Word_t value)
+static Word_t _SelectKey(Word_t key, Word_t value)
     { return key; }
-Word_t _SelectValue(Word_t key, Word_t value)
+static Word_t _SelectValue(Word_t key, Word_t value)
     { return value; }
-std::pair<Word_t, Word_t> _SelectItem(Word_t key, Word_t value)
+static std::pair<Word_t, Word_t> _SelectItem(Word_t key, Word_t value)
     { return std::pair(key, value); }
 
 
 NB_MODULE(_judy_nb, m) {
     m.attr("_T") = nb::type_var("_T");
+
+    nb::class_<JudyIntObjectMap>(m, "JudyIntObjectMap")
+        .def(nb::init<>())
+        .def("__contains__", &JudyIntObjectMap::Contains)
+        .def(
+            "__contains__",
+            [](const JudyIntObjectMap&, std::optional<nb::handle>) { return false; },
+            nb::arg("index").none(),
+            nb::sig("def __contains__(self, arg: typing.Any, /) -> typing.Literal[False]")
+        )
+        .def("__len__", &JudyIntObjectMap::size)
+    ;
 
     nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")
         .def(nb::init<>())

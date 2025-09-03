@@ -61,6 +61,9 @@ struct JudyIntIntMap {
 
         return std::move(s);
     }
+
+private:
+    void UnlockedClear();
 };
 
 

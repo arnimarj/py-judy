@@ -9,9 +9,7 @@ JudyIntIntMap::JudyIntIntMap()
 JudyIntIntMap::~JudyIntIntMap()
 {
     nb::ft_lock_guard guard(mutex);
-    Word_t bytes_freed;
-    JLFA(bytes_freed, judy_map);
-    judy_map = nullptr;
+    UnlockedClear();
 }
 
 bool JudyIntIntMap::Contains(Word_t value)
@@ -41,9 +39,7 @@ Word_t JudyIntIntMap::size_of()
 void JudyIntIntMap::Clear()
 {
     nb::ft_lock_guard guard(mutex);
-    Word_t bytes_freed = 0;
-    JLFA(bytes_freed, judy_map);
-    judy_map = nullptr;
+    UnlockedClear();
 }
 
 Word_t JudyIntIntMap::GetItem(Word_t key)
@@ -183,4 +179,12 @@ Word_t JudyIntIntMap::ByIndex(Py_ssize_t index)
         throw nb::index_error();
 
     return *((Word_t*)v);
+}
+
+
+void JudyIntIntMap::UnlockedClear()
+{
+    Word_t bytes_freed;
+    JLFA(bytes_freed, judy_map);
+    judy_map = nullptr;
 }

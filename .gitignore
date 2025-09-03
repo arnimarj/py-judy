@@ -1,2 +1,5 @@
 CMakeCache.txt
 CMakeFiles/
+src/judy/_judy_nb.pyi
+wheelhouse/
+build/

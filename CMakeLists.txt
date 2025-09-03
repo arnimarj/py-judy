@@ -30,6 +30,7 @@ nanobind_add_module(
     STABLE_ABI FREE_THREADED NB_STATIC PROTECT_STACK NOSTRIP
     src/judy/cpp/judy.cpp
     src/judy/cpp/judy_int_int_map.cpp
+    src/judy/cpp/judy_int_object_map.cpp
     src/judy/cpp/judy_int_set.cpp
 )
 

@@ -1,4 +1,4 @@
-from ._judy_nb import JudyIntIntMap, JudyIntSet
+from ._judy_nb import JudyIntIntMap, JudyIntObjectMap, JudyIntSet
 
 
-__all__ = ['JudyIntIntMap', 'JudyIntSet']
+__all__ = ['JudyIntIntMap', 'JudyIntObjectMap', 'JudyIntSet']
