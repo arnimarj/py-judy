@@ -35,13 +35,15 @@ nanobind_add_module(
 
 target_link_libraries(_judy_nb PRIVATE judy)
 
+message(STATUS "NanoBind Cmake directory: " ${NB_DIR})
+
 nanobind_add_stub(
   _judy_nb_stub
   MODULE _judy_nb
-  OUTPUT _judy_nb.pyi
   DEPENDS _judy_nb
-  MARKER_FILE py.typed
+  OUTPUT "${CMAKE_SOURCE_DIR}/src/judy/_judy_nb.pyi"
 )
 
 install(TARGETS _judy_nb LIBRARY DESTINATION judy)
-install(FILES build/py.typed build/_judy_nb.pyi DESTINATION judy)
+install(FILES "${CMAKE_SOURCE_DIR}/src/judy/_judy_nb.pyi" DESTINATION judy)
+install(FILES "${CMAKE_SOURCE_DIR}/src/judy/py.typed" DESTINATION judy)
