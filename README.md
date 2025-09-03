@@ -6,6 +6,8 @@ TestSuite
 CI+Build Setup
 StressTestSuite for free threading
 Avoid installing CPP files on pip-install
+Ranged Iterators
+(batched) BisectLeft
 
 
 NOTES

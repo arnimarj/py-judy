@@ -93,6 +93,7 @@ NB_MODULE(_judy_nb, m) {
             return JudyIntIntMapIterator<std::pair<Word_t, Word_t>, _SelectItem>(s, empty, empty);
         }, nb::rv_policy::reference)
 
+        // TBD: how to specialize across all combos of u8/16/32/64
         .def_static("FromArray", [](
             nb::ndarray<uint64_t, nb::shape<-1>, nb::device::cpu> keys,
             nb::ndarray<uint64_t, nb::shape<-1>, nb::device::cpu> values
