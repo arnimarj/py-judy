@@ -4,9 +4,8 @@ KeysView/ValuesView/ItemsView for iterators
 TestSuite
 CI+Build Setup
 StressTestSuite for free threading
-Ranged Iterators
 (batched) BisectLeft
-
+IntObjectMap
 
 NOTES
 
@@ -21,3 +20,4 @@ DONE
 * Auto Stub Generation
 * Make classes generic
 * Avoid installing CPP files on pip-install
+* Ranged Iterators

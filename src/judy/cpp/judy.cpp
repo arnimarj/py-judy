@@ -28,11 +28,24 @@ static std::pair<Word_t, Word_t> _SelectItem(Word_t key, Word_t value)
     { return std::pair(key, value); }
 
 
+PyType_Slot int_object_map_gc_slots[] = {
+    { Py_tp_traverse, (void*)int_obj_map_object_traverse },
+    { Py_tp_clear, (void*)int_obj_map_object_clear },
+    { 0, 0 }
+};
+
+
 NB_MODULE(_judy_nb, m) {
     m.attr("T") = nb::type_var("T");
     m.attr("_T") = nb::type_var("_T");
 
-    nb::class_<JudyIntObjectMap>(m, "JudyIntObjectMap", nb::is_generic(), nb::sig("class JudyIntObjectMap(typing.Generic[T])"))
+    nb::class_<JudyIntObjectMap>(
+        m,
+        "JudyIntObjectMap",
+        nb::type_slots(int_object_map_gc_slots),
+        nb::is_generic(),
+        nb::sig("class JudyIntObjectMap(typing.Generic[T])")
+    )
         .def(nb::init<>())
         .def("__contains__", &JudyIntObjectMap::Contains)
         .def(
@@ -44,6 +57,18 @@ NB_MODULE(_judy_nb, m) {
         .def("__len__", &JudyIntObjectMap::size)
         .def("clear", &JudyIntObjectMap::Clear)
         .def("__sizeof__", &JudyIntObjectMap::size_of)
+        .def(
+            "__getitem__",
+            &JudyIntObjectMap::GetItem,
+            nb::sig("def __getitem__(self, arg: int, /) -> T")
+        )
+        .def(
+            "__getitem__",
+            [](const JudyIntObjectMap&, std::optional<nb::handle>) { throw nb::key_error(); },
+            nb::arg("index").none(),
+            nb::sig("def __getitem__(self, arg: typing.Any, /) -> typing.NoReturn")
+        )
+        .def("__setitem__", &JudyIntObjectMap::SetItem)
     ;
 
     nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")
