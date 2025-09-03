@@ -1,9 +1,13 @@
-#include <Judy.h>
-
+#include <cstdint>
+#include <span>
 #include <sstream>
 #include <string>
+#include <utility>
+
+#include <Judy.h>
 
 #include <nanobind/nanobind.h>
+#include <nanobind/ndarray.h>
 #include <nanobind/stl/shared_ptr.h>
 
 namespace nb = nanobind;
@@ -17,6 +21,14 @@ struct JudyIntSet {
     JudyIntSet();
     ~JudyIntSet();
 
+    JudyIntSet(JudyIntSet&& other) noexcept
+        // only move judy pointer, and reset it in the
+        // move'd instance
+        : judy_set(other.judy_set)
+    {
+        other.judy_set = nullptr;
+    }
+
     std::string ToString();
     bool Contains(Word_t value);
     Word_t size();
@@ -24,6 +36,17 @@ struct JudyIntSet {
     void Add(Word_t value);
     Word_t GetItem(Py_ssize_t index);
     void Remove(Word_t value);
+
+    template <typename T>
+    static JudyIntSet FromSpan(const std::span<T> view)
+    {
+        auto s = JudyIntSet();
+
+        for (auto value : view)
+            s.Add(static_cast<Word_t>(value));
+
+        return std::move(s);
+    }
 };
 
 

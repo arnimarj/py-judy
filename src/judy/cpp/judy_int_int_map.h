@@ -1,6 +1,7 @@
 #include <Judy.h>
 
 #include <optional>
+#include <ranges>
 #include <sstream>
 #include <string>
 #include <variant>
@@ -22,6 +23,14 @@ struct JudyIntIntMap {
     JudyIntIntMap();
     ~JudyIntIntMap();
 
+    JudyIntIntMap(JudyIntIntMap&& other) noexcept
+        // only move judy pointer, and reset it in the
+        // move'd instance
+        : judy_map(other.judy_map)
+    {
+        other.judy_map = nullptr;
+    }
+
     bool Contains(Word_t value);
     Word_t size();
     Word_t size_of();
@@ -34,6 +43,24 @@ struct JudyIntIntMap {
     Word_t Pop(Word_t key);
     std::variant<Word_t, std::optional<nb::handle>> PopDefault(Word_t key, std::optional<nb::handle> failobj);
     Word_t ByIndex(Py_ssize_t index);
+
+    template <typename T, typename S>
+    static JudyIntIntMap FromSpan(const std::span<T> keys, const std::span<S> values)
+    {
+        if (keys.size() != values.size())
+            throw std::runtime_error("spans must be of the same size");
+
+        auto s = JudyIntIntMap();
+
+        for (auto [key, value] : std::views::zip(keys, values)) {
+            s.SetItem(
+                static_cast<Word_t>(key),
+                static_cast<Word_t>(value)
+            );
+        }
+
+        return std::move(s);
+    }
 };
 
 

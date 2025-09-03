@@ -78,7 +78,7 @@ void JudyIntSet::Add(Word_t value)
 
     J1S(i, judy_set, value);
 
-    if (i != 0)
+    if (i == 0)
         throw std::bad_alloc();
 }
 

@@ -1,4 +1,4 @@
-#include "judy_int_int_mapping.h"
+#include "judy_int_int_map.h"
 
 
 JudyIntIntMap::JudyIntIntMap()

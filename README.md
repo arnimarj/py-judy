@@ -11,7 +11,7 @@ Avoid installing CPP files on pip-install
 NOTES
 
 cmake -S . -B build
-cmake --build build
+ 	cmake --build build
 cmake -S . -B build -DPython_EXECUTABLE=`which python3`
 
 cibuildwheel --config-file pyproject.toml --output-dir wheelhouse

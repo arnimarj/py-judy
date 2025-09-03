@@ -24,6 +24,9 @@ classifiers = [
 	"Topic :: Database",
 	"Topic :: Software Development :: Libraries",
 ]
+dependencies = [
+	"numpy>=2.3.2"
+]
 
 [build-system]
 requires = [
