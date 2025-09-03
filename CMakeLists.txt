@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(_judy_nb LANGUAGES CXX C)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # from https://github.com/pypa/cibuildwheel/issues/639#issuecomment-1397443143

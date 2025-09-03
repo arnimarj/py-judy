@@ -5,7 +5,6 @@ Make classes generic
 TestSuite
 CI+Build Setup
 StressTestSuite for free threading
-Auto Stub Generation
 Avoid installing CPP files on pip-install
 
 
@@ -16,3 +15,7 @@ cmake --build build
 cmake -S . -B build -DPython_EXECUTABLE=`which python3`
 
 cibuildwheel --config-file pyproject.toml --output-dir wheelhouse
+
+
+DONE
+* Auto Stub Generation

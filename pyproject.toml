@@ -7,7 +7,7 @@ authors = [
 ]
 readme = "README.md"
 version = "1.0.21"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
 	"Development Status :: 5 - Production/Stable",
 	"Environment :: Other Environment",
@@ -16,11 +16,11 @@ classifiers = [
 	"Programming Language :: C",
 	"Programming Language :: Python",
 	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.9",
 	"Programming Language :: Python :: 3.10",
 	"Programming Language :: Python :: 3.11",
 	"Programming Language :: Python :: 3.12",
 	"Programming Language :: Python :: 3.13",
+	"Programming Language :: Python :: 3.14",
 	"Topic :: Database",
 	"Topic :: Software Development :: Libraries",
 ]
@@ -36,12 +36,21 @@ build-backend = "scikit_build_core.build"
 [tool.scikit-build.wheel.packages]
 "judy" = "./src/judy"
 
+[tool.scikit-build]
+strict-config = true
+sdist.cmake = true
+sdist.include = [
+  "pyproject.toml",
+  "src",
+]
+wheel.exclude = ["cpp"]
+
 [tool.cibuildwheel]
 archs = "auto64"
 test-requires = "pytest"
 
 test-command = [
-	"pytest tests"
+	"pytest {package}/tests",
 ]
 
 [tool.cibuildwheel.macos.environment]
