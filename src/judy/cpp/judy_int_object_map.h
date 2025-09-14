@@ -32,17 +32,18 @@ struct JudyIntObjectMap {
     Word_t size();
     Word_t size_of();
     void Clear();
-    nb::object GetItem(Word_t key);
+    nb::handle GetItem(Word_t key);
     void SetItem(Word_t key, nb::handle value);
     void DeleteItem(Word_t key);
     nb::handle Pop(Word_t key);
     std::optional<nb::handle> PopDefault(Word_t key, std::optional<nb::handle> failobj);
 
+    std::optional<nb::handle> Get(Word_t key);
+    std::optional<nb::handle> GetDefault(Word_t key, std::optional<nb::handle> failobj);
+
     /*
     std::string ToString();
-    std::optional<nb::object> Get(Word_t key);
-    std::variant<Word_t, std::optional<nb::handle>> GetDefault(Word_t key, std::optional<nb::handle> failobj);
-    nb::object ByIndex(Py_ssize_t index);
+    nb::handle ByIndex(Py_ssize_t index);
     */
 
     int GCVisit(visitproc visit, void* arg);

@@ -87,7 +87,35 @@ int JudyIntObjectMap::GCVisit(visitproc visit, void*arg)
 }
 
 
-nb::object JudyIntObjectMap::GetItem(Word_t key)
+std::optional<nb::handle> JudyIntObjectMap::Get(Word_t key)
+{
+    nb::ft_lock_guard guard(mutex);
+    void* v = nullptr;
+    JLG(v, judy_map, key);
+
+    if (v == nullptr)
+        return std::nullopt;
+
+    PyObject* obj = *((PyObject**)v);
+    return nb::borrow(obj);
+}
+
+
+std::optional<nb::handle> JudyIntObjectMap::GetDefault(Word_t key, std::optional<nb::handle> failobj)
+{
+    nb::ft_lock_guard guard(mutex);
+    void* v = nullptr;
+    JLG(v, judy_map, key);
+
+    if (v == nullptr)
+        return failobj;
+
+    PyObject* obj = *((PyObject**)v);
+    return nb::borrow(obj);
+}
+
+
+nb::handle JudyIntObjectMap::GetItem(Word_t key)
 {
     nb::ft_lock_guard guard(mutex);
 
@@ -112,9 +140,8 @@ void JudyIntObjectMap::SetItem(Word_t key, nb::handle value)
     JLG(v, judy_map, key);
 
     // if it already exists, decref it
-    if (v != nullptr) {
+    if (v != nullptr)
         nb::handle(*((PyObject**)v)).dec_ref();
-    }
 
     if (v == nullptr) {
         // otherwise, create new item and get pointer to that
@@ -133,8 +160,7 @@ void JudyIntObjectMap::SetItem(Word_t key, nb::handle value)
 
 void JudyIntObjectMap::DeleteItem(Word_t key)
 {
-    auto h = Pop(key);
-    h.dec_ref();
+    Pop(key);
 }
 
 

@@ -85,6 +85,14 @@ NB_MODULE(_judy_nb, m) {
             nb::arg("default"),
             nb::sig("def pop(self, arg: typing.Any, default: _T, /) -> _T")
         )
+        .def("get", &JudyIntObjectMap::Get, nb::arg("index"))
+        .def(
+            "get",
+            &JudyIntObjectMap::GetDefault,
+            nb::arg("index"),
+            nb::arg("default").none() = nb::none(),
+            nb::sig("def get(self, arg: int, default: _T, /) -> T | _T")
+        )
     ;
 
     nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")
