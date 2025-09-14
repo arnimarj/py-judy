@@ -69,6 +69,22 @@ NB_MODULE(_judy_nb, m) {
             nb::sig("def __getitem__(self, arg: typing.Any, /) -> typing.NoReturn")
         )
         .def("__setitem__", &JudyIntObjectMap::SetItem)
+        .def("__delitem__", &JudyIntObjectMap::DeleteItem)
+        .def("pop", &JudyIntObjectMap::Pop, nb::arg("index"))
+        .def(
+            "pop",
+            &JudyIntObjectMap::PopDefault,
+            nb::arg("index"),
+            nb::arg("default").none() = nb::none(),
+            nb::sig("def pop(self, arg: int, default: _T = ..., /) -> T | _T | None")
+        )
+        .def(
+            "pop",
+            [](const JudyIntObjectMap&, nb::handle index, std::optional<nb::handle> def) { return def; },
+            nb::arg("index"),
+            nb::arg("default"),
+            nb::sig("def pop(self, arg: typing.Any, default: _T, /) -> _T")
+        )
     ;
 
     nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")
@@ -90,6 +106,7 @@ NB_MODULE(_judy_nb, m) {
             nb::sig("def __getitem__(self, arg: typing.Any, /) -> typing.NoReturn")
         )
         .def("__setitem__", &JudyIntIntMap::SetItem)
+        .def("__delitem__", &JudyIntIntMap::DeleteItem)
         .def("__str__", &JudyIntIntMap::ToString)
         .def("__repr__", &JudyIntIntMap::ToString)
         .def("__sizeof__", &JudyIntIntMap::size_of)

@@ -6,6 +6,9 @@ CI+Build Setup
 StressTestSuite for free threading
 (batched) BisectLeft
 IntObjectMap
+test IntObjectMap ref-cycles under free-threading (do we need mutex lock under traverse/clear?)
+
+consisten API betwewen int-object/int-int maps, and possibly code reuse
 
 NOTES
 

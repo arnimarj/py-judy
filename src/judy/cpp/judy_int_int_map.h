@@ -40,6 +40,7 @@ struct JudyIntIntMap {
     std::optional<Word_t> Get(Word_t key);
     std::variant<Word_t, std::optional<nb::handle>> GetDefault(Word_t key, std::optional<nb::handle> failobj);
     void SetItem(Word_t key, Word_t value);
+    void DeleteItem(Word_t key);
     Word_t Pop(Word_t key);
     std::variant<Word_t, std::optional<nb::handle>> PopDefault(Word_t key, std::optional<nb::handle> failobj);
     Word_t ByIndex(Py_ssize_t index);
