@@ -41,9 +41,10 @@ struct JudyIntObjectMap {
     std::optional<nb::handle> Get(Word_t key);
     std::optional<nb::handle> GetDefault(Word_t key, std::optional<nb::handle> failobj);
 
+    nb::handle ByIndex(Py_ssize_t index);
+
     /*
     std::string ToString();
-    nb::handle ByIndex(Py_ssize_t index);
     */
 
     int GCVisit(visitproc visit, void* arg);

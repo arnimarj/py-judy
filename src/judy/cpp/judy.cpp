@@ -93,6 +93,11 @@ NB_MODULE(_judy_nb, m) {
             nb::arg("default").none() = nb::none(),
             nb::sig("def get(self, arg: int, default: _T, /) -> T | _T")
         )
+        .def(
+            "by_index",
+            &JudyIntObjectMap::ByIndex,
+            nb::sig("def by_index(self, arg: int, /) -> T")
+        )
     ;
 
     nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")

@@ -202,6 +202,26 @@ std::optional<nb::handle> JudyIntObjectMap::PopDefault(Word_t key, std::optional
     }
 }
 
+
+nb::handle JudyIntObjectMap::ByIndex(Py_ssize_t index)
+{
+    if (index < 0)
+        throw nb::index_error();
+
+    nb::ft_lock_guard guard(mutex);
+
+    // NOTE: judy index is 1-based
+    Word_t k = 0;
+    void* v = nullptr;
+    JLBC(v, judy_map, index + 1, k);
+
+    if (v == nullptr)
+        throw nb::index_error();
+
+    return nb::handle(*((PyObject**)v));
+}
+
+
 // see https://nanobind.readthedocs.io/en/latest/refleaks.html
 int int_obj_map_object_traverse(PyObject* self, visitproc visit, void* arg)
 {
