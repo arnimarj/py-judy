@@ -82,6 +82,13 @@ void JudyIntSet::Add(Word_t value)
         throw std::bad_alloc();
 }
 
+void JudyIntSet::Clear()
+{
+    nb::ft_lock_guard guard(mutex);
+    Word_t freed = 0;
+    J1FA(freed, judy_set);
+}
+
 Word_t JudyIntSet::GetItem(Py_ssize_t index)
 {
     nb::ft_lock_guard guard(mutex);

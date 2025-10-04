@@ -258,6 +258,7 @@ NB_MODULE(_judy_nb, m) {
         .def("__str__", &JudyIntSet::ToString)
         .def("__repr__", &JudyIntSet::ToString)
         .def("__len__", &JudyIntSet::size)
+        .def("clear", &JudyIntSet::Clear)
         .def("__sizeof__", &JudyIntSet::size_of)
 
         .def_static("FromArray", [](nb::ndarray<uint8_t, nb::shape<-1>, nb::device::cpu> array) {

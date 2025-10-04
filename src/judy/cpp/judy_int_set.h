@@ -36,6 +36,7 @@ struct JudyIntSet {
     Word_t size();
     Word_t size_of();
     void Add(Word_t value);
+    void Clear();
     Word_t GetItem(Py_ssize_t index);
     void Remove(Word_t value);
 
