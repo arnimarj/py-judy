@@ -1,6 +1,8 @@
 import itertools
 import random
+import unittest
 
+import pytest
 import judy
 
 
@@ -37,11 +39,44 @@ def test_insert_query_clear() -> None:
 
 
 def test_remove() -> None:
-    raise NotImplementedError
+    judy_set = judy.JudyIntSet()
+    judy_set.discard(10)
+
+    with pytest.raises(KeyError):
+        judy_set.remove(10)
+
+    judy_set.add(10)
+    assert len(judy_set) == 1
+
+    judy_set.discard(10)
+    assert len(judy_set) == 0
+
+    judy_set.add(10)
+    assert len(judy_set) == 1
+
+    judy_set.remove(10)
+    assert len(judy_set) == 0
 
 
 def test_iterators() -> None:
     raise NotImplementedError
+
+
+def test_overwrite() -> None:
+    judy_set = judy.JudyIntSet()
+    judy_set.add(0)
+    judy_set.add(0)
+    assert list(judy_set) == [0]
+
+
+def test_str_repr() -> None:
+    judy_set = judy.JudyIntSet()
+
+    for _ in range(1000):
+        judy_set.add(random.randint(0, 0))
+
+    assert str(judy_set) == f'JudyIntSet({sorted(judy_set)})'
+    assert repr(judy_set) == f'JudyIntSet({sorted(judy_set)})'
 
 
 def test_ranged_iterators() -> None:
@@ -58,13 +93,14 @@ def test_ranged_iterators() -> None:
     uppers = list(range(0, 10_000, 1000))
 
     for lower in lowers:
-        assert sorted(key for key in py_set if key >= lower) == list(judy_set.__iter__(lower_inclusive=lower))
+        assert sorted(key for key in py_set if key >= lower) == list(judy_set.ranged_iterator(lower_inclusive=lower))
 
     for upper in uppers:
-        assert sorted(key for key in py_set if key <= upper) == list(judy_set.__iter__(upper_inclusive=upper))
+        assert sorted(key for key in py_set if key <= upper) == list(judy_set.ranged_iterator(upper_inclusive=upper))
 
     for lower, upper in itertools.product(lowers, uppers):
-        assert sorted(key for key in py_set if lower <= key <= upper) == list(judy_set.__iter__(lower_inclusive=lower, upper_inclusive=upper))
+        assert sorted(key for key in py_set if lower <= key <= upper) == list(judy_set.ranged_iterator(lower_inclusive=lower, upper_inclusive=upper))
+
 
 def test_from_array() -> None:
     raise NotImplementedError

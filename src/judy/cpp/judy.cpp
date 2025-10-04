@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <span>
@@ -147,17 +148,13 @@ NB_MODULE(_judy_nb, m) {
             nb::sig("def pop(self, arg: typing.Any, default: _T, /) -> _T")
         )
         .def("by_index", &JudyIntIntMap::ByIndex)
-        .def("__iter__", [](
-            std::shared_ptr<JudyIntIntMap>& s,
-            std::optional<Word_t> lower_inclusive,
-            std::optional<Word_t> upper_inclusive
-        ) {
-            return JudyIntIntMapIterator<Word_t, _SelectKey>(s, lower_inclusive, upper_inclusive);
-        },
-            nb::kw_only(),
-            nb::arg("lower_inclusive").none() = nb::none(),
-            nb::arg("upper_inclusive").none() = nb::none(),
-            nb::rv_policy::reference
+        .def("__iter__", []
+            (
+                std::shared_ptr<JudyIntIntMap>& s
+            )
+            {
+                return JudyIntIntMapIterator<Word_t, _SelectKey>(s, 0, std::numeric_limits<Word_t>::max());
+            }
         )
         .def("keys", [](
             std::shared_ptr<JudyIntIntMap>& s,
@@ -235,7 +232,10 @@ NB_MODULE(_judy_nb, m) {
             nb::sig("def __contains__(self, arg: typing.Any, /) -> typing.Literal[False]")
         )
         .def("add", &JudyIntSet::Add)
-        .def("remove", &JudyIntSet::Remove)
+
+        //.def("pop", [](
+        .def("discard", [](std::shared_ptr<JudyIntSet>& s, Word_t v) { s->Remove(v, false); })
+        .def("remove", [](std::shared_ptr<JudyIntSet>& s, Word_t v) { s->Remove(v, true); })
         .def("__getitem__", &JudyIntSet::GetItem)
         .def(
             "__getitem__",
@@ -243,7 +243,15 @@ NB_MODULE(_judy_nb, m) {
             nb::arg("index").none(),
             nb::sig("def __getitem__(self, arg: typing.Any, /) -> typing.NoReturn")
         )
-        .def("__iter__", [](
+        .def("__iter__", []
+            (
+                std::shared_ptr<JudyIntSet>& s
+            )
+            {
+                return JudyIntSetIterator(s, 0, std::numeric_limits<Word_t>::max());
+            }
+        )
+        .def("ranged_iterator", [](
             std::shared_ptr<JudyIntSet>& s,
             std::optional<Word_t> lower_inclusive,
             std::optional<Word_t> upper_inclusive

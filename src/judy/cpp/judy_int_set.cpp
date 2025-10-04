@@ -8,12 +8,12 @@ JudyIntSet::JudyIntSet()
 JudyIntSet::~JudyIntSet()
 {
     nb::ft_lock_guard guard(mutex);
-    Word_t bytes = 0;
 
-    if (judy_set != nullptr)
+    if (judy_set != nullptr) {
+        Word_t bytes = 0;
         J1FA(bytes, judy_set);
-
-    judy_set = nullptr;
+        judy_set = nullptr;
+    }
 }
 
 std::string JudyIntSet::ToString()
@@ -78,15 +78,19 @@ void JudyIntSet::Add(Word_t value)
 
     J1S(i, judy_set, value);
 
-    if (i == 0)
+    if (i == JERR)
         throw std::bad_alloc();
 }
 
 void JudyIntSet::Clear()
 {
     nb::ft_lock_guard guard(mutex);
-    Word_t freed = 0;
-    J1FA(freed, judy_set);
+
+    if (judy_set != nullptr) {
+        Word_t bytes = 0;
+        J1FA(bytes, judy_set);
+        judy_set = nullptr;
+    }
 }
 
 Word_t JudyIntSet::GetItem(Py_ssize_t index)
@@ -109,7 +113,7 @@ Word_t JudyIntSet::GetItem(Py_ssize_t index)
     return w;
 }
 
-void JudyIntSet::Remove(Word_t value)
+void JudyIntSet::Remove(Word_t value, bool raise_key_error)
 {
     bool key_error = false;
     int i = 0;
@@ -127,7 +131,7 @@ void JudyIntSet::Remove(Word_t value)
         }
     }
 
-    if (key_error)
+    if (raise_key_error && key_error)
         throw nb::key_error(std::to_string(value).c_str());
 }
 
