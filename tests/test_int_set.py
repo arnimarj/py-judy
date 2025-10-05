@@ -1,6 +1,7 @@
 import itertools
 import random
 
+import numpy
 import pytest
 import judy
 
@@ -166,7 +167,19 @@ def test_pop() -> None:
 
 
 def test_from_array() -> None:
-    raise NotImplementedError
+    n = 1000
+
+    a8 = numpy.random.randint(0, 2**8-1, size=n, dtype=numpy.uint8)
+    assert sorted(set(a8.tolist())) == sorted(judy.JudyIntSet.FromArray(a8))
+
+    a16 = numpy.random.randint(0, 2**16-1, size=n, dtype=numpy.uint16)
+    assert sorted(set(a16.tolist())) == sorted(judy.JudyIntSet.FromArray(a16))
+
+    a32 = numpy.random.randint(0, 2**32-1, size=n, dtype=numpy.uint32)
+    assert sorted(set(a32.tolist())) == sorted(judy.JudyIntSet.FromArray(a32))
+
+    a64 = numpy.random.randint(0, 2**64-1, size=n, dtype=numpy.uint64)
+    assert sorted(set(a64.tolist())) == sorted(judy.JudyIntSet.FromArray(a64))
 
 
 def test_concurrent_mutations() -> None:
