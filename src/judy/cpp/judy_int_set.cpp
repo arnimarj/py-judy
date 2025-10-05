@@ -136,6 +136,25 @@ void JudyIntSet::Remove(Word_t value, bool raise_key_error)
 }
 
 
+std::optional<Word_t> JudyIntSet::Pop()
+{
+    nb::ft_lock_guard guard(mutex);
+    int i = 0;
+    Word_t key = 0;
+
+    if (judy_set == nullptr)
+        return {};
+
+    J1F(i, judy_set, key);
+ 
+    if (i == 0)
+        return {};
+
+    J1U(i, judy_set, key);
+    return key;
+}
+
+
 JudyIntSetIterator::JudyIntSetIterator(
     std::shared_ptr<JudyIntSet> parent,
     std::optional<Word_t> lower_inclusive,

@@ -232,8 +232,19 @@ NB_MODULE(_judy_nb, m) {
             nb::sig("def __contains__(self, arg: typing.Any, /) -> typing.Literal[False]")
         )
         .def("add", &JudyIntSet::Add)
+        .def("pop", []
+            (
+                std::shared_ptr<JudyIntSet>& s
+            )
+            {
+                auto v = s->Pop();
 
-        //.def("pop", [](
+                if (!v.has_value())
+                    throw nb::key_error("pop from an empy set");
+
+                return v.value();
+            }
+        )
         .def("discard", [](std::shared_ptr<JudyIntSet>& s, Word_t v) { s->Remove(v, false); })
         .def("remove", [](std::shared_ptr<JudyIntSet>& s, Word_t v) { s->Remove(v, true); })
         .def("__getitem__", &JudyIntSet::GetItem)
