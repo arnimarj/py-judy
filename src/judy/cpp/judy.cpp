@@ -274,6 +274,16 @@ NB_MODULE(_judy_nb, m) {
             nb::arg("upper_inclusive").none() = nb::none(),
             nb::rv_policy::reference
         )
+        .def(
+            "__eq__",
+            [](const JudyIntSet&, std::optional<nb::handle>) { throw nb::type_error(); },
+            nb::sig("def __eq__(self, arg: typing.Any, /) -> typing.NoReturn")
+        )
+        .def(
+            "__ne__",
+            [](const JudyIntSet&, std::optional<nb::handle>) { throw nb::type_error(); },
+            nb::sig("def __ne__(self, arg: typing.Any, /) -> typing.NoReturn")
+        )
         .def("__str__", &JudyIntSet::ToString)
         .def("__repr__", &JudyIntSet::ToString)
         .def("__len__", &JudyIntSet::size)

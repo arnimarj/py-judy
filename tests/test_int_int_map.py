@@ -4,6 +4,7 @@ import judy as j
 def test_judy_int_set() -> None:
     s = j.JudyIntSet()
     assert len(s) == 0
+    assert dir(s) == []
 
 
 def test_judy_int_int_map() -> None:

@@ -13,7 +13,7 @@ else
 fi
 
 if [[ ! ${COPT} ]]; then
-	COPT="-DJU_64BIT -O0 -fPIC -fno-strict-aliasing"
+	COPT="-DJU_64BIT -O2 -fPIC -fno-strict-aliasing"
 fi
 
 

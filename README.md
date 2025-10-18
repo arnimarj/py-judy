@@ -1,5 +1,20 @@
 TBD
 
+# common interfaces
+init
+contains
+len
+clear
+__sizeof__
+__getitem__
+__setitem__
+__delitem__
+pop
+get
+by_index (x)
+keyimps/values/items/iter with ranges
+FromArray
+
 KeysView/ValuesView/ItemsView for iterators
 TestSuite
 CI+Build Setup
@@ -24,3 +39,4 @@ DONE
 * Make classes generic
 * Avoid installing CPP files on pip-install
 * Ranged Iterators
+

@@ -184,3 +184,26 @@ def test_from_array() -> None:
 
 def test_concurrent_mutations() -> None:
     raise NotImplementedError
+
+
+def test_compare() -> None:
+    s = judy.JudyIntSet()
+    t = judy.JudyIntSet()
+
+    with pytest.raises(TypeError):
+        s < t
+
+    with pytest.raises(TypeError):
+        s > t
+
+    with pytest.raises(TypeError):
+        s <= t
+
+    with pytest.raises(TypeError):
+        s >= t
+
+    with pytest.raises(TypeError):
+        s == t
+
+    with pytest.raises(TypeError):
+        s != t
