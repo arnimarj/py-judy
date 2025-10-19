@@ -48,11 +48,17 @@ def test_insert_query_clear() -> None:
     assert list(m.keys()) == list(key_range)
     assert list(m.keys()) == list(key_range)
 
-    for key, value in zip(iter(key_range), iter(value_range)):
+    for i, (key, value) in enumerate(zip(iter(key_range), iter(value_range))):
+        with pytest.raises(IndexError):
+            assert m.by_index(i)
+
         assert key in m
         assert m[key] == value
         assert m.get(key) == value
         assert m.get(key, 1337) == value
+        assert m.by_index(i) == value
+
+    _contains_items(m, list(zip(iter(key_range), iter(value_range))))
 
     for key in range(1, 16_000, 16):
         assert key not in m
@@ -79,16 +85,12 @@ def test_insert_query_clear() -> None:
 
 
 # FromArray
-# contains
 # delitem
-# eq
-# getiem
 # iter
 # repr/str
 # by_index
 # clear/get/pop
 
-# clear
 # copy
 # fromkeys
 # get

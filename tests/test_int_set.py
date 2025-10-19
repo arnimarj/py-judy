@@ -13,14 +13,22 @@ def _shuffled(s: list[int]) -> list[int]:
 
 
 def test_insert_query_clear() -> None:
-    # basic insert, query, clear
     s = judy.JudyIntSet()
 
     assert len(s) == 0
     assert list(s) == []
 
-    for key in _shuffled(list(range(0, 10_000, 16))):
+    keys = list(range(0, 10_000, 16))
+
+    for index in range(-100, 100):
+        with pytest.raises(IndexError):
+            s.by_index(index)
+
+    for key in _shuffled(keys):
         s.add(key)
+
+    for i, k in enumerate(sorted(keys)):
+        assert s.by_index(i) == k
 
     assert len(s) == 625
     assert list(s) == list(range(0, 10_000, 16))

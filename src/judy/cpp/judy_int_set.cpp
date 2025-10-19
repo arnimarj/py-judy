@@ -155,6 +155,25 @@ std::optional<Word_t> JudyIntSet::Pop()
 }
 
 
+Word_t JudyIntSet::ByIndex(Py_ssize_t index)
+{
+    if (index < 0)
+        throw nb::index_error();
+
+    nb::ft_lock_guard guard(mutex);
+
+    // NOTE: judy index is 1-based
+    int i = 0;
+    Word_t k = 0;
+    J1BC(i, judy_set, index + 1, k);
+
+    if (i == 0)
+        throw nb::index_error();
+
+    return k;
+}
+
+
 JudyIntSetIterator::JudyIntSetIterator(
     std::shared_ptr<JudyIntSet> parent,
     std::optional<Word_t> lower_inclusive,

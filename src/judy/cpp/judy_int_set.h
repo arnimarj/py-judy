@@ -40,6 +40,7 @@ struct JudyIntSet {
     Word_t GetItem(Py_ssize_t index);
     void Remove(Word_t value, bool raise_key_error);
     std::optional<Word_t> Pop();
+    Word_t ByIndex(Py_ssize_t index);
 
     template <typename T>
     static JudyIntSet FromSpan(const std::span<T> view)
