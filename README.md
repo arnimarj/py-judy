@@ -1,6 +1,9 @@
 TBD
+# 
+set.update
+KeysView for iterator
 
-# common interfaces
+# dict interfaces
 init
 contains
 len
@@ -39,4 +42,3 @@ DONE
 * Make classes generic
 * Avoid installing CPP files on pip-install
 * Ranged Iterators
-

@@ -207,3 +207,12 @@ def test_compare() -> None:
 
     with pytest.raises(TypeError):
         s != t
+
+
+def test_sizeof() -> None:
+    s = judy.JudyIntSet()
+    empty = s.__sizeof__()
+    for _ in range(1000):
+        s.add(_)
+    bigger = s.__sizeof__()
+    assert empty < bigger

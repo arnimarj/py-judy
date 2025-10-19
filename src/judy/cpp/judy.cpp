@@ -124,6 +124,16 @@ NB_MODULE(_judy_nb, m) {
         .def("__str__", &JudyIntIntMap::ToString)
         .def("__repr__", &JudyIntIntMap::ToString)
         .def("__sizeof__", &JudyIntIntMap::size_of)
+        .def(
+            "__eq__",
+            [](const JudyIntIntMap&, std::optional<nb::handle>) { throw nb::type_error(); },
+            nb::sig("def __eq__(self, arg: typing.Any, /) -> typing.NoReturn")
+        )
+        .def(
+            "__ne__",
+            [](const JudyIntIntMap&, std::optional<nb::handle>) { throw nb::type_error(); },
+            nb::sig("def __ne__(self, arg: typing.Any, /) -> typing.NoReturn")
+        )
         .def("get", &JudyIntIntMap::Get, nb::arg("index"))
         .def(
             "get",
