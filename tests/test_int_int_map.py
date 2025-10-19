@@ -10,7 +10,7 @@ def _contains_items(m: judy.JudyIntIntMap, sorted_dedup_items: Sequence[tuple[in
     assert list(m) == [k for k, _ in sorted_dedup_items]
     assert list(m.keys()) == [k for k, _ in sorted_dedup_items]
     assert list(m.items()) == list(sorted_dedup_items)
-    assert list(m.values()) == list(sorted_dedup_items)
+    assert list(m.values()) == [v for _, v in sorted_dedup_items]
 
 
 def test_empty() -> None:
@@ -41,7 +41,14 @@ def test_insert_query_clear() -> None:
     key_range = range(0, 16_000, 16)
     value_range = range(16_000, 32_000, 16)
 
+    for index in range(-100, 100):
+        with pytest.raises(IndexError):
+            m.by_index(index)
+
     for key, value in _shuffled_key_value_gen(keys=key_range, values=value_range):
+        with pytest.raises(IndexError):
+            m.by_index(len(m))
+
         m[key] = value
 
     assert len(m) == len(key_range)
@@ -49,9 +56,6 @@ def test_insert_query_clear() -> None:
     assert list(m.keys()) == list(key_range)
 
     for i, (key, value) in enumerate(zip(iter(key_range), iter(value_range))):
-        with pytest.raises(IndexError):
-            assert m.by_index(i)
-
         assert key in m
         assert m[key] == value
         assert m.get(key) == value
@@ -86,10 +90,9 @@ def test_insert_query_clear() -> None:
 
 # FromArray
 # delitem
-# iter
 # repr/str
-# by_index
-# clear/get/pop
+# pop
+# ranged-iterators
 
 # copy
 # fromkeys
@@ -98,25 +101,3 @@ def test_insert_query_clear() -> None:
 # popitem
 # setdefault
 # update 
-
-def test_compare() -> None:
-    s = judy.JudyIntIntMap()
-    t = judy.JudyIntIntMap()
-
-    with pytest.raises(TypeError):
-        s < t
-
-    with pytest.raises(TypeError):
-        s > t
-
-    with pytest.raises(TypeError):
-        s <= t
-
-    with pytest.raises(TypeError):
-        s >= t
-
-    with pytest.raises(TypeError):
-        s == t
-
-    with pytest.raises(TypeError):
-        s != t

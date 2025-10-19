@@ -99,6 +99,16 @@ NB_MODULE(_judy_nb, m) {
             &JudyIntObjectMap::ByIndex,
             nb::sig("def by_index(self, arg: int, /) -> T")
         )
+        .def(
+            "__eq__",
+            [](const JudyIntObjectMap&, std::optional<nb::handle>) { throw nb::type_error(); },
+            nb::sig("def __eq__(self, arg: typing.Any, /) -> typing.NoReturn")
+        )
+        .def(
+            "__ne__",
+            [](const JudyIntObjectMap&, std::optional<nb::handle>) { throw nb::type_error(); },
+            nb::sig("def __ne__(self, arg: typing.Any, /) -> typing.NoReturn")
+        )
     ;
 
     nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")

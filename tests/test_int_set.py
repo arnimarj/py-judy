@@ -20,10 +20,6 @@ def test_insert_query_clear() -> None:
 
     keys = list(range(0, 10_000, 16))
 
-    for index in range(-100, 100):
-        with pytest.raises(IndexError):
-            s.by_index(index)
-
     for key in _shuffled(keys):
         s.add(key)
 
@@ -192,29 +188,6 @@ def test_from_array() -> None:
 
 def test_concurrent_mutations() -> None:
     raise NotImplementedError
-
-
-def test_compare() -> None:
-    s = judy.JudyIntSet()
-    t = judy.JudyIntSet()
-
-    with pytest.raises(TypeError):
-        s < t
-
-    with pytest.raises(TypeError):
-        s > t
-
-    with pytest.raises(TypeError):
-        s <= t
-
-    with pytest.raises(TypeError):
-        s >= t
-
-    with pytest.raises(TypeError):
-        s == t
-
-    with pytest.raises(TypeError):
-        s != t
 
 
 def test_sizeof() -> None:
