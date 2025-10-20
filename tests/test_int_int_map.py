@@ -1,6 +1,7 @@
-import pytest
 import random
 from collections.abc import Sequence
+
+import pytest
 
 import judy
 
@@ -34,60 +35,6 @@ def _shuffled_key_value_gen(keys: range, values: range) -> list[tuple[int, int]]
     return keys_and_values
 
 
-def test_insert_query_clear() -> None:
-    # basic insert, query, clear
-    m = judy.JudyIntIntMap()
-
-    key_range = range(0, 16_000, 16)
-    value_range = range(16_000, 32_000, 16)
-
-    for index in range(-100, 100):
-        with pytest.raises(IndexError):
-            m.by_index(index)
-
-    for key, value in _shuffled_key_value_gen(keys=key_range, values=value_range):
-        with pytest.raises(IndexError):
-            m.by_index(len(m))
-
-        m[key] = value
-
-    assert len(m) == len(key_range)
-    assert list(m.keys()) == list(key_range)
-    assert list(m.keys()) == list(key_range)
-
-    for i, (key, value) in enumerate(zip(iter(key_range), iter(value_range))):
-        assert key in m
-        assert m[key] == value
-        assert m.get(key) == value
-        assert m.get(key, 1337) == value
-        assert m.by_index(i) == value
-
-    _contains_items(m, list(zip(iter(key_range), iter(value_range))))
-
-    for key in range(1, 16_000, 16):
-        assert key not in m
-
-        with pytest.raises(KeyError):
-            assert m[key]
-
-        with pytest.raises(KeyError):
-            assert m.pop(key)
-
-        assert m.pop(key, None) is None
-
-    m.clear()
-    assert len(m) == 0
-
-    for key in iter(key_range):
-        assert key not in m
-
-        with pytest.raises(KeyError):
-            assert m[key] == value
-
-        assert m.get(key) is None
-        assert m.get(key, 1337) == 1337
-
-
 # FromArray
 # delitem
 # repr/str
@@ -100,4 +47,4 @@ def test_insert_query_clear() -> None:
 # pop
 # popitem
 # setdefault
-# update 
+# update

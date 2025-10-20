@@ -59,3 +59,19 @@ test-command = [
 
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "10.14"
+
+[tool.black]
+line-length = 120
+skip-string-normalization = 1
+
+[tool.isort]
+case_sensitive = true
+combine_as_imports = true
+force_alphabetical_sort_within_sections = true
+honor_noqa = true
+known_first_party = ["judy"]
+length_sort = false
+line_length = 120
+lines_after_imports = 2
+lines_between_types = false
+profile = "black"

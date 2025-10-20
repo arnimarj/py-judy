@@ -171,9 +171,8 @@ nb::handle JudyIntObjectMap::Pop(Word_t key)
     void* v = nullptr;
     JLG(v, judy_map, key);
 
-    if (v == nullptr) {
+    if (v == nullptr)
         throw nb::key_error(std::to_string(key).c_str());
-    }
 
     Word_t value = *((Word_t*)v);
     int i = 0;

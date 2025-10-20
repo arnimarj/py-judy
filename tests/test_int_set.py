@@ -3,6 +3,7 @@ import random
 
 import numpy
 import pytest
+
 import judy
 
 
@@ -149,7 +150,9 @@ def test_ranged_iterators() -> None:
         assert sorted(key for key in py_set if key <= upper) == list(judy_set.ranged_iterator(upper_inclusive=upper))
 
     for lower, upper in itertools.product(lowers, uppers):
-        assert sorted(key for key in py_set if lower <= key <= upper) == list(judy_set.ranged_iterator(lower_inclusive=lower, upper_inclusive=upper))
+        assert sorted(key for key in py_set if lower <= key <= upper) == list(
+            judy_set.ranged_iterator(lower_inclusive=lower, upper_inclusive=upper)
+        )
 
 
 def test_pop() -> None:
@@ -173,16 +176,16 @@ def test_pop() -> None:
 def test_from_array() -> None:
     n = 1000
 
-    a8 = numpy.random.randint(0, 2**8-1, size=n, dtype=numpy.uint8)
+    a8 = numpy.random.randint(0, 2**8 - 1, size=n, dtype=numpy.uint8)
     assert sorted(set(a8.tolist())) == sorted(judy.JudyIntSet.FromArray(a8))
 
-    a16 = numpy.random.randint(0, 2**16-1, size=n, dtype=numpy.uint16)
+    a16 = numpy.random.randint(0, 2**16 - 1, size=n, dtype=numpy.uint16)
     assert sorted(set(a16.tolist())) == sorted(judy.JudyIntSet.FromArray(a16))
 
-    a32 = numpy.random.randint(0, 2**32-1, size=n, dtype=numpy.uint32)
+    a32 = numpy.random.randint(0, 2**32 - 1, size=n, dtype=numpy.uint32)
     assert sorted(set(a32.tolist())) == sorted(judy.JudyIntSet.FromArray(a32))
 
-    a64 = numpy.random.randint(0, 2**64-1, size=n, dtype=numpy.uint64)
+    a64 = numpy.random.randint(0, 2**64 - 1, size=n, dtype=numpy.uint64)
     assert sorted(set(a64.tolist())) == sorted(judy.JudyIntSet.FromArray(a64))
 
 
@@ -193,7 +196,9 @@ def test_concurrent_mutations() -> None:
 def test_sizeof() -> None:
     s = judy.JudyIntSet()
     empty = s.__sizeof__()
+
     for _ in range(1000):
         s.add(_)
+
     bigger = s.__sizeof__()
     assert empty < bigger
