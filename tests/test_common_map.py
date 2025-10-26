@@ -1,13 +1,13 @@
-from typing import TypeAlias
+from typing import Any, TypeAlias
 
 import pytest
 
 import judy
 
-from .test_common import _contains_items, _key_value_gen
+from .test_utils import judy_dict_contains_items, key_value_gen
 
 
-JudyMap: TypeAlias = judy.JudyIntIntMap | judy.JudyIntObjectMap
+JudyMap: TypeAlias = judy.JudyIntIntMap | judy.JudyIntObjectMap[Any]
 JudyMaps: tuple[type[JudyMap], ...] = (judy.JudyIntIntMap, judy.JudyIntObjectMap)
 
 
@@ -19,7 +19,7 @@ def test_insert_query_clear(klass: type[JudyMap]) -> None:
     key_range = range(0, 16_000, 16)
     value_range = range(16_000, 32_000, 16)
 
-    for key, value in _key_value_gen(keys=key_range, values=value_range, shuffle=True):
+    for key, value in key_value_gen(keys=key_range, values=value_range, shuffle=True):
         with pytest.raises(IndexError):
             m.by_index(len(m))
 
@@ -36,7 +36,7 @@ def test_insert_query_clear(klass: type[JudyMap]) -> None:
         assert m.get(key, 1337) == value
         assert m.by_index(i) == value
 
-    _contains_items(m, list(zip(iter(key_range), iter(value_range))))
+    judy_dict_contains_items(m, list(zip(iter(key_range), iter(value_range))))
 
     for key in range(1, 16_000, 16):
         assert key not in m

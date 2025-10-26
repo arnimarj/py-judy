@@ -1,14 +1,6 @@
-from collections.abc import Sequence
-
 import judy
 
-
-def _contains_items(m: judy.JudyIntIntMap, sorted_dedup_items: Sequence[tuple[int, int]]) -> None:
-    assert len(m) == len(sorted_dedup_items)
-    assert list(m) == [k for k, _ in sorted_dedup_items]
-    assert list(m.keys()) == [k for k, _ in sorted_dedup_items]
-    assert list(m.items()) == list(sorted_dedup_items)
-    assert list(m.values()) == [v for _, v in sorted_dedup_items]
+from .test_utils import judy_set_contains_items
 
 
 def test_empty() -> None:
@@ -22,4 +14,4 @@ def test_empty() -> None:
         assert [] == list(s.items())
         s.clear()
 
-    _contains_items(s, [])
+    judy_set_contains_items(s, [])
