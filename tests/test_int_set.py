@@ -7,13 +7,8 @@ import pytest
 import judy
 
 
-def _shuffled(s: list[int]) -> list[int]:
-    s = s[:]
-    random.shuffle(s)
-    return s
-
-
-def test_insert_query_clear() -> None:
+@pytest.mark.parametrize('shuffled_insertion', [True, False])
+def test_insert_query_clear(*, shuffled_insertion: bool) -> None:
     s = judy.JudyIntSet()
 
     assert len(s) == 0
@@ -21,11 +16,15 @@ def test_insert_query_clear() -> None:
 
     keys = list(range(0, 10_000, 16))
 
-    for key in _shuffled(keys):
+    if shuffled_insertion:
+        random.shuffle(keys)
+
+    for key in keys:
         s.add(key)
 
     for i, k in enumerate(sorted(keys)):
         assert s.by_index(i) == k
+        assert s[i] == k
 
     assert len(s) == 625
     assert list(s) == list(range(0, 10_000, 16))

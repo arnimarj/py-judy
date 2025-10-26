@@ -1,0 +1,23 @@
+int-int-map 
+'FromArray'
+'__delitem__'
+'__iter__',
+'__repr__'
+'__setitem__'
+'__sizeof__'
+'__str__'
+'keys'
+'items'
+'values'
+ranged-iterator variant of keys/values/items
+
+int-object-map 
+'__delitem__'
+'__nb_signature__'
+'__repr__'
+'__sizeof__'
+'__str__'
+'keys'
+'items'
+'values'
+ranged-iterator variant of keys/values/items

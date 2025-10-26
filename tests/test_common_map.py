@@ -27,7 +27,6 @@ def test_insert_query_clear(klass: type[JudyMap]) -> None:
 
     assert len(m) == len(key_range)
     assert list(m.keys()) == list(key_range)
-    assert list(m.keys()) == list(key_range)
 
     for i, (key, value) in enumerate(zip(iter(key_range), iter(value_range))):
         assert key in m
