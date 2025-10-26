@@ -1,7 +1,4 @@
-import random
 from collections.abc import Sequence
-
-import pytest
 
 import judy
 
@@ -26,25 +23,3 @@ def test_empty() -> None:
         s.clear()
 
     _contains_items(s, [])
-
-
-def _shuffled_key_value_gen(keys: range, values: range) -> list[tuple[int, int]]:
-    assert len(keys) == len(values)
-    keys_and_values = list(zip(iter(keys), iter(values)))
-    random.shuffle(keys_and_values)
-    return keys_and_values
-
-
-# FromArray
-# delitem
-# repr/str
-# pop
-# ranged-iterators
-
-# copy
-# fromkeys
-# get
-# pop
-# popitem
-# setdefault
-# update

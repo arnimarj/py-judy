@@ -189,6 +189,7 @@ def test_from_array() -> None:
     assert sorted(set(a64.tolist())) == sorted(judy.JudyIntSet.FromArray(a64))
 
 
+@pytest.mark.skip(reason='This test is currently under development')
 def test_concurrent_mutations() -> None:
     raise NotImplementedError
 

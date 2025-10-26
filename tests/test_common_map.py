@@ -4,9 +4,11 @@ import pytest
 
 import judy
 
+from .test_common import _contains_items, _key_value_gen
+
 
 JudyMap: TypeAlias = judy.JudyIntIntMap | judy.JudyIntObjectMap
-JudyMaps: tuple[type[JudyMaps], ...] = (judy.JudyIntIntMap, judy.JudyIntObjectMap)
+JudyMaps: tuple[type[JudyMap], ...] = (judy.JudyIntIntMap, judy.JudyIntObjectMap)
 
 
 @pytest.mark.parametrize('klass', JudyMaps)

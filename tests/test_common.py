@@ -33,19 +33,19 @@ def test_compare(klass: type[JudyContainer]) -> None:
     t = klass()
 
     with pytest.raises(TypeError):
-        s < t
+        s < t  # noqa: B015
 
     with pytest.raises(TypeError):
-        s > t
+        s > t  # noqa: B015
 
     with pytest.raises(TypeError):
-        s <= t
+        s <= t  # noqa: B015
 
     with pytest.raises(TypeError):
-        s >= t
+        s >= t  # noqa: B015
 
     with pytest.raises(TypeError):
-        s == t
+        s == t  # noqa: B015
 
     with pytest.raises(TypeError):
-        s != t
+        s != t  # noqa: B015
