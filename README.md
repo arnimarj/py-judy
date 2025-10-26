@@ -1,44 +1,43 @@
-TBD
-# 
-set.update
-KeysView for iterator
+ Feature TBD
+-----------
 
-# dict interfaces
-init
-contains
-len
-clear
-__sizeof__
-__getitem__
-__setitem__
-__delitem__
-pop
-get
-by_index (x)
-keyimps/values/items/iter with ranges
-FromArray
+ * set.update
+ * Keys/Items/ValueView for dict iterators
+ * ranged-iterators which don't conflict with `keys()/items()/values()`
+ * batched bi-section
+ * implement `Next(key, default=...)` which returns smallest key LE to `key`
+ * `judy.JudyIntSet()` to numpy array
+ * `judy.JudyIntIntMap()` to numpy arrays
+ * `set/dict.by_index()`
 
-KeysView/ValuesView/ItemsView for iterators
-TestSuite
-CI+Build Setup
-StressTestSuite for free threading
-(batched) BisectLeft
-IntObjectMap
-test IntObjectMap ref-cycles under free-threading (do we need mutex lock under traverse/clear?)
+Quality TBD
+-----------
 
-consisten API betwewen int-object/int-int maps, and possibly code reuse
+ * stress test under ASAN/TSAN in free-threading Python
+ * consolidate exposed interfaces for `judy.JudyIntObjectMap/JudyIntIntMap`
+ * test ref-cycles in `judy.JudyIntObjectMap`
+ * implement cycle-detector for `judy.JudyIntObjectMap.__str__()/__repr__()`
 
-NOTES
+Potential Future Features
+-------------------------
 
-cmake -S . -B build
- 	cmake --build build
-cmake -S . -B build -DPython_EXECUTABLE=`which python3`
+ * `set/dict.copy()`
+ * `set/dict.update()`
+ * `set.discard()`
 
-cibuildwheel --config-file pyproject.toml --output-dir wheelhouse
+ * `set.difference/intersection/symmetric_difference`
+ * `..._update()` variants of these 3
+ * `set.isdisjoint/issubset/issuperset`
+ * `set.pop/remove()`
+ * `dict.pop/popitem()`
+ * `dict.setdefault()`
+ * `dict.fromkeys`
 
 
-DONE
-* Auto Stub Generation
-* Make classes generic
-* Avoid installing CPP files on pip-install
-* Ranged Iterators
+Notes:
+------
+ * `PIP_INDEX_URL=https://pypi.org/simple pip install nanobind scikit-build-core`
+ * `cmake -S . -B build`
+ * `cmake --build build`
+ * `cmake -S . -B build -DPython_EXECUTABLE=$(which python3)`
+ * `cibuildwheel --config-file pyproject.toml --output-dir wheelhouse`

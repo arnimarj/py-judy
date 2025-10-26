@@ -3,3 +3,5 @@ CMakeFiles/
 src/judy/_judy_nb.pyi
 wheelhouse/
 build/
+_trial_temp/
+src/judy/_judy_nb.so
