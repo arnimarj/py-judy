@@ -27,10 +27,16 @@ static Word_t MapIterSelectValue(Word_t key, Word_t value)
     { return value; }
 static std::pair<Word_t, Word_t> MapIterSelectItem(Word_t key, Word_t value)
     { return std::pair(key, value); }
+
 static std::pair<Word_t, nb::handle> MapIterSelectItemAsObject(Word_t key, Word_t value)
-    { auto obj = (PyObject*)(value); return std::pair(key, nb::borrow(obj)); }
+{
+    return std::pair(key, nb::borrow((PyObject*)(value)));
+}
+
 static nb::handle MapIterSelectValueAsObject(Word_t key, Word_t value)
-    { auto obj = (PyObject*)(value); return nb::borrow(obj); }
+{
+    return nb::borrow((PyObject*)(value));
+}
 
 
 PyType_Slot int_object_map_gc_slots[] = {

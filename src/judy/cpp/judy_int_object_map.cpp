@@ -173,16 +173,15 @@ nb::handle JudyIntObjectMap::Pop(Word_t key)
     if (v == nullptr)
         throw nb::key_error(std::to_string(key).c_str());
 
-    Word_t value = *((Word_t*)v);
+    auto object = nb::handle(*((PyObject**)v));
     int i = 0;
     JLD(i, judy_map, key);
 
     if (i == JERR)
         throw std::bad_alloc();
 
-    auto h = nb::handle(*((PyObject**)v));
-    h.dec_ref();
-    return h;
+    object.dec_ref();
+    return object;
 }
 
 
