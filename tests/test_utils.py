@@ -14,7 +14,9 @@ def key_value_gen(keys: range, values: range, *, shuffle: bool) -> list[tuple[in
     return keys_and_values
 
 
-def judy_dict_contains_items(m: judy.JudyIntIntMap | judy.JudyIntObjectMap[int], sorted_dedup_items: Sequence[tuple[int, int]]) -> None:
+def judy_dict_contains_items(
+    m: judy.JudyIntIntMap | judy.JudyIntObjectMap[int], sorted_dedup_items: Sequence[tuple[int, int]]
+) -> None:
     assert len(m) == len(sorted_dedup_items)
     assert list(m) == [k for k, _ in sorted_dedup_items]
     assert list(m.keys()) == [k for k, _ in sorted_dedup_items]

@@ -1,12 +1,4 @@
-int-int-map 
-'__delitem__'
-'__setitem__'
-ranged-iterator variant of keys/values/items
-
 int-object-map 
-'__delitem__'
-'__nb_signature__'
 '__repr__'
 '__sizeof__'
 '__str__'
-ranged-iterator variant of keys/values/items

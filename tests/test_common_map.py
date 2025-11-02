@@ -2,10 +2,12 @@ import itertools
 import random
 from typing import Any, TypeAlias
 
-import judy
 import pytest
 
+import judy
+
 from .test_utils import judy_dict_contains_items, key_value_gen
+
 
 JudyMap: TypeAlias = judy.JudyIntIntMap | judy.JudyIntObjectMap[Any]
 JudyMaps: tuple[type[JudyMap], ...] = (judy.JudyIntIntMap, judy.JudyIntObjectMap)
@@ -73,19 +75,52 @@ def test_ranged_iterators(klass: type[JudyMap]) -> None:
     for key in keys:
         judy_map[key] = key * 2
 
+    s_keys = sorted(keys)
+    s_values = [key * 2 for key in s_keys]
+
     assert len(judy_map) == len(keys)
     assert list(judy_map) == sorted(keys)
 
     lowers = list(range(0, UPPER, RANGE_INC))
     uppers = list(range(0, UPPER, RANGE_INC))
 
+    def _in_range(*, lower_inclusive: int | None = None, upper_inclusive: int | None = None) -> list[tuple[int, int]]:
+        return [
+            (key, value)
+            for key, value in zip(s_keys, s_values)
+            if (lower_inclusive is None or key >= lower_inclusive)
+            and (upper_inclusive is None or key <= upper_inclusive)
+        ]
+
     for lower in lowers:
-        assert sorted(key for key in keys if lower <= key) == list(judy_map.keys(lower_inclusive=lower))
+        assert [kv[0] for kv in _in_range(lower_inclusive=lower)] == list(judy_map.keys(lower_inclusive=lower))
+        assert [kv[1] for kv in _in_range(lower_inclusive=lower)] == list(judy_map.values(lower_inclusive=lower))
+        assert _in_range(lower_inclusive=lower) == list(judy_map.items(lower_inclusive=lower))
 
     for upper in uppers:
-        assert sorted(key for key in keys if key <= upper) == list(judy_map.keys(upper_inclusive=upper))
+        assert [kv[0] for kv in _in_range(upper_inclusive=upper)] == list(judy_map.keys(upper_inclusive=upper))
+        assert [kv[1] for kv in _in_range(upper_inclusive=upper)] == list(judy_map.values(upper_inclusive=upper))
+        assert _in_range(upper_inclusive=upper) == list(judy_map.items(upper_inclusive=upper))
 
     for lower, upper in itertools.product(lowers, uppers):
-        assert sorted(key for key in keys if lower <= key <= upper) == list(
+        assert [kv[0] for kv in _in_range(lower_inclusive=lower, upper_inclusive=upper)] == list(
             judy_map.keys(lower_inclusive=lower, upper_inclusive=upper)
         )
+        assert [kv[1] for kv in _in_range(lower_inclusive=lower, upper_inclusive=upper)] == list(
+            judy_map.values(lower_inclusive=lower, upper_inclusive=upper)
+        )
+        assert _in_range(lower_inclusive=lower, upper_inclusive=upper) == list(
+            judy_map.items(lower_inclusive=lower, upper_inclusive=upper)
+        )
+
+
+@pytest.mark.parametrize('klass', JudyMaps)
+def test_set_del(klass: type[JudyMap]) -> None:
+    m = klass()
+    assert len(m) == 0
+
+    m[10] = 20
+    assert len(m) == 1
+
+    m[10] = 30
+    assert len(m) == 1

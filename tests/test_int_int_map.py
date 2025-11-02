@@ -1,6 +1,7 @@
-import pytest
-import judy
 import numpy
+import pytest
+
+import judy
 
 from .test_utils import judy_set_contains_items
 
