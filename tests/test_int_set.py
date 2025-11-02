@@ -1,10 +1,10 @@
 import itertools
 import random
 
-import numpy
+import judy
 import pytest
 
-import judy
+import numpy
 
 
 @pytest.mark.parametrize('shuffled_insertion', [True, False])

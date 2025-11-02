@@ -5,3 +5,4 @@ wheelhouse/
 build/
 _trial_temp/
 src/judy/_judy_nb.so
+.cmake/

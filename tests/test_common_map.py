@@ -1,11 +1,9 @@
 from typing import Any, TypeAlias
 
+import judy
 import pytest
 
-import judy
-
 from .test_utils import judy_dict_contains_items, key_value_gen
-
 
 JudyMap: TypeAlias = judy.JudyIntIntMap | judy.JudyIntObjectMap[Any]
 JudyMaps: tuple[type[JudyMap], ...] = (judy.JudyIntIntMap, judy.JudyIntObjectMap)

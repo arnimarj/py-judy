@@ -1,9 +1,7 @@
 from typing import TypeAlias
 
-import pytest
-
 import judy
-
+import pytest
 
 JudyContainer: TypeAlias = judy.JudyIntSet | judy.JudyIntIntMap | judy.JudyIntObjectMap
 JudyContainers: tuple[type[JudyContainer], ...] = (judy.JudyIntSet, judy.JudyIntIntMap, judy.JudyIntObjectMap)
