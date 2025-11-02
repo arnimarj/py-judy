@@ -124,3 +124,15 @@ def test_set_del(klass: type[JudyMap]) -> None:
 
     m[10] = 30
     assert len(m) == 1
+
+
+@pytest.mark.parametrize('klass', JudyMaps)
+def test_sizeof(klass: type[JudyMap]) -> None:
+    s = klass()
+    empty = s.__sizeof__()
+
+    for _ in range(1000):
+        s[_] = _ * 10_000
+
+    bigger = s.__sizeof__()
+    assert empty < bigger

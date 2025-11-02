@@ -55,14 +55,3 @@ def test_str_repr() -> None:
 
     assert str(m) == f'JudyIntIntMap({payload})'
     assert repr(m) == f'JudyIntIntMap({payload})'
-
-
-def test_sizeof() -> None:
-    s = judy.JudyIntIntMap()
-    empty = s.__sizeof__()
-
-    for _ in range(1000):
-        s[_] = _ * 10_000
-
-    bigger = s.__sizeof__()
-    assert empty < bigger
