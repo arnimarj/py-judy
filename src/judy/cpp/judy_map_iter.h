@@ -45,23 +45,15 @@ struct JudyMapIterator {
             } else {
                 JLF(v, judy_map_object->judy_map, key);
             }
-
             started = true;
 
-            if (v == nullptr) {
-                ended = true;
-                throw nb::stop_iteration();
-            }
-
-            CheckPastUpper(*((Word_t*)v));
-            return Func(key, *((Word_t*)v));
+        // next item
+        } else {
+            JLN(v, judy_map_object->judy_map, key);
         }
 
-        // next item
-        JLN(v, judy_map_object->judy_map, key);
-
         if (v != nullptr) {
-            CheckPastUpper(*((Word_t*)v));
+            CheckPastUpper(key);
             return Func(key, *((Word_t*)v));
         }
 

@@ -16,6 +16,7 @@ Quality TBD
  * stress test under ASAN/TSAN in free-threading Python
  * consolidate exposed interfaces for `judy.JudyIntObjectMap/JudyIntIntMap`
  * test ref-cycles in `judy.JudyIntObjectMap`
+ * test ref-leaks in `judy.JudyIntObjectMap` iterators
  * implement cycle-detector for `judy.JudyIntObjectMap.__str__()/__repr__()`
 
 Potential Future Features

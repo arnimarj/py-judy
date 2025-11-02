@@ -8,4 +8,4 @@ set -e
 
 cmake --build build
 # cmake -S . -B build -DPython_EXECUTABLE=$(which python3)
-PYTHONPATH=./src/ pytest tests/
+PYTHONPATH=./src/ pytest -s -vv tests/

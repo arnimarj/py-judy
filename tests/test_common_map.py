@@ -1,3 +1,5 @@
+import itertools
+import random
 from typing import Any, TypeAlias
 
 import judy
@@ -57,3 +59,33 @@ def test_insert_query_clear(klass: type[JudyMap]) -> None:
 
         assert m.get(key) is None
         assert m.get(key, 1337) == 1337
+
+
+@pytest.mark.parametrize('klass', JudyMaps)
+def test_ranged_iterators(klass: type[JudyMap]) -> None:
+    judy_map = klass()
+    UPPER = 10_000
+    COUNT = 10_000
+    RANGE_INC = 1_000
+
+    keys = {random.randint(0, UPPER) for _ in range(COUNT)}
+
+    for key in keys:
+        judy_map[key] = key * 2
+
+    assert len(judy_map) == len(keys)
+    assert list(judy_map) == sorted(keys)
+
+    lowers = list(range(0, UPPER, RANGE_INC))
+    uppers = list(range(0, UPPER, RANGE_INC))
+
+    for lower in lowers:
+        assert sorted(key for key in keys if lower <= key) == list(judy_map.keys(lower_inclusive=lower))
+
+    for upper in uppers:
+        assert sorted(key for key in keys if key <= upper) == list(judy_map.keys(upper_inclusive=upper))
+
+    for lower, upper in itertools.product(lowers, uppers):
+        assert sorted(key for key in keys if lower <= key <= upper) == list(
+            judy_map.keys(lower_inclusive=lower, upper_inclusive=upper)
+        )

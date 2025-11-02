@@ -1,5 +1,4 @@
 #include <cstdint>
-#include <limits>
 #include <memory>
 #include <optional>
 #include <span>
@@ -119,7 +118,7 @@ NB_MODULE(_judy_nb, m) {
                 std::shared_ptr<JudyIntObjectMap>& s
             )
             {
-                return JudyMapIterator<JudyIntObjectMap, Word_t, MapIterSelectKey>(s, 0, std::numeric_limits<Word_t>::max());
+                return JudyMapIterator<JudyIntObjectMap, Word_t, MapIterSelectKey>(s, {}, {});
             }
         )
         .def("keys", [](
@@ -134,7 +133,6 @@ NB_MODULE(_judy_nb, m) {
             nb::arg("upper_inclusive").none() = nb::none(),
             nb::rv_policy::reference
         )
-
         .def("values", [](
             std::shared_ptr<JudyIntObjectMap>& s,
             std::optional<Word_t> lower_inclusive,
@@ -238,7 +236,7 @@ NB_MODULE(_judy_nb, m) {
                 std::shared_ptr<JudyIntIntMap>& s
             )
             {
-                return JudyMapIterator<JudyIntIntMap, Word_t, MapIterSelectKey>(s, 0, std::numeric_limits<Word_t>::max());
+                return JudyMapIterator<JudyIntIntMap, Word_t, MapIterSelectKey>(s, {}, {});
             }
         )
         .def("keys", [](
@@ -344,7 +342,7 @@ NB_MODULE(_judy_nb, m) {
                 std::shared_ptr<JudyIntSet>& s
             )
             {
-                return JudyIntSetIterator(s, 0, std::numeric_limits<Word_t>::max());
+                return JudyIntSetIterator(s, {}, {});
             }
         )
         .def("ranged_iterator", [](
