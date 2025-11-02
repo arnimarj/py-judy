@@ -59,7 +59,7 @@ std::string JudyIntIntMap::ToString()
 {
     std::stringbuf sbuf;
     std::ostream os(&sbuf);
-    os << "{";
+    os << "JudyIntIntMap({";
 
     {
         nb::ft_lock_guard guard(mutex);
@@ -81,7 +81,7 @@ std::string JudyIntIntMap::ToString()
         }
     }
 
-    os << "}";
+    os << "})";
     return sbuf.str();
 }
 
