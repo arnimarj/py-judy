@@ -28,6 +28,10 @@ static Word_t MapIterSelectValue(Word_t key, Word_t value)
     { return value; }
 static std::pair<Word_t, Word_t> MapIterSelectItem(Word_t key, Word_t value)
     { return std::pair(key, value); }
+static std::pair<Word_t, nb::handle> MapIterSelectItemAsObject(Word_t key, Word_t value)
+    { auto obj = (PyObject*)(value); return std::pair(key, nb::borrow(obj)); }
+static nb::handle MapIterSelectValueAsObject(Word_t key, Word_t value)
+    { auto obj = (PyObject*)(value); return nb::borrow(obj); }
 
 
 PyType_Slot int_object_map_gc_slots[] = {
@@ -110,52 +114,66 @@ NB_MODULE(_judy_nb, m) {
             [](const JudyIntObjectMap&, std::optional<nb::handle>) { throw nb::type_error(); },
             nb::sig("def __ne__(self, arg: typing.Any, /) -> typing.NoReturn")
         )
-//        .def("__iter__", []
-//            (
-//                std::shared_ptr<JudyIntObjectMap>& s
-//            )
-//            {
-//                return JudyIntObjectMapIterator<Word_t, IntObjectIterSelect>(s, 0, std::numeric_limits<Word_t>::max());
-//            }
-//        )
-//        .def("keys", [](
-//            std::shared_ptr<JudyIntObjectMap>& s,
-//            std::optional<Word_t> lower_inclusive,
-//            std::optional<Word_t> upper_inclusive
-//        ) {
-//            return JudyIntObjectMapIterator<Word_t, _SelectKey>(s, lower_inclusive, upper_inclusive);
-//        },
-//            nb::kw_only(),
-//            nb::arg("lower_inclusive").none() = nb::none(),
-//            nb::arg("upper_inclusive").none() = nb::none(),
-//            nb::rv_policy::reference
-//        )
-//        .def("values", [](
-//            std::shared_ptr<JudyIntObjectMap>& s,
-//            std::optional<Word_t> lower_inclusive,
-//            std::optional<Word_t> upper_inclusive
-//        ) {
-//            return JudyIntObjectMapIterator<Word_t, _SelectValue>(s, lower_inclusive, upper_inclusive);
-//        },
-//            nb::kw_only(),
-//            nb::arg("lower_inclusive").none() = nb::none(),
-//            nb::arg("upper_inclusive").none() = nb::none(),
-//            nb::rv_policy::reference
-//        )
-//        .def("items", [](
-//            std::shared_ptr<JudyIntObjectMap>& s,
-//            std::optional<Word_t> lower_inclusive,
-//            std::optional<Word_t> upper_inclusive
-//        ) {
-//            return JudyIntObjectMapIterator<std::pair<Word_t, Word_t>, _SelectItem>(s, lower_inclusive, upper_inclusive);
-//        },
-//            nb::kw_only(),
-//            nb::arg("lower_inclusive").none() = nb::none(),
-//            nb::arg("upper_inclusive").none() = nb::none(),
-//            nb::rv_policy::reference
-//        )
+        .def("__iter__", []
+            (
+                std::shared_ptr<JudyIntObjectMap>& s
+            )
+            {
+                return JudyMapIterator<JudyIntObjectMap, Word_t, MapIterSelectKey>(s, 0, std::numeric_limits<Word_t>::max());
+            }
+        )
+        .def("keys", [](
+            std::shared_ptr<JudyIntObjectMap>& s,
+            std::optional<Word_t> lower_inclusive,
+            std::optional<Word_t> upper_inclusive
+        ) {
+            return JudyMapIterator<JudyIntObjectMap, Word_t, MapIterSelectKey>(s, lower_inclusive, upper_inclusive);
+        },
+            nb::kw_only(),
+            nb::arg("lower_inclusive").none() = nb::none(),
+            nb::arg("upper_inclusive").none() = nb::none(),
+            nb::rv_policy::reference
+        )
 
+        .def("values", [](
+            std::shared_ptr<JudyIntObjectMap>& s,
+            std::optional<Word_t> lower_inclusive,
+            std::optional<Word_t> upper_inclusive
+        ) {
+            return JudyMapIterator<JudyIntObjectMap, nb::handle, MapIterSelectValueAsObject>(s, lower_inclusive, upper_inclusive);
+        },
+            nb::kw_only(),
+            nb::arg("lower_inclusive").none() = nb::none(),
+            nb::arg("upper_inclusive").none() = nb::none(),
+            nb::rv_policy::reference
+        )
+        .def("items", [](
+            std::shared_ptr<JudyIntObjectMap>& s,
+            std::optional<Word_t> lower_inclusive,
+            std::optional<Word_t> upper_inclusive
+        ) {
+            return JudyMapIterator<JudyIntObjectMap, std::pair<Word_t, nb::handle>, MapIterSelectItemAsObject>(s, lower_inclusive, upper_inclusive);
+        },
+            nb::kw_only(),
+            nb::arg("lower_inclusive").none() = nb::none(),
+            nb::arg("upper_inclusive").none() = nb::none(),
+            nb::rv_policy::reference
+        )
+   ;
 
+    nb::class_<JudyMapIterator<JudyIntObjectMap, Word_t, MapIterSelectKey>>(m, "JudyIntObjectMapKeyIterator")
+        .def("__iter__", [](nb::handle h) { return h; }, nb::sig("def __iter__(self) -> typing.Self"))
+        .def("__next__", &JudyMapIterator<JudyIntObjectMap, Word_t, MapIterSelectKey>::Next)
+    ;
+
+    nb::class_<JudyMapIterator<JudyIntObjectMap, nb::handle, MapIterSelectValueAsObject>>(m, "JudyIntObjectMapValueIterator")
+        .def("__iter__", [](nb::handle h) { return h; }, nb::sig("def __iter__(self) -> typing.Self"))
+        .def("__next__", &JudyMapIterator<JudyIntObjectMap, nb::handle, MapIterSelectValueAsObject>::Next)
+    ;
+
+    nb::class_<JudyMapIterator<JudyIntObjectMap, std::pair<Word_t, nb::handle>, MapIterSelectItemAsObject>>(m, "JudyIntObjectMapItemIterator")
+        .def("__iter__", [](nb::handle h) { return h; }, nb::sig("def __iter__(self) -> typing.Self"))
+        .def("__next__", &JudyMapIterator<JudyIntObjectMap, std::pair<Word_t, nb::handle>, MapIterSelectItemAsObject>::Next)
     ;
 
     nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")

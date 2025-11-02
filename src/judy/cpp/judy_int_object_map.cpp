@@ -126,7 +126,6 @@ nb::handle JudyIntObjectMap::GetItem(Word_t key)
         throw nb::key_error(std::to_string(key).c_str());
 
     PyObject* obj = *((PyObject**)v);
-
     return nb::borrow(obj);
 }
 
