@@ -1,6 +1,7 @@
 #include <Judy.h>
 
 #include <optional>
+#include <sstream>
 #include <string>
 #include <variant>
 
@@ -33,6 +34,7 @@ struct JudyIntObjectMap {
     Word_t size_of();
     void Clear();
     nb::handle GetItem(Word_t key);
+    std::string ToString();
     void SetItem(Word_t key, nb::handle value);
     void DeleteItem(Word_t key);
     nb::handle Pop(Word_t key);
@@ -43,11 +45,10 @@ struct JudyIntObjectMap {
 
     nb::handle ByIndex(Py_ssize_t index);
 
-    /*
-    std::string ToString();
-    */
-
     int GCVisit(visitproc visit, void* arg);
+
+private:
+    std::string _ToString(bool is_repr);
 };
 
 

@@ -81,6 +81,8 @@ NB_MODULE(_judy_nb, m) {
         )
         .def("__setitem__", &JudyIntObjectMap::SetItem)
         .def("__delitem__", &JudyIntObjectMap::DeleteItem)
+        .def("__str__", &JudyIntObjectMap::ToString)
+        .def("__repr__", &JudyIntObjectMap::ToString)
         .def("pop", &JudyIntObjectMap::Pop, nb::arg("index"))
         .def(
             "pop",

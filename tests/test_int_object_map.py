@@ -88,3 +88,23 @@ def test_circular_destruction() -> None:
 
     m[1] = m
     del m
+
+
+def test_str_repr() -> None:
+    m = judy.JudyIntObjectMap()
+    assert str(m) == 'JudyIntObjectMap({})'
+    assert repr(m) == 'JudyIntObjectMap({})'
+
+    m[1] = m
+    assert str(m) == 'JudyIntObjectMap({1: JudyIntObjectMap({...})})'
+    assert repr(m) == 'JudyIntObjectMap({1: JudyIntObjectMap({...})})'
+
+    k = judy.JudyIntObjectMap()
+    k[1337] = m
+    assert str(k) == 'JudyIntObjectMap({1337: JudyIntObjectMap({1: JudyIntObjectMap({...})})})'
+    assert repr(k) == 'JudyIntObjectMap({1337: JudyIntObjectMap({1: JudyIntObjectMap({...})})})'
+
+    m.clear()
+    m[1] = 'hello python 🐍'
+    assert str(m) == 'JudyIntObjectMap({1: \'hello python 🐍\'})'
+    assert repr(m) == 'JudyIntObjectMap({1: \'hello python 🐍\'})'
