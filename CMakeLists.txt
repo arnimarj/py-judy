@@ -17,6 +17,17 @@ list(APPEND CMAKE_PREFIX_PATH "${NB_DIR}")
 
 message("Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
 
+# Check if the file does NOT exist
+if (NOT EXISTS "./judy-1.0.5/src/libJudy.a")
+    message("Building Judy Static Library")
+
+    execute_process(
+        COMMAND ./build_judy.sh
+    )
+
+endif()
+
+
 add_library(judy STATIC IMPORTED)
 set_target_properties(judy PROPERTIES
     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/judy-1.0.5/src/libJudy.a"
