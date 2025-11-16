@@ -66,8 +66,8 @@ jobs:
     - uses: actions/setup-python@v6
     - uses: actions/download-artifact@v6
       with:
-        path: wheelhouse
-        pattern: '*'
+        path: dist
+        pattern: dist-*
         merge-multiple: true
 
     - uses: pypa/gh-action-pypi-publish@release/v1
