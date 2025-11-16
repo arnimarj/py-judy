@@ -23,4 +23,12 @@ else
 	COPT+=" -fno-aggressive-loop-optimizations"
 fi
 
-(cd "$basename"; cd judy-1.0.5/src; CC="$JUDYCC" COPT="$COPT" sh ./sh_build)
+
+if [ ! -d "judy-1.0.5/src" ]; then
+	(
+		cd "$basename";
+		gzip -dc Judy-1.0.5.tar.gz | tar -x
+		cd judy-1.0.5/src
+		CC="$JUDYCC" COPT="$COPT" sh ./sh_build
+	)
+fi
