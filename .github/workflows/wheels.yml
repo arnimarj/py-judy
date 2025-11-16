@@ -67,7 +67,7 @@ jobs:
     - uses: actions/download-artifact@v6
       with:
         path: wheelhouse
-        pattern: *
+        pattern: '*'
         merge-multiple: true
 
     - uses: pypa/gh-action-pypi-publish@release/v1
