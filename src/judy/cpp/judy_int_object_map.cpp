@@ -189,40 +189,42 @@ std::string JudyIntObjectMap::ToString()
     std::ostream os(&sbuf);
     os << "JudyIntObjectMap({";
 
-    {
+    // see https://docs.python.org/3/c-api/exceptions.html#c.Py_ReprEnter
+
+    // we need to do the recurion check outside of the lock-guard, otherwise
+    // we may come here again (since this object may contain itself), and
+    // and deadlock
+    nb::handle self_handle = nb::cast(this);
+
+    if (Py_ReprEnter(self_handle.ptr()) > 0)
+        return std::string("JudyIntObjectMap({...})");
+
+    try {
         nb::ft_lock_guard guard(mutex);
 
-        nb::handle self_handle = nb::cast(this); 
+        void* v = nullptr;
+        Word_t key = 0;
+        JLF(v, judy_map, key);
 
-        // see https://docs.python.org/3/c-api/exceptions.html#c.Py_ReprEnter
-        if (Py_ReprEnter(self_handle.ptr()) > 0)
-            return std::string("JudyIntObjectMap({...})");
-
-        try {
-            void* v = nullptr;
-            Word_t key = 0;
-            JLF(v, judy_map, key);
-
-            if (v != nullptr) {
-                auto value = nb::handle(*((PyObject**)v));
-                os << key << ": " << nb::repr(value).c_str();
-            }
-
-            while (true) {
-                JLN(v, judy_map, key);
-
-                if (v == nullptr)
-                    break;
-
-                auto value = nb::handle(*((PyObject**)v));
-                os << ", " << key << ": " << nb::repr(value).c_str();
-            }
-
-            Py_ReprLeave(self_handle.ptr());
-        } catch (...) {
-            Py_ReprLeave(self_handle.ptr());
-            throw;
+        if (v != nullptr) {
+            auto value = nb::handle(*((PyObject**)v));
+            os << key << ": " << nb::repr(value).c_str();
         }
+
+        while (true) {
+            JLN(v, judy_map, key);
+
+            if (v == nullptr)
+                break;
+
+            auto value = nb::handle(*((PyObject**)v));
+            os << ", " << key << ": " << nb::repr(value).c_str();
+        }
+
+        Py_ReprLeave(self_handle.ptr());
+    } catch (...) {
+        Py_ReprLeave(self_handle.ptr());
+        throw;
     }
 
     os << "})";
