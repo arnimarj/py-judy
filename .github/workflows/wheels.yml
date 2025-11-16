@@ -28,7 +28,7 @@ jobs:
     - uses: actions/upload-artifact@v5
       with:
         name: dist-sdist
-        path: wheelshouse/*.tar.gz
+        path: wheelhouse/*.tar.gz
 
 
   build_wheels:
@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-15-intel, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-15-intel, macos-15, macos-26]
 
     steps:
     - uses: actions/checkout@v5
