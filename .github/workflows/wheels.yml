@@ -20,15 +20,15 @@ jobs:
         submodules: true
 
     - name: Build SDist
-      run: pipx run build --sdist
+      run: ./build-sdist.sh
 
     - name: Check metadata
-      run: pipx run twine check dist/*
+      run: pipx run twine check wheelhouse/*
 
     - uses: actions/upload-artifact@v5
       with:
         name: dist-sdist
-        path: dist/*.tar.gz
+        path: wheelshouse/*.tar.gz
 
 
   build_wheels:
@@ -66,8 +66,8 @@ jobs:
     - uses: actions/setup-python@v6
     - uses: actions/download-artifact@v6
       with:
-        path: dist
-        pattern: dist-*
+        path: wheelhouse
+        pattern: *
         merge-multiple: true
 
     - uses: pypa/gh-action-pypi-publish@release/v1
