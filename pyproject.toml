@@ -57,9 +57,6 @@ test-command = [
 	"pytest {package}/tests",
 ]
 
-[tool.cibuildwheel.macos.environment]
-MACOSX_DEPLOYMENT_TARGET = "10.14"
-
 [tool.black]
 line-length = 120
 skip-string-normalization = 1
