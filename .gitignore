@@ -6,3 +6,4 @@ build/
 _trial_temp/
 src/judy/_judy_nb.so
 .cmake/
+judy-1.0.5/
