@@ -79,17 +79,26 @@ NB_MODULE(_judy_nb, m) {
             nb::arg("index").none(),
             nb::sig("def __getitem__(self, arg: typing.Any, /) -> typing.NoReturn")
         )
-        .def("__setitem__", &JudyIntObjectMap::SetItem)
+        .def(
+            "__setitem__", 
+            &JudyIntObjectMap::SetItem,
+            nb::sig("def __setitem__(self, arg0: int, arg1: T, /) -> None")
+        )
         .def("__delitem__", &JudyIntObjectMap::DeleteItem)
         .def("__str__", &JudyIntObjectMap::ToString)
         .def("__repr__", &JudyIntObjectMap::ToString)
-        .def("pop", &JudyIntObjectMap::Pop, nb::arg("index"))
+        .def(
+            "pop",
+            &JudyIntObjectMap::Pop,
+            nb::arg("index"),
+            nb::sig("def pop(self, arg: int, /) -> T")
+        )
         .def(
             "pop",
             &JudyIntObjectMap::PopDefault,
             nb::arg("index"),
             nb::arg("default").none() = nb::none(),
-            nb::sig("def pop(self, arg: int, default: _T = ..., /) -> T | _T | None")
+            nb::sig("def pop(self, arg: int, default: _T, /) -> T | _T")
         )
         .def(
             "pop",
@@ -98,12 +107,17 @@ NB_MODULE(_judy_nb, m) {
             nb::arg("default"),
             nb::sig("def pop(self, arg: typing.Any, default: _T, /) -> _T")
         )
-        .def("get", &JudyIntObjectMap::Get, nb::arg("index"))
+        .def(
+            "get",
+            &JudyIntObjectMap::Get,
+            nb::arg("index"),
+            nb::sig("def get(self, arg: int, /) -> T | None")
+        )
         .def(
             "get",
             &JudyIntObjectMap::GetDefault,
             nb::arg("index"),
-            nb::arg("default").none() = nb::none(),
+            nb::arg("default"),
             nb::sig("def get(self, arg: int, default: _T, /) -> T | _T")
         )
         .def(
@@ -151,7 +165,8 @@ NB_MODULE(_judy_nb, m) {
             nb::kw_only(),
             nb::arg("lower_inclusive").none() = nb::none(),
             nb::arg("upper_inclusive").none() = nb::none(),
-            nb::rv_policy::reference
+            nb::rv_policy::reference,
+            nb::sig("def values(self, *, lower_inclusive: int | None = None, upper_inclusive: int | None = None) -> JudyIntObjectMapValueIterator[T]")
         )
         .def("items", [](
             std::shared_ptr<JudyIntObjectMap>& s,
@@ -163,23 +178,45 @@ NB_MODULE(_judy_nb, m) {
             nb::kw_only(),
             nb::arg("lower_inclusive").none() = nb::none(),
             nb::arg("upper_inclusive").none() = nb::none(),
-            nb::rv_policy::reference
+            nb::rv_policy::reference,
+            nb::sig("def items(self, *, lower_inclusive: int | None = None, upper_inclusive: int | None = None) -> JudyIntObjectMapItemIterator[T]")
         )
    ;
 
-    nb::class_<JudyMapIterator<JudyIntObjectMap, Word_t, MapIterSelectKey>>(m, "JudyIntObjectMapKeyIterator")
+    nb::class_<JudyMapIterator<JudyIntObjectMap, Word_t, MapIterSelectKey>>(
+        m,
+        "JudyIntObjectMapKeyIterator"
+    )
         .def("__iter__", [](nb::handle h) { return h; }, nb::sig("def __iter__(self) -> typing.Self"))
         .def("__next__", &JudyMapIterator<JudyIntObjectMap, Word_t, MapIterSelectKey>::Next)
     ;
 
-    nb::class_<JudyMapIterator<JudyIntObjectMap, nb::handle, MapIterSelectValueAsObject>>(m, "JudyIntObjectMapValueIterator")
+    nb::class_<JudyMapIterator<JudyIntObjectMap, nb::handle, MapIterSelectValueAsObject>>(
+        m,
+        "JudyIntObjectMapValueIterator",
+        nb::is_generic(),
+        nb::sig("class JudyIntObjectMapValueIterator(typing.Generic[T])")
+    )
         .def("__iter__", [](nb::handle h) { return h; }, nb::sig("def __iter__(self) -> typing.Self"))
-        .def("__next__", &JudyMapIterator<JudyIntObjectMap, nb::handle, MapIterSelectValueAsObject>::Next)
+        .def(
+            "__next__",
+            &JudyMapIterator<JudyIntObjectMap, nb::handle, MapIterSelectValueAsObject>::Next,
+            nb::sig("def __next__(self) -> T")
+        )
     ;
 
-    nb::class_<JudyMapIterator<JudyIntObjectMap, std::pair<Word_t, nb::handle>, MapIterSelectItemAsObject>>(m, "JudyIntObjectMapItemIterator")
+    nb::class_<JudyMapIterator<JudyIntObjectMap, std::pair<Word_t, nb::handle>, MapIterSelectItemAsObject>>(
+        m,
+        "JudyIntObjectMapItemIterator",
+        nb::is_generic(),
+        nb::sig("class JudyIntObjectMapItemIterator(typing.Generic[T])")
+    )
         .def("__iter__", [](nb::handle h) { return h; }, nb::sig("def __iter__(self) -> typing.Self"))
-        .def("__next__", &JudyMapIterator<JudyIntObjectMap, std::pair<Word_t, nb::handle>, MapIterSelectItemAsObject>::Next)
+        .def(
+            "__next__",
+            &JudyMapIterator<JudyIntObjectMap, std::pair<Word_t, nb::handle>, MapIterSelectItemAsObject>::Next,
+            nb::sig("def __next__(self) -> tuple[int, T]")
+        )
     ;
 
     nb::class_<JudyIntIntMap>(m, "JudyIntIntMap")
@@ -220,7 +257,7 @@ NB_MODULE(_judy_nb, m) {
             "get",
             &JudyIntIntMap::GetDefault,
             nb::arg("index"),
-            nb::arg("default").none() = nb::none(),
+            nb::arg("default"),
             nb::sig("def get(self, arg: int, default: _T, /) -> int | _T")
         )
         .def("pop", &JudyIntIntMap::Pop, nb::arg("index"))
@@ -229,7 +266,7 @@ NB_MODULE(_judy_nb, m) {
             &JudyIntIntMap::PopDefault,
             nb::arg("index"),
             nb::arg("default").none() = nb::none(),
-            nb::sig("def pop(self, arg: int, default: _T = ..., /) -> int | _T | None")
+            nb::sig("def pop(self, arg: int, default: _T, /) -> int | _T")
         )
         .def(
             "pop",
