@@ -1,16 +1,14 @@
 #!/bin/bash
 
-set -e
+set -xe
 
 mkdir -p ./wheelhouse
 
-pip3 install setuptools
-python3 setup.py sdist --dist-dir ./wheelhouse
+pip install pipx
+pipx run build --sdist --outdir ./wheelhouse .
 
 # test it
-pip3 install -U pip virtualenv
+pip install -U pip virtualenv
 python -m virtualenv venv
+
 ./venv/bin/pip install ./wheelhouse/*.gz
-
-
-ls -l ./wheelhouse
