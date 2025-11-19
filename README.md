@@ -7,7 +7,6 @@
  * implement `Next(key, default=...)` which returns smallest key LE to `key`
  * `judy.JudyIntSet()` to numpy array
  * `judy.JudyIntIntMap()` to numpy arrays
- * `set/dict.by_index()`
 
 Quality TBD
 -----------
