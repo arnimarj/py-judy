@@ -117,7 +117,7 @@ NB_MODULE(_judy_nb, m) {
             "get",
             &JudyIntObjectMap::GetDefault,
             nb::arg("index"),
-            nb::arg("default"),
+            nb::arg("default").none() = nb::none(),
             nb::sig("def get(self, arg: int, default: _T, /) -> T | _T")
         )
         .def(
@@ -257,7 +257,7 @@ NB_MODULE(_judy_nb, m) {
             "get",
             &JudyIntIntMap::GetDefault,
             nb::arg("index"),
-            nb::arg("default"),
+            nb::arg("default").none() = nb::none(),
             nb::sig("def get(self, arg: int, default: _T, /) -> int | _T")
         )
         .def("pop", &JudyIntIntMap::Pop, nb::arg("index"))
