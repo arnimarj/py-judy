@@ -37,6 +37,11 @@ def test_insert_query_clear(klass: type[JudyMap]) -> None:
         assert m.get(key, 1337) == value
         assert m.by_index(i) == value
 
+        obj = object()
+        assert m.get(10_000_000) is None
+        assert m.get(10_000_000, None) is None
+        assert m.get(10_000_000, obj) is obj
+
     judy_dict_contains_items(m, list(zip(iter(key_range), iter(value_range))))
 
     for key in range(1, 16_000, 16):
@@ -49,6 +54,9 @@ def test_insert_query_clear(klass: type[JudyMap]) -> None:
             assert m.pop(key)
 
         assert m.pop(key, None) is None
+
+        obj = object()
+        assert m.pop(key, obj) is obj
 
     m.clear()
     assert len(m) == 0
