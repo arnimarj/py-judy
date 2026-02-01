@@ -20,6 +20,14 @@ def test_empty() -> None:
     judy_set_contains_items(s, [])
 
 
+def test_from_wrong_array() -> None:
+    with pytest.raises(TypeError):
+        judy.JudyIntIntMap.FromArray(numpy.array([-1]), numpy.array([-1]))
+
+    with pytest.raises(TypeError):
+        judy.JudyIntIntMap.FromArray(numpy.array([1.0]), numpy.array([1.1]))
+
+
 def test_from_array() -> None:
     n = 1000
 
