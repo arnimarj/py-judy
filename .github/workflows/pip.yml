@@ -29,6 +29,11 @@ jobs:
       run: |
         echo "MACOSX_DEPLOYMENT_TARGET=10.14" >> $GITHUB_ENV
 
+    - name: Set min macOS version
+      if: matrix.os == 'macos-26'
+      run: |
+        echo "MACOSX_DEPLOYMENT_TARGET=11.0" >> $GITHUB_ENV
+
     - name: Build and install
       run: |
         python -m pip install pytest
