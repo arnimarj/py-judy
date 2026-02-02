@@ -6,7 +6,7 @@ authors = [
 	{ name = "Arni Mar Jonsson", email = "arnimarj@gmail.com" },
 ]
 readme = "README.md"
-version = "2.0.4"
+version = "2.0.5"
 requires-python = ">=3.10"
 classifiers = [
 	"Development Status :: 5 - Production/Stable",
@@ -33,7 +33,7 @@ dependencies = [
 [build-system]
 requires = [
     "scikit-build-core>=0.11.6",
-    "nanobind>=2.9.2"
+    "nanobind>=2.11.0"
 ]
 
 build-backend = "scikit_build_core.build"

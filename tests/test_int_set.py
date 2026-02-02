@@ -172,6 +172,14 @@ def test_pop() -> None:
     assert len(judy_set) == 0
 
 
+def test_from_wrong_array() -> None:
+    with pytest.raises(TypeError):
+        judy.JudyIntSet.FromArray(numpy.array([-1]))
+
+    with pytest.raises(TypeError):
+        judy.JudyIntSet.FromArray(numpy.array([1.1]))
+
+
 def test_from_array() -> None:
     n = 1000
 

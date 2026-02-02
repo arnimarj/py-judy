@@ -323,8 +323,8 @@ NB_MODULE(_judy_nb, m) {
 
         // TBD: how to specialize across all combos of u8/16/32/64
         .def_static("FromArray", [](
-            nb::ndarray<uint64_t, nb::shape<-1>, nb::device::cpu> keys,
-            nb::ndarray<uint64_t, nb::shape<-1>, nb::device::cpu> values
+            nb::ndarray<uint64_t, nb::shape<-1>, nb::device::cpu, nb::ro> keys,
+            nb::ndarray<uint64_t, nb::shape<-1>, nb::device::cpu, nb::ro> values
         ) {
             // release gil while building
             nb::gil_scoped_release release_gil;
@@ -332,7 +332,10 @@ NB_MODULE(_judy_nb, m) {
                 std::span{keys.data(), keys.shape(0)},
                 std::span{values.data(), values.shape(0)}
             );
-        })
+        },
+            nb::arg("keys").noconvert(),
+            nb::arg("values").noconvert()
+        )
     ;
 
     nb::class_<JudyMapIterator<JudyIntIntMap, Word_t, MapIterSelectKey>>(m, "JudyIntIntMapKeyIterator")
@@ -419,26 +422,42 @@ NB_MODULE(_judy_nb, m) {
         .def("__sizeof__", &JudyIntSet::size_of)
         .def("by_index", &JudyIntSet::ByIndex)
 
-        .def_static("FromArray", [](nb::ndarray<uint8_t, nb::shape<-1>, nb::device::cpu> array) {
+        .def_static("FromArray", [](
+            nb::ndarray<uint8_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
+        ) {
             // release gil while building
             nb::gil_scoped_release release_gil;
             return JudyIntSet::FromSpan(std::span{array.data(), array.shape(0)});
-        })
-        .def_static("FromArray", [](nb::ndarray<uint16_t, nb::shape<-1>, nb::device::cpu> array) {
+        },
+            nb::arg("array").noconvert()
+        )
+        .def_static("FromArray", [](
+            nb::ndarray<uint16_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
+        ) {
             // release gil while building
             nb::gil_scoped_release release_gil;
             return JudyIntSet::FromSpan(std::span{array.data(), array.shape(0)});
-        })
-        .def_static("FromArray", [](nb::ndarray<uint32_t, nb::shape<-1>, nb::device::cpu> array) {
+        },
+            nb::arg("array").noconvert()
+        )
+        .def_static("FromArray", [](
+            nb::ndarray<uint32_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
+        ) {
             // release gil while building
             nb::gil_scoped_release release_gil;
             return JudyIntSet::FromSpan(std::span{array.data(), array.shape(0)});
-        })
-        .def_static("FromArray", [](nb::ndarray<uint64_t, nb::shape<-1>, nb::device::cpu> array) {
+        },
+            nb::arg("array").noconvert()
+        )
+        .def_static("FromArray", [](
+            nb::ndarray<uint64_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
+        ) {
             // release gil while building
             nb::gil_scoped_release release_gil;
             return JudyIntSet::FromSpan(std::span{array.data(), array.shape(0)});
-        })
+        },
+            nb::arg("array").noconvert()
+        )
     ;
 
     nb::class_<JudyIntSetIterator>(m, "JudyIntSetIterator")
