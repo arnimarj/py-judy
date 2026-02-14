@@ -1,5 +1,3 @@
-# VIRTUAL_ENV := ".venv"
-
 all: local-build local-test
 
 local-build:
