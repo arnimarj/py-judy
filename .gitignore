@@ -1,10 +1,10 @@
+.cmake/
+_trial_temp/
+build/
 CMakeCache.txt
 CMakeFiles/
-src/judy/_judy_nb.pyi
-wheelhouse/
-build/
-_trial_temp/
-src/judy/_judy_nb.so
-.cmake/
 judy-1.0.5/
+src/judy/_judy_nb.pyi
+src/judy/_judy_nb.so
 uv.lock
+wheelhouse/
