@@ -23,6 +23,7 @@ if (NOT EXISTS "./judy-1.0.5/src/libJudy.a")
 
     execute_process(
         COMMAND ./build_judy.sh
+        COMMAND_ERROR_IS_FATAL ANY
     )
 
 endif()
