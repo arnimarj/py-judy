@@ -17,6 +17,9 @@ namespace nb = nanobind;
 using namespace nb::literals;
 
 
+template <typename T>
+using nd_T = nb::ndarray<nb::numpy, T, nb::c_contig, nb::shape<-1>, nb::device::cpu>;
+
 using nd_64 = nb::ndarray<nb::numpy, uint64_t, nb::c_contig, nb::shape<-1>, nb::device::cpu>;
 
 
@@ -48,13 +51,17 @@ struct JudyIntSet {
     Word_t ByIndex(Py_ssize_t index);
 
     template <typename T>
+    void Update(const std::span<T> view)
+    {
+        for (auto value : view)
+            Add(static_cast<Word_t>(value));
+    }
+
+    template <typename T>
     static JudyIntSet FromSpan(const std::span<T> view)
     {
         auto s = JudyIntSet();
-
-        for (auto value : view)
-            s.Add(static_cast<Word_t>(value));
-
+        s.Update(view);
         return std::move(s);
     }
 };

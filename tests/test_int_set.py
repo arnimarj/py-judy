@@ -1,5 +1,6 @@
 import itertools
 import random
+from typing import Any
 
 import numpy
 import pytest
@@ -7,8 +8,11 @@ import pytest
 import judy
 
 
-@pytest.mark.parametrize('shuffled_insertion', [True, False])
-def test_insert_query_clear(*, shuffled_insertion: bool) -> None:
+@pytest.mark.parametrize(
+    'shuffled_insertion, use_update, dtype',
+    list(itertools.product([False, True], [False, True], [numpy.uint16, numpy.uint32, numpy.uint64]))
+)
+def test_insert_query_clear(*, shuffled_insertion: bool, use_update: bool, dtype: Any) -> None:
     s = judy.JudyIntSet()
 
     assert len(s) == 0
@@ -19,8 +23,12 @@ def test_insert_query_clear(*, shuffled_insertion: bool) -> None:
     if shuffled_insertion:
         random.shuffle(keys)
 
-    for key in keys:
-        s.add(key)
+    if use_update:
+        np = numpy.array(keys, dtype=dtype)
+        s.update(np)
+    else:
+        for key in keys:
+            s.add(key)
 
     for i, k in enumerate(sorted(keys)):
         assert s.by_index(i) == k
