@@ -425,6 +425,53 @@ NB_MODULE(_judy_nb, m) {
         .def("by_index", &JudyIntSet::ByIndex)
         .def("ToArray", &JudyIntSet::ToNumpyArray)
 
+        .def(
+            "update",
+            [](
+                JudyIntSet& set,
+                nb::ndarray<uint8_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
+            ) {
+                set.Update(std::span{array.data(), array.shape(0)});
+            }, (
+                nb::arg("array").noconvert()
+            )
+        )
+
+        .def(
+            "update",
+            [](
+                JudyIntSet& set,
+                nb::ndarray<uint16_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
+            ) {
+                set.Update(std::span{array.data(), array.shape(0)});
+            }, (
+                nb::arg("array").noconvert()
+            )
+        )
+
+        .def(
+            "update",
+            [](
+                JudyIntSet& set,
+                nb::ndarray<uint32_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
+            ) {
+                set.Update(std::span{array.data(), array.shape(0)});
+            }, (
+                nb::arg("array").noconvert()
+            )
+        )
+
+        .def(
+            "update", [](
+                JudyIntSet& set,
+                nb::ndarray<uint64_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
+            ) {
+                set.Update(std::span{array.data(), array.shape(0)});
+            }, (
+                nb::arg("array").noconvert()
+            )
+        )
+
         .def_static("FromArray", [](
             nb::ndarray<uint8_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
         ) {
