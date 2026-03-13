@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <optional>
+#include <vector>
 #include <span>
 #include <sstream>
 #include <string>
@@ -14,6 +15,9 @@
 
 namespace nb = nanobind;
 using namespace nb::literals;
+
+
+using nd_64 = nb::ndarray<nb::numpy, uint64_t, nb::c_contig, nb::shape<-1>, nb::device::cpu>;
 
 
 struct JudyIntSet {
@@ -32,6 +36,7 @@ struct JudyIntSet {
     }
 
     std::string ToString();
+    nd_64 ToNumpyArray();
     bool Contains(Word_t value);
     Word_t size();
     Word_t size_of();

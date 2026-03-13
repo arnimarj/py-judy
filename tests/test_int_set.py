@@ -201,7 +201,7 @@ def test_to_array() -> None:
 
     a64 = numpy.random.randint(low=0, high=2**64 - 1, size=n, dtype=numpy.uint64)
     j_array = judy.JudyIntSet.FromArray(a64)
-    np_array = j_array.to_numpy_array()
+    np_array = j_array.ToArray()
     assert isinstance(np_array, numpy.ndarray)
     assert np_array.dtype == numpy.uint64()
     assert sorted(a64) == [int(item) for item in np_array]

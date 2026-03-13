@@ -16,6 +16,39 @@ JudyIntSet::~JudyIntSet()
     }
 }
 
+nd_64 JudyIntSet::ToNumpyArray()
+{
+    auto ptr = std::make_unique<std::vector<uint64_t>>();
+
+    {
+        nb::ft_lock_guard guard(mutex);
+
+        Word_t v = 0;
+        int i = 0;
+        J1F(i, judy_set, v);
+
+        if (i != 0) {
+            ptr->push_back(static_cast<uint64_t>(v));
+
+            while (true) {
+                J1N(i, judy_set, v);
+
+                if (i == 0)
+                    break;
+
+                ptr->push_back(static_cast<uint64_t>(v));
+            }
+        }
+    }
+
+    std::size_t size = ptr->size();
+    auto data = ptr->data();
+
+    // transfer ownership into a capsule
+    auto deleter = nb::capsule(ptr.release(), [](void *p) noexcept { delete static_cast<std::vector<uint64_t>*>(p); });
+    return nd_64(data, {size}, deleter);
+}
+
 std::string JudyIntSet::ToString()
 {
     std::stringbuf sbuf;
