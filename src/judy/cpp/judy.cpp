@@ -2,15 +2,17 @@
 #include <memory>
 #include <optional>
 #include <span>
-#include <utility>
 #include <stdexcept>
+#include <utility>
+#include <vector>
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 #include <nanobind/typing.h>
 #include <nanobind/stl/optional.h>
-#include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/pair.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/tuple.h>
 
 #include "judy_int_set.h"
 #include "judy_int_int_map.h"
@@ -421,6 +423,7 @@ NB_MODULE(_judy_nb, m) {
         .def("clear", &JudyIntSet::Clear)
         .def("__sizeof__", &JudyIntSet::size_of)
         .def("by_index", &JudyIntSet::ByIndex)
+        .def("ToArray", &JudyIntSet::ToNumpyArray)
 
         .def_static("FromArray", [](
             nb::ndarray<uint8_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
