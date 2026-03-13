@@ -2,15 +2,16 @@
 #include <memory>
 #include <optional>
 #include <span>
-#include <utility>
 #include <stdexcept>
+#include <utility>
+#include <vector>
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 #include <nanobind/typing.h>
 #include <nanobind/stl/optional.h>
 #include <nanobind/stl/shared_ptr.h>
-#include <nanobind/stl/pair.h>
+#include <nanobind/stl/tuple.h>
 
 #include "judy_int_set.h"
 #include "judy_int_int_map.h"
@@ -421,6 +422,21 @@ NB_MODULE(_judy_nb, m) {
         .def("clear", &JudyIntSet::Clear)
         .def("__sizeof__", &JudyIntSet::size_of)
         .def("by_index", &JudyIntSet::ByIndex)
+        .def(
+            "to_numpy_array",
+            [](JudyIntSet& set) {
+                auto ptr = std::make_unique<std::vector<uint64_t>>();
+                std::size_t size = ptr->size();
+                auto data = ptr->data();
+
+                // transfer ownership into a capsule
+                auto deleter = nb::capsule(ptr.release(), [](void *p) noexcept { delete static_cast<std::vector<uint64_t>*>(p); });
+
+                using nd_64 = nb::ndarray<nb::numpy, uint64_t, nb::ro, nb::c_contig, nb::shape<-1>, nb::device::cpu>;
+
+                return nd_64(data, {size}, deleter);
+            }
+        )
 
         .def_static("FromArray", [](
             nb::ndarray<uint8_t, nb::shape<-1>, nb::device::cpu, nb::ro> array
