@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-26.04, ubuntu-26.04-arm, macos-15-intel, macos-26]
+        os: [ubuntu-26.04, ubuntu-26.04-arm, macos-26-intel, macos-26]
 
     steps:
     - uses: actions/checkout@v7
@@ -63,7 +63,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
 
     steps:
-    - uses: actions/setup-python@v6
+    - uses: actions/setup-python@v7
     - uses: actions/download-artifact@v6
       with:
         path: dist
