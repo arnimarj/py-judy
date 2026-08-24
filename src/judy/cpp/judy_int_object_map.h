@@ -1,10 +1,3 @@
-#include <Judy.h>
-
-#include <optional>
-#include <sstream>
-#include <string>
-#include <variant>
-
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/optional.h>
 #include <nanobind/stl/string.h>
@@ -12,6 +5,13 @@
 
 namespace nb = nanobind;
 using namespace nb::literals;
+
+#include <Judy.h>
+
+#include <optional>
+#include <sstream>
+#include <string>
+#include <variant>
 
 
 struct JudyIntObjectMap {
