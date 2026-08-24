@@ -1,3 +1,11 @@
+#include <nanobind/nanobind.h>
+
+namespace nb = nanobind;
+using namespace nb::literals;
+
+#include <memory>
+#include <optional>
+
 #include <Judy.h>
 
 

@@ -1,3 +1,11 @@
+#include <nanobind/nanobind.h>
+#include <nanobind/ndarray.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/shared_ptr.h>
+
+namespace nb = nanobind;
+using namespace nb::literals;
+
 #include <cstdint>
 #include <optional>
 #include <vector>
@@ -7,14 +15,6 @@
 #include <utility>
 
 #include <Judy.h>
-
-#include <nanobind/nanobind.h>
-#include <nanobind/ndarray.h>
-#include <nanobind/stl/optional.h>
-#include <nanobind/stl/shared_ptr.h>
-
-namespace nb = nanobind;
-using namespace nb::literals;
 
 
 template <typename T>

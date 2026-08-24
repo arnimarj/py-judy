@@ -1,11 +1,3 @@
-#include <cstdint>
-#include <memory>
-#include <optional>
-#include <span>
-#include <stdexcept>
-#include <utility>
-#include <vector>
-
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 #include <nanobind/typing.h>
@@ -14,13 +6,21 @@
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/tuple.h>
 
+namespace nb = nanobind;
+using namespace nb::literals;
+
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <span>
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
 #include "judy_int_set.h"
 #include "judy_int_int_map.h"
 #include "judy_int_object_map.h"
 #include "judy_map_iter.h"
-
-namespace nb = nanobind;
-using namespace nb::literals;
 
 
 static Word_t MapIterSelectKey(Word_t key, Word_t value)
