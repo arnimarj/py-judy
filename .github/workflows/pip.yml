@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
-    - uses: actions/setup-python@7
+    - uses: actions/setup-python@6
       with:
         python-version: ${{ matrix.python-version }}
 
